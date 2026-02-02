@@ -1,5 +1,6 @@
 import type { PlayerSummary } from '../../types';
-import { formatPrice, formatPoints, getPositionLabel, getCountryFlag, cn } from '../../utils';
+import { CountryFlag } from '../common/CountryFlag';
+import { formatPrice, formatPoints, getPositionLabel, cn } from '../../utils';
 
 interface PlayerCardProps {
   player: PlayerSummary;
@@ -32,8 +33,9 @@ export function PlayerCard({
     >
       <div className="flex justify-between items-start">
         <div>
-          <h3 className="font-semibold text-gray-900">
-            {getCountryFlag(player.country)} {player.name}
+          <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+            <CountryFlag country={player.country} size="sm" />
+            {player.name}
           </h3>
           <p className="text-sm text-gray-500">
             {getPositionLabel(player.fantasy_position)} | {player.country}

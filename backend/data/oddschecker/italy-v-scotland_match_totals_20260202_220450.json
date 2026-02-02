@@ -1,0 +1,750 @@
+{
+  "market_type": "match_totals",
+  "url": "https://www.oddschecker.com/rugby-union/six-nations/italy-v-scotland/total-points",
+  "scraped_at": "2026-02-02T22:04:50.183234",
+  "bookmakers": [
+    "B3",
+    "WH",
+    "UN",
+    "FR",
+    "EE",
+    "SX",
+    "LD",
+    "VC",
+    "KN",
+    "BY",
+    "OE",
+    "S6",
+    "PUP",
+    "SI",
+    "VE",
+    "QN",
+    "WA",
+    "CE",
+    "G5",
+    "BTT",
+    "BRS",
+    "SK",
+    "PP",
+    "AKB",
+    "BF",
+    "MA"
+  ],
+  "totals_data": [
+    {
+      "selection": "Over 36.5",
+      "direction": "over",
+      "line": 36.5,
+      "odds_by_bookmaker": {
+        "SX": 1.22,
+        "SI": 1.22,
+        "WA": 1.18
+      }
+    },
+    {
+      "selection": "Under 60.5",
+      "direction": "under",
+      "line": 60.5,
+      "odds_by_bookmaker": {
+        "SX": 1.22,
+        "SI": 1.22,
+        "WA": 1.2
+      }
+    },
+    {
+      "selection": "Over 39.5",
+      "direction": "over",
+      "line": 39.5,
+      "odds_by_bookmaker": {
+        "SX": 1.33,
+        "SI": 1.33
+      }
+    },
+    {
+      "selection": "Under 57.5",
+      "direction": "under",
+      "line": 57.5,
+      "odds_by_bookmaker": {
+        "SX": 1.33,
+        "SI": 1.33
+      }
+    },
+    {
+      "selection": "Over 41.5",
+      "direction": "over",
+      "line": 41.5,
+      "odds_by_bookmaker": {
+        "QN": 1.4
+      }
+    },
+    {
+      "selection": "Under 54.5",
+      "direction": "under",
+      "line": 54.5,
+      "odds_by_bookmaker": {
+        "SX": 1.44,
+        "SI": 1.44,
+        "QN": 1.44,
+        "WA": 1.4,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 42.5",
+      "direction": "over",
+      "line": 42.5,
+      "odds_by_bookmaker": {
+        "SX": 1.5,
+        "SI": 1.5,
+        "WA": 1.44
+      }
+    },
+    {
+      "selection": "Under 51.5",
+      "direction": "under",
+      "line": 51.5,
+      "odds_by_bookmaker": {
+        "EE": 1.62,
+        "SX": 1.62,
+        "SI": 1.62,
+        "QN": 1.62,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 45.5",
+      "direction": "over",
+      "line": 45.5,
+      "odds_by_bookmaker": {
+        "EE": 1.67,
+        "SX": 1.67,
+        "SI": 1.67
+      }
+    },
+    {
+      "selection": "Over 46.5",
+      "direction": "over",
+      "line": 46.5,
+      "odds_by_bookmaker": {
+        "EE": 1.67,
+        "QN": 1.73
+      }
+    },
+    {
+      "selection": "Over 48.5",
+      "direction": "over",
+      "line": 48.5,
+      "odds_by_bookmaker": {
+        "B3": 1.91,
+        "EE": 1.91,
+        "SX": 1.91,
+        "VC": 1.87,
+        "KN": 1.86,
+        "OE": 1.83,
+        "S6": 1.91,
+        "PUP": 1.91,
+        "SI": 1.91,
+        "VE": 1.88,
+        "QN": 1.87,
+        "WA": 1.85,
+        "G5": 1.85,
+        "BTT": 1.85,
+        "BRS": 1.91,
+        "SK": 1.83,
+        "PP": 1.91
+      }
+    },
+    {
+      "selection": "Under 48.5",
+      "direction": "under",
+      "line": 48.5,
+      "odds_by_bookmaker": {
+        "B3": 1.91,
+        "EE": 1.85,
+        "SX": 1.8,
+        "VC": 1.83,
+        "KN": 1.86,
+        "OE": 1.83,
+        "S6": 1.85,
+        "PUP": 1.85,
+        "SI": 1.8,
+        "VE": 1.88,
+        "QN": 1.83,
+        "WA": 1.8,
+        "G5": 1.85,
+        "BTT": 1.85,
+        "BRS": 1.85,
+        "SK": 1.83,
+        "PP": 1.8,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 46.5",
+      "direction": "under",
+      "line": 46.5,
+      "odds_by_bookmaker": {
+        "EE": 2.2,
+        "QN": 2.0,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 45.5",
+      "direction": "under",
+      "line": 45.5,
+      "odds_by_bookmaker": {
+        "EE": 2.2,
+        "SX": 2.1,
+        "SI": 2.1,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 51.5",
+      "direction": "over",
+      "line": 51.5,
+      "odds_by_bookmaker": {
+        "EE": 2.25,
+        "SX": 2.2,
+        "SI": 2.2,
+        "QN": 2.2
+      }
+    },
+    {
+      "selection": "Under 42.5",
+      "direction": "under",
+      "line": 42.5,
+      "odds_by_bookmaker": {
+        "SX": 2.5,
+        "SI": 2.5,
+        "WA": 2.6,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 54.5",
+      "direction": "over",
+      "line": 54.5,
+      "odds_by_bookmaker": {
+        "SX": 2.63,
+        "SI": 2.63,
+        "QN": 2.6,
+        "WA": 2.6
+      }
+    },
+    {
+      "selection": "Under 41.5",
+      "direction": "under",
+      "line": 41.5,
+      "odds_by_bookmaker": {
+        "QN": 2.7,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 39.5",
+      "direction": "under",
+      "line": 39.5,
+      "odds_by_bookmaker": {
+        "SX": 3.2,
+        "SI": 3.2,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 57.5",
+      "direction": "over",
+      "line": 57.5,
+      "odds_by_bookmaker": {
+        "SX": 3.2,
+        "SI": 3.2
+      }
+    },
+    {
+      "selection": "Under 36.5",
+      "direction": "under",
+      "line": 36.5,
+      "odds_by_bookmaker": {
+        "SX": 4.0,
+        "SI": 4.0,
+        "WA": 4.0,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 60.5",
+      "direction": "over",
+      "line": 60.5,
+      "odds_by_bookmaker": {
+        "SX": 4.0,
+        "SI": 4.0,
+        "WA": 4.0
+      }
+    },
+    {
+      "selection": "Under 52.5",
+      "direction": "under",
+      "line": 52.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 94.5",
+      "direction": "over",
+      "line": 94.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 92.5",
+      "direction": "over",
+      "line": 92.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 73.5",
+      "direction": "over",
+      "line": 73.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 79.5",
+      "direction": "over",
+      "line": 79.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 76.5",
+      "direction": "over",
+      "line": 76.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 70.5",
+      "direction": "over",
+      "line": 70.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 96.5",
+      "direction": "over",
+      "line": 96.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 100.5",
+      "direction": "over",
+      "line": 100.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 82.5",
+      "direction": "over",
+      "line": 82.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 86.5",
+      "direction": "over",
+      "line": 86.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 84.5",
+      "direction": "over",
+      "line": 84.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 89.5",
+      "direction": "over",
+      "line": 89.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 72.5",
+      "direction": "over",
+      "line": 72.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 71.5",
+      "direction": "over",
+      "line": 71.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 87.5",
+      "direction": "over",
+      "line": 87.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 83.5",
+      "direction": "over",
+      "line": 83.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 91.5",
+      "direction": "over",
+      "line": 91.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 80.5",
+      "direction": "over",
+      "line": 80.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 75.5",
+      "direction": "over",
+      "line": 75.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 78.5",
+      "direction": "over",
+      "line": 78.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 97.5",
+      "direction": "over",
+      "line": 97.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 88.5",
+      "direction": "over",
+      "line": 88.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 93.5",
+      "direction": "over",
+      "line": 93.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 98.5",
+      "direction": "over",
+      "line": 98.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 81.5",
+      "direction": "over",
+      "line": 81.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 99.5",
+      "direction": "over",
+      "line": 99.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 85.5",
+      "direction": "over",
+      "line": 85.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 90.5",
+      "direction": "over",
+      "line": 90.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 77.5",
+      "direction": "over",
+      "line": 77.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 74.5",
+      "direction": "over",
+      "line": 74.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 95.5",
+      "direction": "over",
+      "line": 95.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 47.5",
+      "direction": "under",
+      "line": 47.5,
+      "odds_by_bookmaker": {
+        "EE": 1.95,
+        "SX": 1.83,
+        "SI": 1.83,
+        "WA": 1.9,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 33.5",
+      "direction": "under",
+      "line": 33.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 38.5",
+      "direction": "under",
+      "line": 38.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 50.5",
+      "direction": "under",
+      "line": 50.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 35.5",
+      "direction": "under",
+      "line": 35.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 26.5",
+      "direction": "under",
+      "line": 26.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 34.5",
+      "direction": "under",
+      "line": 34.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 37.5",
+      "direction": "under",
+      "line": 37.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 40.5",
+      "direction": "under",
+      "line": 40.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 53.5",
+      "direction": "under",
+      "line": 53.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 43.5",
+      "direction": "under",
+      "line": 43.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 55.5",
+      "direction": "under",
+      "line": 55.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 44.5",
+      "direction": "under",
+      "line": 44.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 28.5",
+      "direction": "under",
+      "line": 28.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 49.5",
+      "direction": "under",
+      "line": 49.5,
+      "odds_by_bookmaker": {
+        "EE": 1.83,
+        "SI": 1.83,
+        "G5": 1.85,
+        "BTT": 1.85,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 24.5",
+      "direction": "under",
+      "line": 24.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 32.5",
+      "direction": "under",
+      "line": 32.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 30.5",
+      "direction": "under",
+      "line": 30.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 27.5",
+      "direction": "under",
+      "line": 27.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 31.5",
+      "direction": "under",
+      "line": 31.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 29.5",
+      "direction": "under",
+      "line": 29.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Under 25.5",
+      "direction": "under",
+      "line": 25.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Over 52.5",
+      "direction": "over",
+      "line": 52.5,
+      "odds_by_bookmaker": {
+        "BF": 1.98
+      }
+    },
+    {
+      "selection": "Over 58.5",
+      "direction": "over",
+      "line": 58.5,
+      "odds_by_bookmaker": {
+        "BF": 1.98
+      }
+    },
+    {
+      "selection": "Over 56.5",
+      "direction": "over",
+      "line": 56.5,
+      "odds_by_bookmaker": {
+        "BF": 2.18
+      }
+    }
+  ]
+}

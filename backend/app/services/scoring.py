@@ -17,6 +17,7 @@ class PlayerStats:
     tackles_made: int = 0
     turnovers_won: int = 0
     lineout_steals: int = 0
+    kicks_retained: int = 0
     player_of_match: bool = False
     penalties_conceded: int = 0
     yellow_cards: int = 0
@@ -58,6 +59,9 @@ def calculate_fantasy_points(stats: Union[PlayerStats, dict]) -> float:
     # Scrums (forwards only)
     if stats.is_forward:
         points += stats.scrums_won * 1
+
+    # Kicks retained
+    points += stats.kicks_retained * 2
 
     # Defensive
     points += stats.tackles_made * 1

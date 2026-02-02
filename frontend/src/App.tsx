@@ -1,10 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Link, NavLink } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import Players from './pages/Players';
-import TeamBuilder from './pages/TeamBuilder';
-import Optimiser from './pages/Optimiser';
-import Compare from './pages/Compare';
-import Admin from './pages/Admin';
+import PlayersAllStats from './pages/PlayersAllStats';
+import HistoricalStats from './pages/HistoricalStats';
+import PlayerProjections from './pages/PlayerProjections';
 
 function App() {
   return (
@@ -38,58 +37,59 @@ function App() {
                   Players
                 </NavLink>
                 <NavLink
-                  to="/team-builder"
+                  to="/players-all-stats"
                   className={({ isActive }) =>
                     `px-3 py-2 rounded-md text-sm font-medium ${
                       isActive ? 'bg-primary-800' : 'hover:bg-primary-600'
                     }`
                   }
                 >
-                  Team Builder
+                  2025 F6N Stats
                 </NavLink>
                 <NavLink
-                  to="/optimiser"
+                  to="/projections"
                   className={({ isActive }) =>
                     `px-3 py-2 rounded-md text-sm font-medium ${
                       isActive ? 'bg-primary-800' : 'hover:bg-primary-600'
                     }`
                   }
                 >
-                  Optimiser
+                  Projections
                 </NavLink>
                 <NavLink
-                  to="/compare"
+                  to="/historical-stats"
                   className={({ isActive }) =>
                     `px-3 py-2 rounded-md text-sm font-medium ${
                       isActive ? 'bg-primary-800' : 'hover:bg-primary-600'
                     }`
                   }
                 >
-                  Compare
-                </NavLink>
-                <NavLink
-                  to="/admin"
-                  className={({ isActive }) =>
-                    `px-3 py-2 rounded-md text-sm font-medium ${
-                      isActive ? 'bg-primary-800' : 'hover:bg-primary-600'
-                    }`
-                  }
-                >
-                  Admin
+                  Historical Stats
                 </NavLink>
               </div>
             </div>
           </div>
         </nav>
 
-        <main className="max-w-7xl mx-auto px-4 py-6">
+        <main>
           <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/players" element={<Players />} />
-            <Route path="/team-builder" element={<TeamBuilder />} />
-            <Route path="/optimiser" element={<Optimiser />} />
-            <Route path="/compare" element={<Compare />} />
-            <Route path="/admin" element={<Admin />} />
+            <Route path="/players-all-stats" element={
+              <div className="px-4 py-6">
+                <PlayersAllStats />
+              </div>
+            } />
+            <Route path="/projections" element={
+              <div className="px-4 py-6">
+                <PlayerProjections />
+              </div>
+            } />
+            <Route path="/historical-stats" element={
+              <div className="px-4 py-6">
+                <HistoricalStats />
+              </div>
+            } />
+            <Route path="/" element={<div className="max-w-7xl mx-auto px-4 py-6"><Dashboard /></div>} />
+            <Route path="/players" element={<div className="max-w-7xl mx-auto px-4 py-6"><Players /></div>} />
           </Routes>
         </main>
       </div>

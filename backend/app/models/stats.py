@@ -96,6 +96,9 @@ class ClubStats(Base):
     yellow_cards: Mapped[int] = mapped_column(Integer, default=0)
     red_cards: Mapped[int] = mapped_column(Integer, default=0)
 
+    # Calculated
+    fantasy_points: Mapped[Optional[Decimal]] = mapped_column(Numeric(6, 2), nullable=True)
+
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     player: Mapped["Player"] = relationship("Player", back_populates="club_stats")

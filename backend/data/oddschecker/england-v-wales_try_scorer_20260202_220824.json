@@ -1,0 +1,75 @@
+{
+  "market_type": "try_scorer",
+  "url": "https://www.oddschecker.com/rugby-union/six-nations/england-v-wales/anytime-tryscorer",
+  "scraped_at": "2026-02-02T22:08:24.562573",
+  "bookmakers": [
+    "Team",
+    "P",
+    "W",
+    "D",
+    "L",
+    "Pts"
+  ],
+  "odds_data": [
+    {
+      "player_name": "20:10",
+      "odds_by_bookmaker": {
+        "D": 1.2142857142857142,
+        "L": 36.0,
+        "Pts": 6.0
+      }
+    },
+    {
+      "player_name": "14:10",
+      "odds_by_bookmaker": {
+        "D": 4.2,
+        "L": 30.0,
+        "Pts": 1.3333333333333333
+      }
+    },
+    {
+      "player_name": "16:40",
+      "odds_by_bookmaker": {
+        "D": 1.024390243902439,
+        "L": 101.0,
+        "Pts": 31.0
+      }
+    },
+    {
+      "player_name": "1",
+      "odds_by_bookmaker": {
+        "Team": 1.0
+      }
+    },
+    {
+      "player_name": "2",
+      "odds_by_bookmaker": {
+        "Team": 2.0
+      }
+    },
+    {
+      "player_name": "3",
+      "odds_by_bookmaker": {
+        "Team": 3.0
+      }
+    },
+    {
+      "player_name": "4",
+      "odds_by_bookmaker": {
+        "Team": 4.0
+      }
+    },
+    {
+      "player_name": "5",
+      "odds_by_bookmaker": {
+        "Team": 5.0
+      }
+    },
+    {
+      "player_name": "6",
+      "odds_by_bookmaker": {
+        "Team": 6.0
+      }
+    }
+  ]
+}

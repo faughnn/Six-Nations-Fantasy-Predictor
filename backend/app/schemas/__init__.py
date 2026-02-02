@@ -11,10 +11,13 @@ from app.schemas.prediction import (
     PredictionResponse,
     PredictionDetail,
 )
-from app.schemas.team import (
-    OptimiseRequest,
-    OptimisedTeam,
-    TeamSlot,
+from app.schemas.odds import (
+    OddsScrapeRequest,
+    OddsScrapeResponse,
+    OddsScrapeResult,
+    MatchTotalsScrapeResult,
+    PlayerOddsResult,
+    MatchTotalsResult,
 )
 
 __all__ = [
@@ -27,7 +30,10 @@ __all__ = [
     "PredictionCreate",
     "PredictionResponse",
     "PredictionDetail",
-    "OptimiseRequest",
-    "OptimisedTeam",
-    "TeamSlot",
+    "OddsScrapeRequest",
+    "OddsScrapeResponse",
+    "OddsScrapeResult",
+    "MatchTotalsScrapeResult",
+    "PlayerOddsResult",
+    "MatchTotalsResult",
 ]

@@ -1,0 +1,1583 @@
+{
+  "market_type": "handicaps",
+  "url": "https://www.oddschecker.com/rugby-union/six-nations/france-v-ireland/handicaps",
+  "scraped_at": "2026-02-02T21:25:56.683555",
+  "bookmakers": [
+    "B3",
+    "WH",
+    "UN",
+    "FR",
+    "EE",
+    "SX",
+    "LD",
+    "VC",
+    "KN",
+    "BY",
+    "OE",
+    "S6",
+    "PUP",
+    "SI",
+    "VE",
+    "QN",
+    "WA",
+    "CE",
+    "G5",
+    "BTT",
+    "BRS",
+    "SK",
+    "PP",
+    "AKB",
+    "BF",
+    "MA"
+  ],
+  "handicap_data": [
+    {
+      "selection": "France +6",
+      "team": "France",
+      "line": 6.0,
+      "odds_by_bookmaker": {
+        "BY": 1.03
+      }
+    },
+    {
+      "selection": "France +6.5",
+      "team": "France",
+      "line": 6.5,
+      "odds_by_bookmaker": {
+        "SX": 1.06,
+        "SI": 1.06
+      }
+    },
+    {
+      "selection": "Ireland +29.5",
+      "team": "Ireland",
+      "line": 29.5,
+      "odds_by_bookmaker": {
+        "SX": 1.08,
+        "SI": 1.08
+      }
+    },
+    {
+      "selection": "France +3.5",
+      "team": "France",
+      "line": 3.5,
+      "odds_by_bookmaker": {
+        "SX": 1.09,
+        "SI": 1.09
+      }
+    },
+    {
+      "selection": "France +2",
+      "team": "France",
+      "line": 2.0,
+      "odds_by_bookmaker": {
+        "BY": 1.1,
+        "SK": 1.1,
+        "PP": 1.1
+      }
+    },
+    {
+      "selection": "Ireland +28",
+      "team": "Ireland",
+      "line": 28.0,
+      "odds_by_bookmaker": {
+        "BY": 1.11
+      }
+    },
+    {
+      "selection": "Ireland +26.5",
+      "team": "Ireland",
+      "line": 26.5,
+      "odds_by_bookmaker": {
+        "SX": 1.14,
+        "SI": 1.14
+      }
+    },
+    {
+      "selection": "France -1",
+      "team": "France",
+      "line": -1.0,
+      "odds_by_bookmaker": {
+        "SK": 1.14,
+        "PP": 1.14
+      }
+    },
+    {
+      "selection": "Ireland +25",
+      "team": "Ireland",
+      "line": 25.0,
+      "odds_by_bookmaker": {
+        "EE": 1.22,
+        "SK": 1.14,
+        "PP": 1.14
+      }
+    },
+    {
+      "selection": "Ireland +26",
+      "team": "Ireland",
+      "line": 26.0,
+      "odds_by_bookmaker": {
+        "BY": 1.17
+      }
+    },
+    {
+      "selection": "Ireland +24",
+      "team": "Ireland",
+      "line": 24.0,
+      "odds_by_bookmaker": {
+        "BY": 1.2
+      }
+    },
+    {
+      "selection": "Ireland +23.5",
+      "team": "Ireland",
+      "line": 23.5,
+      "odds_by_bookmaker": {
+        "SX": 1.22,
+        "SI": 1.22
+      }
+    },
+    {
+      "selection": "France -2.5",
+      "team": "France",
+      "line": -2.5,
+      "odds_by_bookmaker": {
+        "SX": 1.22,
+        "SI": 1.22
+      }
+    },
+    {
+      "selection": "Ireland +22",
+      "team": "Ireland",
+      "line": 22.0,
+      "odds_by_bookmaker": {
+        "BY": 1.29,
+        "SK": 1.11,
+        "PP": 1.11
+      }
+    },
+    {
+      "selection": "France -4",
+      "team": "France",
+      "line": -4.0,
+      "odds_by_bookmaker": {
+        "BY": 1.3,
+        "SK": 1.36,
+        "PP": 1.36
+      }
+    },
+    {
+      "selection": "Ireland +20.5",
+      "team": "Ireland",
+      "line": 20.5,
+      "odds_by_bookmaker": {
+        "SX": 1.33,
+        "SI": 1.33
+      }
+    },
+    {
+      "selection": "France -5.5",
+      "team": "France",
+      "line": -5.5,
+      "odds_by_bookmaker": {
+        "SX": 1.36,
+        "SI": 1.36,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland +19",
+      "team": "Ireland",
+      "line": 19.0,
+      "odds_by_bookmaker": {
+        "WA": 1.4,
+        "SK": 1.4,
+        "PP": 1.4
+      }
+    },
+    {
+      "selection": "Ireland +17.5",
+      "team": "Ireland",
+      "line": 17.5,
+      "odds_by_bookmaker": {
+        "SX": 1.47,
+        "SI": 1.47
+      }
+    },
+    {
+      "selection": "France -6",
+      "team": "France",
+      "line": -6.0,
+      "odds_by_bookmaker": {
+        "FR": 1.53,
+        "LD": 1.5,
+        "BY": 1.4,
+        "OE": 1.4,
+        "QN": 1.53,
+        "CE": 1.5
+      }
+    },
+    {
+      "selection": "Ireland +18",
+      "team": "Ireland",
+      "line": 18.0,
+      "odds_by_bookmaker": {
+        "LD": 1.5,
+        "BY": 1.44,
+        "OE": 1.44,
+        "CE": 1.5
+      }
+    },
+    {
+      "selection": "France -8",
+      "team": "France",
+      "line": -8.0,
+      "odds_by_bookmaker": {
+        "BY": 1.5
+      }
+    },
+    {
+      "selection": "France -8.5",
+      "team": "France",
+      "line": -8.5,
+      "odds_by_bookmaker": {
+        "SX": 1.54,
+        "VC": 1.85,
+        "KN": 1.68,
+        "OE": 1.8,
+        "SI": 1.54,
+        "VE": 1.71,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland +16",
+      "team": "Ireland",
+      "line": 16.0,
+      "odds_by_bookmaker": {
+        "BY": 1.54,
+        "SK": 1.36,
+        "PP": 1.36
+      }
+    },
+    {
+      "selection": "France -9",
+      "team": "France",
+      "line": -9.0,
+      "odds_by_bookmaker": {
+        "B3": 1.91,
+        "WH": 1.91,
+        "FR": 1.62,
+        "EE": 1.91,
+        "LD": 1.61,
+        "VC": 1.83,
+        "KN": 1.76,
+        "OE": 1.62,
+        "QN": 1.62,
+        "WA": 1.8,
+        "CE": 1.61,
+        "G5": 1.91,
+        "BTT": 1.91,
+        "SK": 1.91,
+        "PP": 1.91
+      }
+    },
+    {
+      "selection": "France -10",
+      "team": "France",
+      "line": -10.0,
+      "odds_by_bookmaker": {
+        "B3": 1.91,
+        "WH": 1.91,
+        "FR": 1.91,
+        "EE": 1.91,
+        "LD": 1.91,
+        "VC": 1.87,
+        "KN": 1.9,
+        "BY": 1.62,
+        "OE": 1.91,
+        "WA": 1.85,
+        "CE": 1.91,
+        "G5": 1.95,
+        "BTT": 1.95,
+        "SK": 1.91,
+        "PP": 1.91
+      }
+    },
+    {
+      "selection": "Ireland +14.5",
+      "team": "Ireland",
+      "line": 14.5,
+      "odds_by_bookmaker": {
+        "SX": 1.67,
+        "SI": 1.67
+      }
+    },
+    {
+      "selection": "Ireland +15",
+      "team": "Ireland",
+      "line": 15.0,
+      "odds_by_bookmaker": {
+        "FR": 1.73,
+        "LD": 1.67,
+        "OE": 1.67,
+        "QN": 1.75,
+        "WA": 1.38,
+        "CE": 1.67,
+        "SK": 1.36,
+        "PP": 1.36
+      }
+    },
+    {
+      "selection": "France -11.5",
+      "team": "France",
+      "line": -11.5,
+      "odds_by_bookmaker": {
+        "EE": 1.85,
+        "SX": 1.8,
+        "VC": 1.8,
+        "KN": 1.85,
+        "SI": 1.8,
+        "VE": 1.85,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland +13.5",
+      "team": "Ireland",
+      "line": 13.5,
+      "odds_by_bookmaker": {
+        "EE": 1.83,
+        "SX": 1.83,
+        "VC": 1.8,
+        "KN": 1.82,
+        "SI": 1.83,
+        "VE": 1.87,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland +12.5",
+      "team": "Ireland",
+      "line": 12.5,
+      "odds_by_bookmaker": {
+        "EE": 1.95,
+        "SX": 1.9,
+        "VC": 1.85,
+        "KN": 1.85,
+        "OE": 1.8,
+        "SI": 1.9,
+        "VE": 1.93,
+        "BF": 1.82
+      }
+    },
+    {
+      "selection": "France -12",
+      "team": "France",
+      "line": -12.0,
+      "odds_by_bookmaker": {
+        "B3": 1.91,
+        "FR": 1.83,
+        "LD": 1.91,
+        "KN": 1.85,
+        "BY": 1.91,
+        "OE": 1.91,
+        "QN": 1.83,
+        "CE": 1.91,
+        "G5": 1.91,
+        "BTT": 1.91
+      }
+    },
+    {
+      "selection": "France -7",
+      "team": "France",
+      "line": -7.0,
+      "odds_by_bookmaker": {
+        "BY": 1.91,
+        "WA": 1.4,
+        "SK": 1.4,
+        "PP": 1.4
+      }
+    },
+    {
+      "selection": "France -12.5",
+      "team": "France",
+      "line": -12.5,
+      "odds_by_bookmaker": {
+        "EE": 1.83,
+        "SX": 1.9,
+        "VC": 1.85,
+        "KN": 1.85,
+        "OE": 1.91,
+        "SI": 1.9,
+        "VE": 1.87,
+        "BF": 2.0
+      }
+    },
+    {
+      "selection": "France -13.5",
+      "team": "France",
+      "line": -13.5,
+      "odds_by_bookmaker": {
+        "EE": 1.95,
+        "SX": 1.83,
+        "VC": 1.91,
+        "KN": 1.88,
+        "SI": 1.83,
+        "VE": 1.93,
+        "BF": 2.06
+      }
+    },
+    {
+      "selection": "Ireland +11.5",
+      "team": "Ireland",
+      "line": 11.5,
+      "odds_by_bookmaker": {
+        "EE": 1.91,
+        "SX": 1.95,
+        "VC": 1.91,
+        "KN": 1.85,
+        "SI": 1.95,
+        "VE": 1.95,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -13",
+      "team": "France",
+      "line": -13.0,
+      "odds_by_bookmaker": {
+        "B3": 2.0,
+        "WH": 1.91,
+        "FR": 1.91,
+        "VC": 1.87,
+        "KN": 1.88,
+        "WA": 1.85,
+        "G5": 1.91,
+        "BTT": 1.91,
+        "SK": 1.91,
+        "PP": 1.91
+      }
+    },
+    {
+      "selection": "Ireland +13",
+      "team": "Ireland",
+      "line": 13.0,
+      "odds_by_bookmaker": {
+        "B3": 2.0,
+        "WH": 1.91,
+        "FR": 1.91,
+        "VC": 1.87,
+        "KN": 1.88,
+        "WA": 1.85,
+        "G5": 1.91,
+        "BTT": 1.91,
+        "SK": 1.91,
+        "PP": 1.91
+      }
+    },
+    {
+      "selection": "Ireland +12",
+      "team": "Ireland",
+      "line": 12.0,
+      "odds_by_bookmaker": {
+        "B3": 2.1,
+        "FR": 2.0,
+        "LD": 1.91,
+        "KN": 1.95,
+        "BY": 1.91,
+        "OE": 1.91,
+        "QN": 2.0,
+        "CE": 1.91,
+        "G5": 1.91,
+        "BTT": 1.91
+      }
+    },
+    {
+      "selection": "Ireland +10.5",
+      "team": "Ireland",
+      "line": 10.5,
+      "odds_by_bookmaker": {
+        "EE": 1.85,
+        "KN": 1.81,
+        "OE": 1.91,
+        "VE": 2.0,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -14.5",
+      "team": "France",
+      "line": -14.5,
+      "odds_by_bookmaker": {
+        "SX": 2.05,
+        "SI": 2.05,
+        "BF": 2.14
+      }
+    },
+    {
+      "selection": "France -15",
+      "team": "France",
+      "line": -15.0,
+      "odds_by_bookmaker": {
+        "FR": 2.1,
+        "LD": 2.1,
+        "OE": 2.2,
+        "QN": 2.15,
+        "WA": 2.75,
+        "CE": 2.1,
+        "SK": 3.0,
+        "PP": 3.0
+      }
+    },
+    {
+      "selection": "Ireland +10",
+      "team": "Ireland",
+      "line": 10.0,
+      "odds_by_bookmaker": {
+        "B3": 2.0,
+        "WH": 1.91,
+        "FR": 1.95,
+        "EE": 2.0,
+        "LD": 1.91,
+        "VC": 1.91,
+        "KN": 1.9,
+        "BY": 2.25,
+        "OE": 1.91,
+        "WA": 1.9,
+        "CE": 1.91,
+        "G5": 1.95,
+        "BTT": 1.95,
+        "SK": 1.91,
+        "PP": 1.91
+      }
+    },
+    {
+      "selection": "Ireland +8.5",
+      "team": "Ireland",
+      "line": 8.5,
+      "odds_by_bookmaker": {
+        "SX": 2.38,
+        "VC": 1.87,
+        "KN": 2.05,
+        "OE": 1.91,
+        "SI": 2.38,
+        "VE": 2.1,
+        "BF": 1.98
+      }
+    },
+    {
+      "selection": "Ireland +9",
+      "team": "Ireland",
+      "line": 9.0,
+      "odds_by_bookmaker": {
+        "B3": 2.0,
+        "WH": 1.91,
+        "FR": 2.4,
+        "EE": 2.0,
+        "LD": 2.2,
+        "VC": 1.95,
+        "KN": 2.06,
+        "OE": 2.25,
+        "QN": 2.4,
+        "WA": 1.9,
+        "CE": 2.2,
+        "G5": 1.95,
+        "BTT": 1.95,
+        "SK": 1.91,
+        "PP": 1.91
+      }
+    },
+    {
+      "selection": "France -16",
+      "team": "France",
+      "line": -16.0,
+      "odds_by_bookmaker": {
+        "BY": 2.4,
+        "SK": 3.0,
+        "PP": 3.0
+      }
+    },
+    {
+      "selection": "France -17.5",
+      "team": "France",
+      "line": -17.5,
+      "odds_by_bookmaker": {
+        "SX": 2.5,
+        "SI": 2.5,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland +8",
+      "team": "Ireland",
+      "line": 8.0,
+      "odds_by_bookmaker": {
+        "BY": 2.5
+      }
+    },
+    {
+      "selection": "France -18",
+      "team": "France",
+      "line": -18.0,
+      "odds_by_bookmaker": {
+        "LD": 2.5,
+        "BY": 2.8,
+        "OE": 2.63,
+        "CE": 2.5
+      }
+    },
+    {
+      "selection": "Ireland +7",
+      "team": "Ireland",
+      "line": 7.0,
+      "odds_by_bookmaker": {
+        "BY": 1.91,
+        "WA": 2.75,
+        "SK": 2.88,
+        "PP": 2.88
+      }
+    },
+    {
+      "selection": "Ireland +6",
+      "team": "Ireland",
+      "line": 6.0,
+      "odds_by_bookmaker": {
+        "FR": 2.5,
+        "LD": 2.5,
+        "BY": 2.9,
+        "OE": 2.88,
+        "QN": 2.55,
+        "CE": 2.5
+      }
+    },
+    {
+      "selection": "Ireland +5.5",
+      "team": "Ireland",
+      "line": 5.5,
+      "odds_by_bookmaker": {
+        "SX": 3.0,
+        "SI": 3.0,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -19",
+      "team": "France",
+      "line": -19.0,
+      "odds_by_bookmaker": {
+        "WA": 2.75,
+        "SK": 3.0,
+        "PP": 3.0
+      }
+    },
+    {
+      "selection": "France -20.5",
+      "team": "France",
+      "line": -20.5,
+      "odds_by_bookmaker": {
+        "SX": 3.1,
+        "SI": 3.1,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland +4",
+      "team": "Ireland",
+      "line": 4.0,
+      "odds_by_bookmaker": {
+        "BY": 3.4,
+        "SK": 3.0,
+        "PP": 3.0
+      }
+    },
+    {
+      "selection": "France -22",
+      "team": "France",
+      "line": -22.0,
+      "odds_by_bookmaker": {
+        "BY": 3.5,
+        "SK": 5.5,
+        "PP": 5.5
+      }
+    },
+    {
+      "selection": "Ireland +2.5",
+      "team": "Ireland",
+      "line": 2.5,
+      "odds_by_bookmaker": {
+        "SX": 3.8,
+        "SI": 3.8,
+        "BF": 2.37
+      }
+    },
+    {
+      "selection": "France -23.5",
+      "team": "France",
+      "line": -23.5,
+      "odds_by_bookmaker": {
+        "SX": 4.0,
+        "SI": 4.0,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -24",
+      "team": "France",
+      "line": -24.0,
+      "odds_by_bookmaker": {
+        "BY": 4.0
+      }
+    },
+    {
+      "selection": "France -26",
+      "team": "France",
+      "line": -26.0,
+      "odds_by_bookmaker": {
+        "BY": 4.5
+      }
+    },
+    {
+      "selection": "Ireland +1",
+      "team": "Ireland",
+      "line": 1.0,
+      "odds_by_bookmaker": {
+        "SK": 5.0,
+        "PP": 5.0
+      }
+    },
+    {
+      "selection": "France -25",
+      "team": "France",
+      "line": -25.0,
+      "odds_by_bookmaker": {
+        "EE": 4.5,
+        "SK": 5.0,
+        "PP": 5.0
+      }
+    },
+    {
+      "selection": "France -26.5",
+      "team": "France",
+      "line": -26.5,
+      "odds_by_bookmaker": {
+        "SX": 5.25,
+        "SI": 5.25,
+        "BF": 1.98
+      }
+    },
+    {
+      "selection": "France -28",
+      "team": "France",
+      "line": -28.0,
+      "odds_by_bookmaker": {
+        "BY": 5.5
+      }
+    },
+    {
+      "selection": "Ireland -2",
+      "team": "Ireland",
+      "line": -2.0,
+      "odds_by_bookmaker": {
+        "BY": 6.0,
+        "SK": 6.0,
+        "PP": 6.0
+      }
+    },
+    {
+      "selection": "Ireland -3.5",
+      "team": "Ireland",
+      "line": -3.5,
+      "odds_by_bookmaker": {
+        "SX": 6.5,
+        "SI": 6.5,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -29.5",
+      "team": "France",
+      "line": -29.5,
+      "odds_by_bookmaker": {
+        "SX": 7.0,
+        "SI": 7.0,
+        "BF": 1.98
+      }
+    },
+    {
+      "selection": "Ireland -6.5",
+      "team": "Ireland",
+      "line": -6.5,
+      "odds_by_bookmaker": {
+        "SX": 9.0,
+        "SI": 9.0,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -6",
+      "team": "Ireland",
+      "line": -6.0,
+      "odds_by_bookmaker": {
+        "BY": 9.0
+      }
+    },
+    {
+      "selection": "France -27.5",
+      "team": "France",
+      "line": -27.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -38.5",
+      "team": "France",
+      "line": -38.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -35.5",
+      "team": "France",
+      "line": -35.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -18.5",
+      "team": "France",
+      "line": -18.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -6.5",
+      "team": "France",
+      "line": -6.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -16.5",
+      "team": "France",
+      "line": -16.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -22.5",
+      "team": "France",
+      "line": -22.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -19.5",
+      "team": "France",
+      "line": -19.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -7.5",
+      "team": "France",
+      "line": -7.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland +7.5",
+      "team": "Ireland",
+      "line": 7.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -49.5",
+      "team": "France",
+      "line": -49.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -21.5",
+      "team": "France",
+      "line": -21.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -28.5",
+      "team": "France",
+      "line": -28.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -48.5",
+      "team": "France",
+      "line": -48.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -39.5",
+      "team": "France",
+      "line": -39.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -33.5",
+      "team": "France",
+      "line": -33.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -32.5",
+      "team": "France",
+      "line": -32.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -41.5",
+      "team": "France",
+      "line": -41.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -25.5",
+      "team": "France",
+      "line": -25.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -40.5",
+      "team": "France",
+      "line": -40.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -24.5",
+      "team": "France",
+      "line": -24.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -47.5",
+      "team": "France",
+      "line": -47.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -30.5",
+      "team": "France",
+      "line": -30.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -34.5",
+      "team": "France",
+      "line": -34.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -42.5",
+      "team": "France",
+      "line": -42.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -46.5",
+      "team": "France",
+      "line": -46.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -37.5",
+      "team": "France",
+      "line": -37.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -43.5",
+      "team": "France",
+      "line": -43.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -50.5",
+      "team": "France",
+      "line": -50.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -36.5",
+      "team": "France",
+      "line": -36.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -44.5",
+      "team": "France",
+      "line": -44.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -9.5",
+      "team": "France",
+      "line": -9.5,
+      "odds_by_bookmaker": {
+        "EE": 1.83,
+        "VC": 1.85,
+        "KN": 1.9,
+        "VE": 1.98,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland +9.5",
+      "team": "Ireland",
+      "line": 9.5,
+      "odds_by_bookmaker": {
+        "EE": 1.95,
+        "VC": 1.85,
+        "KN": 1.81,
+        "VE": 1.81,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -45.5",
+      "team": "France",
+      "line": -45.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -10.5",
+      "team": "France",
+      "line": -10.5,
+      "odds_by_bookmaker": {
+        "EE": 1.91,
+        "KN": 1.9,
+        "OE": 1.8,
+        "VE": 1.81,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -15.5",
+      "team": "France",
+      "line": -15.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -3.5",
+      "team": "France",
+      "line": -3.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland +3.5",
+      "team": "Ireland",
+      "line": 3.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "France -4.5",
+      "team": "France",
+      "line": -4.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland +4.5",
+      "team": "Ireland",
+      "line": 4.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -23.5",
+      "team": "Ireland",
+      "line": -23.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -41.5",
+      "team": "Ireland",
+      "line": -41.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -48.5",
+      "team": "Ireland",
+      "line": -48.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -50.5",
+      "team": "Ireland",
+      "line": -50.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -38.5",
+      "team": "Ireland",
+      "line": -38.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -22.5",
+      "team": "Ireland",
+      "line": -22.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -49.5",
+      "team": "Ireland",
+      "line": -49.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -47.5",
+      "team": "Ireland",
+      "line": -47.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -25.5",
+      "team": "Ireland",
+      "line": -25.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -24.5",
+      "team": "Ireland",
+      "line": -24.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -19.5",
+      "team": "Ireland",
+      "line": -19.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -32.5",
+      "team": "Ireland",
+      "line": -32.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -44.5",
+      "team": "Ireland",
+      "line": -44.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -39.5",
+      "team": "Ireland",
+      "line": -39.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -35.5",
+      "team": "Ireland",
+      "line": -35.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -20.5",
+      "team": "Ireland",
+      "line": -20.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -18.5",
+      "team": "Ireland",
+      "line": -18.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -27.5",
+      "team": "Ireland",
+      "line": -27.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -42.5",
+      "team": "Ireland",
+      "line": -42.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -43.5",
+      "team": "Ireland",
+      "line": -43.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -26.5",
+      "team": "Ireland",
+      "line": -26.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -37.5",
+      "team": "Ireland",
+      "line": -37.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -10.5",
+      "team": "Ireland",
+      "line": -10.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -11.5",
+      "team": "Ireland",
+      "line": -11.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -40.5",
+      "team": "Ireland",
+      "line": -40.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -12.5",
+      "team": "Ireland",
+      "line": -12.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -45.5",
+      "team": "Ireland",
+      "line": -45.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -46.5",
+      "team": "Ireland",
+      "line": -46.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -31.5",
+      "team": "Ireland",
+      "line": -31.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -29.5",
+      "team": "Ireland",
+      "line": -29.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -21.5",
+      "team": "Ireland",
+      "line": -21.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -34.5",
+      "team": "Ireland",
+      "line": -34.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -36.5",
+      "team": "Ireland",
+      "line": -36.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -30.5",
+      "team": "Ireland",
+      "line": -30.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -28.5",
+      "team": "Ireland",
+      "line": -28.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -17.5",
+      "team": "Ireland",
+      "line": -17.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -33.5",
+      "team": "Ireland",
+      "line": -33.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -14.5",
+      "team": "Ireland",
+      "line": -14.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -16.5",
+      "team": "Ireland",
+      "line": -16.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -15.5",
+      "team": "Ireland",
+      "line": -15.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -4.5",
+      "team": "Ireland",
+      "line": -4.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland +1.5",
+      "team": "Ireland",
+      "line": 1.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -13.5",
+      "team": "Ireland",
+      "line": -13.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -2.5",
+      "team": "Ireland",
+      "line": -2.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -9.5",
+      "team": "Ireland",
+      "line": -9.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -7.5",
+      "team": "Ireland",
+      "line": -7.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland +0.5",
+      "team": "Ireland",
+      "line": 0.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -5.5",
+      "team": "Ireland",
+      "line": -5.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -1.5",
+      "team": "Ireland",
+      "line": -1.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Ireland -8.5",
+      "team": "Ireland",
+      "line": -8.5,
+      "odds_by_bookmaker": {
+        "BF": 2.0
+      }
+    },
+    {
+      "selection": "Ireland +6.5",
+      "team": "Ireland",
+      "line": 6.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01,
+        "MA": 2.02
+      }
+    },
+    {
+      "selection": "France -31.5",
+      "team": "France",
+      "line": -31.5,
+      "odds_by_bookmaker": {
+        "BF": 2.08
+      }
+    },
+    {
+      "selection": "Ireland -0.5",
+      "team": "Ireland",
+      "line": -0.5,
+      "odds_by_bookmaker": {
+        "BF": 2.96
+      }
+    }
+  ]
+}

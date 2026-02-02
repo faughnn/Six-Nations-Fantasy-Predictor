@@ -1,0 +1,1424 @@
+{
+  "market_type": "handicaps",
+  "url": "https://www.oddschecker.com/rugby-union/six-nations/italy-v-scotland/handicaps",
+  "scraped_at": "2026-02-02T22:03:58.955528",
+  "bookmakers": [
+    "B3",
+    "WH",
+    "UN",
+    "FR",
+    "EE",
+    "SX",
+    "LD",
+    "VC",
+    "KN",
+    "BY",
+    "OE",
+    "S6",
+    "PUP",
+    "SI",
+    "VE",
+    "QN",
+    "WA",
+    "CE",
+    "G5",
+    "BTT",
+    "BRS",
+    "SK",
+    "PP",
+    "AKB",
+    "BF",
+    "MA"
+  ],
+  "handicap_data": [
+    {
+      "selection": "Italy +29.5",
+      "team": "Italy",
+      "line": 29.5,
+      "odds_by_bookmaker": {
+        "SX": 1.04,
+        "SI": 1.04
+      }
+    },
+    {
+      "selection": "Italy +26.5",
+      "team": "Italy",
+      "line": 26.5,
+      "odds_by_bookmaker": {
+        "SX": 1.07,
+        "SI": 1.07
+      }
+    },
+    {
+      "selection": "Scotland +6.5",
+      "team": "Scotland",
+      "line": 6.5,
+      "odds_by_bookmaker": {
+        "SX": 1.09,
+        "SI": 1.09
+      }
+    },
+    {
+      "selection": "Scotland +4",
+      "team": "Scotland",
+      "line": 4.0,
+      "odds_by_bookmaker": {
+        "SK": 1.11,
+        "PP": 1.11
+      }
+    },
+    {
+      "selection": "Italy +23.5",
+      "team": "Italy",
+      "line": 23.5,
+      "odds_by_bookmaker": {
+        "SX": 1.13,
+        "SI": 1.13
+      }
+    },
+    {
+      "selection": "Scotland +3.5",
+      "team": "Scotland",
+      "line": 3.5,
+      "odds_by_bookmaker": {
+        "SX": 1.15,
+        "SI": 1.15
+      }
+    },
+    {
+      "selection": "Italy +20.5",
+      "team": "Italy",
+      "line": 20.5,
+      "odds_by_bookmaker": {
+        "SX": 1.2,
+        "SI": 1.2
+      }
+    },
+    {
+      "selection": "Italy +20",
+      "team": "Italy",
+      "line": 20.0,
+      "odds_by_bookmaker": {
+        "BY": 1.25,
+        "SK": 1.14,
+        "PP": 1.14
+      }
+    },
+    {
+      "selection": "Italy +17.5",
+      "team": "Italy",
+      "line": 17.5,
+      "odds_by_bookmaker": {
+        "SX": 1.3,
+        "SI": 1.3
+      }
+    },
+    {
+      "selection": "Italy +18",
+      "team": "Italy",
+      "line": 18.0,
+      "odds_by_bookmaker": {
+        "BY": 1.33
+      }
+    },
+    {
+      "selection": "Scotland -2.5",
+      "team": "Scotland",
+      "line": -2.5,
+      "odds_by_bookmaker": {
+        "SX": 1.36,
+        "SI": 1.36
+      }
+    },
+    {
+      "selection": "Scotland -2",
+      "team": "Scotland",
+      "line": -2.0,
+      "odds_by_bookmaker": {
+        "BY": 1.3,
+        "SK": 1.36,
+        "PP": 1.36
+      }
+    },
+    {
+      "selection": "Scotland -3",
+      "team": "Scotland",
+      "line": -3.0,
+      "odds_by_bookmaker": {
+        "OE": 1.4,
+        "WA": 1.36,
+        "SK": 1.36,
+        "PP": 1.36
+      }
+    },
+    {
+      "selection": "Italy +16",
+      "team": "Italy",
+      "line": 16.0,
+      "odds_by_bookmaker": {
+        "EE": 1.44,
+        "BY": 1.4,
+        "WA": 1.35,
+        "SK": 1.36,
+        "PP": 1.36
+      }
+    },
+    {
+      "selection": "Scotland -4",
+      "team": "Scotland",
+      "line": -4.0,
+      "odds_by_bookmaker": {
+        "EE": 1.44,
+        "BY": 1.4,
+        "WA": 1.4,
+        "SK": 1.4,
+        "PP": 1.4
+      }
+    },
+    {
+      "selection": "Italy +14.5",
+      "team": "Italy",
+      "line": 14.5,
+      "odds_by_bookmaker": {
+        "SX": 1.44,
+        "SI": 1.44
+      }
+    },
+    {
+      "selection": "Italy +15",
+      "team": "Italy",
+      "line": 15.0,
+      "odds_by_bookmaker": {
+        "OE": 1.44,
+        "WA": 1.44,
+        "SK": 1.4,
+        "PP": 1.4
+      }
+    },
+    {
+      "selection": "Italy +14",
+      "team": "Italy",
+      "line": 14.0,
+      "odds_by_bookmaker": {
+        "FR": 1.62,
+        "BY": 1.54,
+        "QN": 1.62,
+        "SK": 1.4,
+        "PP": 1.4
+      }
+    },
+    {
+      "selection": "Scotland -5.5",
+      "team": "Scotland",
+      "line": -5.5,
+      "odds_by_bookmaker": {
+        "SX": 1.57,
+        "SI": 1.57
+      }
+    },
+    {
+      "selection": "Scotland -5",
+      "team": "Scotland",
+      "line": -5.0,
+      "odds_by_bookmaker": {
+        "FR": 1.57,
+        "QN": 1.57
+      }
+    },
+    {
+      "selection": "Scotland -6",
+      "team": "Scotland",
+      "line": -6.0,
+      "odds_by_bookmaker": {
+        "BY": 1.54,
+        "OE": 1.62
+      }
+    },
+    {
+      "selection": "Italy +11.5",
+      "team": "Italy",
+      "line": 11.5,
+      "odds_by_bookmaker": {
+        "SX": 1.67,
+        "SI": 1.67,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy +12",
+      "team": "Italy",
+      "line": 12.0,
+      "odds_by_bookmaker": {
+        "BY": 1.67,
+        "OE": 1.67
+      }
+    },
+    {
+      "selection": "Italy +11",
+      "team": "Italy",
+      "line": 11.0,
+      "odds_by_bookmaker": {
+        "FR": 1.73,
+        "QN": 1.73
+      }
+    },
+    {
+      "selection": "Scotland -8.5",
+      "team": "Scotland",
+      "line": -8.5,
+      "odds_by_bookmaker": {
+        "EE": 1.85,
+        "SX": 1.83,
+        "VC": 1.8,
+        "OE": 1.8,
+        "SI": 1.83,
+        "VE": 1.81,
+        "BF": 1.93
+      }
+    },
+    {
+      "selection": "Italy +9.5",
+      "team": "Italy",
+      "line": 9.5,
+      "odds_by_bookmaker": {
+        "EE": 1.9,
+        "SX": 1.83,
+        "KN": 1.85,
+        "OE": 1.8,
+        "SI": 1.83,
+        "VE": 1.9,
+        "BF": 1.25
+      }
+    },
+    {
+      "selection": "Scotland -9",
+      "team": "Scotland",
+      "line": -9.0,
+      "odds_by_bookmaker": {
+        "B3": 1.91,
+        "WH": 1.91,
+        "FR": 1.91,
+        "EE": 2.0,
+        "LD": 1.91,
+        "VC": 1.87,
+        "BY": 1.91,
+        "OE": 1.91,
+        "WA": 1.83,
+        "CE": 1.91,
+        "G5": 1.91,
+        "BTT": 1.91,
+        "SK": 1.91,
+        "PP": 1.91
+      }
+    },
+    {
+      "selection": "Scotland -8",
+      "team": "Scotland",
+      "line": -8.0,
+      "odds_by_bookmaker": {
+        "WH": 1.91,
+        "FR": 1.83,
+        "VC": 1.87,
+        "BY": 1.67,
+        "QN": 1.83,
+        "WA": 1.85,
+        "G5": 1.95,
+        "BTT": 1.95,
+        "SK": 1.91,
+        "PP": 1.91
+      }
+    },
+    {
+      "selection": "Italy +8.5",
+      "team": "Italy",
+      "line": 8.5,
+      "odds_by_bookmaker": {
+        "EE": 1.91,
+        "SX": 1.91,
+        "VC": 1.91,
+        "OE": 1.91,
+        "SI": 1.91,
+        "VE": 2.0,
+        "BF": 2.0
+      }
+    },
+    {
+      "selection": "Scotland -9.5",
+      "team": "Scotland",
+      "line": -9.5,
+      "odds_by_bookmaker": {
+        "EE": 1.9,
+        "SX": 1.95,
+        "KN": 1.85,
+        "OE": 1.91,
+        "SI": 1.95,
+        "VE": 1.9,
+        "BF": 1.95
+      }
+    },
+    {
+      "selection": "Italy +10",
+      "team": "Italy",
+      "line": 10.0,
+      "odds_by_bookmaker": {
+        "B3": 1.91,
+        "WH": 1.91,
+        "FR": 1.91,
+        "EE": 1.91,
+        "KN": 1.85,
+        "BY": 1.91,
+        "OE": 1.91,
+        "WA": 1.8,
+        "G5": 1.95,
+        "BTT": 1.95,
+        "SK": 1.91,
+        "PP": 1.91
+      }
+    },
+    {
+      "selection": "Scotland -10",
+      "team": "Scotland",
+      "line": -10.0,
+      "odds_by_bookmaker": {
+        "B3": 2.0,
+        "WH": 1.91,
+        "FR": 1.95,
+        "EE": 2.0,
+        "KN": 1.95,
+        "BY": 1.91,
+        "OE": 1.91,
+        "WA": 1.9,
+        "G5": 1.95,
+        "BTT": 1.95,
+        "SK": 1.91,
+        "PP": 1.91
+      }
+    },
+    {
+      "selection": "Italy +9",
+      "team": "Italy",
+      "line": 9.0,
+      "odds_by_bookmaker": {
+        "B3": 2.1,
+        "WH": 1.91,
+        "FR": 1.91,
+        "EE": 1.91,
+        "LD": 1.91,
+        "VC": 1.87,
+        "BY": 1.91,
+        "OE": 1.91,
+        "WA": 1.9,
+        "CE": 1.91,
+        "G5": 1.91,
+        "BTT": 1.91,
+        "SK": 1.91,
+        "PP": 1.91
+      }
+    },
+    {
+      "selection": "Scotland -11.5",
+      "team": "Scotland",
+      "line": -11.5,
+      "odds_by_bookmaker": {
+        "SX": 2.1,
+        "SI": 2.1,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -11",
+      "team": "Scotland",
+      "line": -11.0,
+      "odds_by_bookmaker": {
+        "FR": 2.1,
+        "QN": 2.15
+      }
+    },
+    {
+      "selection": "Scotland -12",
+      "team": "Scotland",
+      "line": -12.0,
+      "odds_by_bookmaker": {
+        "BY": 2.2,
+        "OE": 2.2
+      }
+    },
+    {
+      "selection": "Italy +8",
+      "team": "Italy",
+      "line": 8.0,
+      "odds_by_bookmaker": {
+        "WH": 1.91,
+        "FR": 2.05,
+        "VC": 1.87,
+        "BY": 2.25,
+        "QN": 2.05,
+        "WA": 1.85,
+        "G5": 1.91,
+        "BTT": 1.91,
+        "SK": 1.91,
+        "PP": 1.91
+      }
+    },
+    {
+      "selection": "Italy +5.5",
+      "team": "Italy",
+      "line": 5.5,
+      "odds_by_bookmaker": {
+        "SX": 2.3,
+        "SI": 2.3,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy +5",
+      "team": "Italy",
+      "line": 5.0,
+      "odds_by_bookmaker": {
+        "FR": 2.5,
+        "QN": 2.5
+      }
+    },
+    {
+      "selection": "Italy +6",
+      "team": "Italy",
+      "line": 6.0,
+      "odds_by_bookmaker": {
+        "BY": 2.5,
+        "OE": 2.25
+      }
+    },
+    {
+      "selection": "Scotland -14.5",
+      "team": "Scotland",
+      "line": -14.5,
+      "odds_by_bookmaker": {
+        "SX": 2.63,
+        "SI": 2.63,
+        "BF": 1.98
+      }
+    },
+    {
+      "selection": "Scotland -15",
+      "team": "Scotland",
+      "line": -15.0,
+      "odds_by_bookmaker": {
+        "OE": 2.63,
+        "WA": 2.75,
+        "SK": 2.88,
+        "PP": 2.88
+      }
+    },
+    {
+      "selection": "Scotland -14",
+      "team": "Scotland",
+      "line": -14.0,
+      "odds_by_bookmaker": {
+        "FR": 2.4,
+        "BY": 2.5,
+        "QN": 2.4,
+        "SK": 2.88,
+        "PP": 2.88
+      }
+    },
+    {
+      "selection": "Italy +2.5",
+      "team": "Italy",
+      "line": 2.5,
+      "odds_by_bookmaker": {
+        "SX": 2.88,
+        "SI": 2.88,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -16",
+      "team": "Scotland",
+      "line": -16.0,
+      "odds_by_bookmaker": {
+        "EE": 2.88,
+        "BY": 2.88,
+        "WA": 2.9,
+        "SK": 3.0,
+        "PP": 3.0
+      }
+    },
+    {
+      "selection": "Italy +3",
+      "team": "Italy",
+      "line": 3.0,
+      "odds_by_bookmaker": {
+        "OE": 2.88,
+        "WA": 2.9,
+        "SK": 3.0,
+        "PP": 3.0
+      }
+    },
+    {
+      "selection": "Italy +4",
+      "team": "Italy",
+      "line": 4.0,
+      "odds_by_bookmaker": {
+        "EE": 2.88,
+        "BY": 2.9,
+        "WA": 2.75,
+        "SK": 2.88,
+        "PP": 2.88
+      }
+    },
+    {
+      "selection": "Scotland -17.5",
+      "team": "Scotland",
+      "line": -17.5,
+      "odds_by_bookmaker": {
+        "SX": 3.25,
+        "SI": 3.25,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -18",
+      "team": "Scotland",
+      "line": -18.0,
+      "odds_by_bookmaker": {
+        "BY": 3.3
+      }
+    },
+    {
+      "selection": "Italy +2",
+      "team": "Italy",
+      "line": 2.0,
+      "odds_by_bookmaker": {
+        "BY": 3.5,
+        "SK": 3.0,
+        "PP": 3.0
+      }
+    },
+    {
+      "selection": "Scotland -20.5",
+      "team": "Scotland",
+      "line": -20.5,
+      "odds_by_bookmaker": {
+        "SX": 4.0,
+        "SI": 4.0,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -20",
+      "team": "Scotland",
+      "line": -20.0,
+      "odds_by_bookmaker": {
+        "BY": 3.75,
+        "SK": 5.0,
+        "PP": 5.0
+      }
+    },
+    {
+      "selection": "Italy -3.5",
+      "team": "Italy",
+      "line": -3.5,
+      "odds_by_bookmaker": {
+        "SX": 5.0,
+        "SI": 5.0,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -23.5",
+      "team": "Scotland",
+      "line": -23.5,
+      "odds_by_bookmaker": {
+        "SX": 5.5,
+        "SI": 5.5,
+        "BF": 1.98
+      }
+    },
+    {
+      "selection": "Italy -4",
+      "team": "Italy",
+      "line": -4.0,
+      "odds_by_bookmaker": {
+        "SK": 5.5,
+        "PP": 5.5
+      }
+    },
+    {
+      "selection": "Italy -6.5",
+      "team": "Italy",
+      "line": -6.5,
+      "odds_by_bookmaker": {
+        "SX": 6.5,
+        "SI": 6.5,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -26.5",
+      "team": "Scotland",
+      "line": -26.5,
+      "odds_by_bookmaker": {
+        "SX": 7.5,
+        "SI": 7.5,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -29.5",
+      "team": "Scotland",
+      "line": -29.5,
+      "odds_by_bookmaker": {
+        "SX": 10.0,
+        "SI": 10.0,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy +6.5",
+      "team": "Italy",
+      "line": 6.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy +12.5",
+      "team": "Italy",
+      "line": 12.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -12.5",
+      "team": "Scotland",
+      "line": -12.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -5.5",
+      "team": "Italy",
+      "line": -5.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy +7.5",
+      "team": "Italy",
+      "line": 7.5,
+      "odds_by_bookmaker": {
+        "VC": 1.91,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -10.5",
+      "team": "Italy",
+      "line": -10.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy +10.5",
+      "team": "Italy",
+      "line": 10.5,
+      "odds_by_bookmaker": {
+        "EE": 1.9,
+        "SX": 1.83,
+        "OE": 1.8,
+        "SI": 1.83,
+        "VE": 1.74,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -10.5",
+      "team": "Scotland",
+      "line": -10.5,
+      "odds_by_bookmaker": {
+        "EE": 1.9,
+        "SX": 1.83,
+        "OE": 1.91,
+        "SI": 1.83,
+        "VE": 2.08,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy +13.5",
+      "team": "Italy",
+      "line": 13.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -13.5",
+      "team": "Scotland",
+      "line": -13.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -24.5",
+      "team": "Italy",
+      "line": -24.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -9.5",
+      "team": "Italy",
+      "line": -9.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -34.5",
+      "team": "Italy",
+      "line": -34.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -26.5",
+      "team": "Italy",
+      "line": -26.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy +4.5",
+      "team": "Italy",
+      "line": 4.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -17.5",
+      "team": "Italy",
+      "line": -17.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -19.5",
+      "team": "Italy",
+      "line": -19.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy +3.5",
+      "team": "Italy",
+      "line": 3.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -1.5",
+      "team": "Italy",
+      "line": -1.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy +0.5",
+      "team": "Italy",
+      "line": 0.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -36.5",
+      "team": "Italy",
+      "line": -36.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -42.5",
+      "team": "Italy",
+      "line": -42.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -32.5",
+      "team": "Italy",
+      "line": -32.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -18.5",
+      "team": "Italy",
+      "line": -18.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -30.5",
+      "team": "Italy",
+      "line": -30.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -31.5",
+      "team": "Italy",
+      "line": -31.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -20.5",
+      "team": "Italy",
+      "line": -20.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -45.5",
+      "team": "Italy",
+      "line": -45.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -21.5",
+      "team": "Italy",
+      "line": -21.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -28.5",
+      "team": "Italy",
+      "line": -28.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -41.5",
+      "team": "Italy",
+      "line": -41.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -46.5",
+      "team": "Italy",
+      "line": -46.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -2.5",
+      "team": "Italy",
+      "line": -2.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -15.5",
+      "team": "Italy",
+      "line": -15.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -27.5",
+      "team": "Italy",
+      "line": -27.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -35.5",
+      "team": "Italy",
+      "line": -35.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -29.5",
+      "team": "Italy",
+      "line": -29.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -43.5",
+      "team": "Italy",
+      "line": -43.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -7.5",
+      "team": "Italy",
+      "line": -7.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -44.5",
+      "team": "Italy",
+      "line": -44.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -37.5",
+      "team": "Italy",
+      "line": -37.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -33.5",
+      "team": "Italy",
+      "line": -33.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -22.5",
+      "team": "Italy",
+      "line": -22.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -47.5",
+      "team": "Italy",
+      "line": -47.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -38.5",
+      "team": "Italy",
+      "line": -38.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -11.5",
+      "team": "Italy",
+      "line": -11.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -48.5",
+      "team": "Italy",
+      "line": -48.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -8.5",
+      "team": "Italy",
+      "line": -8.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -23.5",
+      "team": "Italy",
+      "line": -23.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -50.5",
+      "team": "Italy",
+      "line": -50.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -39.5",
+      "team": "Italy",
+      "line": -39.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -16.5",
+      "team": "Italy",
+      "line": -16.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -49.5",
+      "team": "Italy",
+      "line": -49.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -12.5",
+      "team": "Italy",
+      "line": -12.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -25.5",
+      "team": "Italy",
+      "line": -25.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -4.5",
+      "team": "Italy",
+      "line": -4.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -40.5",
+      "team": "Italy",
+      "line": -40.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy +1.5",
+      "team": "Italy",
+      "line": 1.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -18.5",
+      "team": "Scotland",
+      "line": -18.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -24.5",
+      "team": "Scotland",
+      "line": -24.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -40.5",
+      "team": "Scotland",
+      "line": -40.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -47.5",
+      "team": "Scotland",
+      "line": -47.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -46.5",
+      "team": "Scotland",
+      "line": -46.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -41.5",
+      "team": "Scotland",
+      "line": -41.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -44.5",
+      "team": "Scotland",
+      "line": -44.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -30.5",
+      "team": "Scotland",
+      "line": -30.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -48.5",
+      "team": "Scotland",
+      "line": -48.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -32.5",
+      "team": "Scotland",
+      "line": -32.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -15.5",
+      "team": "Scotland",
+      "line": -15.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -50.5",
+      "team": "Scotland",
+      "line": -50.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -43.5",
+      "team": "Scotland",
+      "line": -43.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -34.5",
+      "team": "Scotland",
+      "line": -34.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -22.5",
+      "team": "Scotland",
+      "line": -22.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -31.5",
+      "team": "Scotland",
+      "line": -31.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -39.5",
+      "team": "Scotland",
+      "line": -39.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -45.5",
+      "team": "Scotland",
+      "line": -45.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -49.5",
+      "team": "Scotland",
+      "line": -49.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -38.5",
+      "team": "Scotland",
+      "line": -38.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -36.5",
+      "team": "Scotland",
+      "line": -36.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -42.5",
+      "team": "Scotland",
+      "line": -42.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -16.5",
+      "team": "Scotland",
+      "line": -16.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -33.5",
+      "team": "Scotland",
+      "line": -33.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -35.5",
+      "team": "Scotland",
+      "line": -35.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -37.5",
+      "team": "Scotland",
+      "line": -37.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -28.5",
+      "team": "Scotland",
+      "line": -28.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -27.5",
+      "team": "Scotland",
+      "line": -27.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -25.5",
+      "team": "Scotland",
+      "line": -25.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -21.5",
+      "team": "Scotland",
+      "line": -21.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Scotland -19.5",
+      "team": "Scotland",
+      "line": -19.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Italy -13.5",
+      "team": "Italy",
+      "line": -13.5,
+      "odds_by_bookmaker": {
+        "BF": 1.98
+      }
+    },
+    {
+      "selection": "Italy -14.5",
+      "team": "Italy",
+      "line": -14.5,
+      "odds_by_bookmaker": {
+        "BF": 2.08
+      }
+    },
+    {
+      "selection": "Italy -0.5",
+      "team": "Italy",
+      "line": -0.5,
+      "odds_by_bookmaker": {
+        "BF": 2.96
+      }
+    }
+  ]
+}

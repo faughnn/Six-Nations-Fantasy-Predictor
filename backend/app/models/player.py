@@ -10,10 +10,13 @@ class Player(Base):
     __tablename__ = "players"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    external_id: Mapped[Optional[str]] = mapped_column(String(50), nullable=True, unique=True)  # rugbypy player_id
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     country: Mapped[str] = mapped_column(String(50), nullable=False)
     fantasy_position: Mapped[str] = mapped_column(String(50), nullable=False)
     is_kicker: Mapped[bool] = mapped_column(Boolean, default=False)
+    height: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # cm
+    weight: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # kg
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

@@ -1,0 +1,289 @@
+{
+  "market_type": "try_scorer",
+  "url": "https://www.oddschecker.com/rugby-union/six-nations/france-v-ireland/anytime-tryscorer",
+  "scraped_at": "2026-02-02T12:36:44.840086",
+  "bookmakers": [
+    "B3",
+    "WH",
+    "UN",
+    "FR",
+    "EE",
+    "SX",
+    "LD",
+    "VC",
+    "KN",
+    "BY",
+    "OE",
+    "S6",
+    "PUP",
+    "SI",
+    "VE",
+    "QN",
+    "WA",
+    "CE",
+    "G5",
+    "BTT",
+    "BRS",
+    "SK",
+    "PP",
+    "AKB",
+    "BF",
+    "MA",
+    "B3",
+    "WH",
+    "UN",
+    "FR",
+    "EE",
+    "SX",
+    "LD",
+    "VC",
+    "KN",
+    "BY",
+    "OE",
+    "S6",
+    "PUP",
+    "SI",
+    "VE",
+    "QN",
+    "WA",
+    "CE",
+    "G5",
+    "BTT",
+    "BRS",
+    "SK",
+    "PP",
+    "AKB",
+    "BF",
+    "MA"
+  ],
+  "odds_data": [
+    {
+      "player_name": "Louis Bielle Biarrey",
+      "odds_by_bookmaker": {
+        "B3": 1.62
+      }
+    },
+    {
+      "player_name": "Theo Attissogbe",
+      "odds_by_bookmaker": {
+        "B3": 2.05
+      }
+    },
+    {
+      "player_name": "Antoine Dupont",
+      "odds_by_bookmaker": {
+        "B3": 2.38
+      }
+    },
+    {
+      "player_name": "Dan Sheehan",
+      "odds_by_bookmaker": {
+        "B3": 2.38
+      }
+    },
+    {
+      "player_name": "Tommy OBrien",
+      "odds_by_bookmaker": {
+        "B3": 2.5
+      }
+    },
+    {
+      "player_name": "Kalvin Gourgues",
+      "odds_by_bookmaker": {
+        "B3": 2.5
+      }
+    },
+    {
+      "player_name": "Julien Marchand",
+      "odds_by_bookmaker": {
+        "B3": 2.5
+      }
+    },
+    {
+      "player_name": "James Lowe",
+      "odds_by_bookmaker": {
+        "B3": 2.5
+      }
+    },
+    {
+      "player_name": "Nicolas Depoortere",
+      "odds_by_bookmaker": {
+        "B3": 2.8
+      }
+    },
+    {
+      "player_name": "Maxime Lamothe",
+      "odds_by_bookmaker": {
+        "B3": 2.8
+      }
+    },
+    {
+      "player_name": "Matthieu Jalibert",
+      "odds_by_bookmaker": {
+        "B3": 3.1
+      }
+    },
+    {
+      "player_name": "Jacob Stockdale",
+      "odds_by_bookmaker": {
+        "B3": 3.1
+      }
+    },
+    {
+      "player_name": "Jamison Gibson-Park",
+      "odds_by_bookmaker": {
+        "B3": 3.75
+      }
+    },
+    {
+      "player_name": "Thomas Ramos",
+      "odds_by_bookmaker": {
+        "B3": 3.75
+      }
+    },
+    {
+      "player_name": "Yoram Moefana",
+      "odds_by_bookmaker": {
+        "B3": 3.75
+      }
+    },
+    {
+      "player_name": "Lenni Nouchi",
+      "odds_by_bookmaker": {
+        "B3": 3.75
+      }
+    },
+    {
+      "player_name": "Baptiste Serin",
+      "odds_by_bookmaker": {
+        "B3": 3.75
+      }
+    },
+    {
+      "player_name": "Emmanuel Meafou",
+      "odds_by_bookmaker": {
+        "B3": 3.75
+      }
+    },
+    {
+      "player_name": "Garry Ringrose",
+      "odds_by_bookmaker": {
+        "B3": 4.0
+      }
+    },
+    {
+      "player_name": "Oscar Jegou",
+      "odds_by_bookmaker": {
+        "B3": 4.5
+      }
+    },
+    {
+      "player_name": "Anthony Jelonch",
+      "odds_by_bookmaker": {
+        "B3": 4.5
+      }
+    },
+    {
+      "player_name": "Dorian Aldegheri",
+      "odds_by_bookmaker": {
+        "B3": 4.5
+      }
+    },
+    {
+      "player_name": "Hugo Auradou",
+      "odds_by_bookmaker": {
+        "B3": 4.5
+      }
+    },
+    {
+      "player_name": "Charles Ollivon",
+      "odds_by_bookmaker": {
+        "B3": 4.5
+      }
+    },
+    {
+      "player_name": "Stuart McCloskey",
+      "odds_by_bookmaker": {
+        "B3": 5.0
+      }
+    },
+    {
+      "player_name": "Caelan Doris",
+      "odds_by_bookmaker": {
+        "B3": 5.5
+      }
+    },
+    {
+      "player_name": "Francois Cros",
+      "odds_by_bookmaker": {
+        "B3": 5.5
+      }
+    },
+    {
+      "player_name": "Mickael Guillard",
+      "odds_by_bookmaker": {
+        "B3": 5.5
+      }
+    },
+    {
+      "player_name": "Sam Prendergast",
+      "odds_by_bookmaker": {
+        "B3": 5.5
+      }
+    },
+    {
+      "player_name": "Rodrigue Neti",
+      "odds_by_bookmaker": {
+        "B3": 5.5
+      }
+    },
+    {
+      "player_name": "Tadhg Beirne",
+      "odds_by_bookmaker": {
+        "B3": 6.5
+      }
+    },
+    {
+      "player_name": "Josh van der Flier",
+      "odds_by_bookmaker": {
+        "B3": 6.5
+      }
+    },
+    {
+      "player_name": "Joe McCarthy",
+      "odds_by_bookmaker": {
+        "B3": 8.5
+      }
+    },
+    {
+      "player_name": "Jean Baptiste Gros",
+      "odds_by_bookmaker": {
+        "B3": 8.5
+      }
+    },
+    {
+      "player_name": "Regis Montagne",
+      "odds_by_bookmaker": {
+        "B3": 8.5
+      }
+    },
+    {
+      "player_name": "Thomas Clarkson",
+      "odds_by_bookmaker": {
+        "B3": 11.0
+      }
+    },
+    {
+      "player_name": "James Ryan",
+      "odds_by_bookmaker": {
+        "B3": 13.0
+      }
+    },
+    {
+      "player_name": "No Try Scorer",
+      "odds_by_bookmaker": {
+        "B3": 101.0
+      }
+    }
+  ]
+}

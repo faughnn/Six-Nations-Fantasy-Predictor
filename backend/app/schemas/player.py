@@ -94,3 +94,80 @@ class PlayerDetail(PlayerSummary):
     six_nations_stats: List[StatsHistory] = []
     club_stats: List[StatsHistory] = []
     prediction_breakdown: Optional[dict] = None
+
+
+class PlayerProjection(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    # Identity
+    id: int
+    name: str
+    country: str
+    fantasy_position: str
+
+    # Cost / Value
+    price: Optional[float] = None
+    predicted_points: Optional[float] = None
+    points_per_star: Optional[float] = None
+
+    # Predicted Stats (historical averages)
+    avg_tries: Optional[float] = None
+    avg_tackles: Optional[float] = None
+    avg_metres: Optional[float] = None
+    avg_turnovers: Optional[float] = None
+    avg_defenders_beaten: Optional[float] = None
+    avg_offloads: Optional[float] = None
+
+    # Efficiency
+    expected_minutes: Optional[float] = None
+    start_rate: Optional[float] = None
+    points_per_minute: Optional[float] = None
+
+    # Odds / Fixture
+    anytime_try_odds: Optional[float] = None
+    opponent: Optional[str] = None
+    home_away: Optional[str] = None
+
+    # Sample size
+    total_games: int = 0
+
+
+class PlayerValueAnalysis(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    # Identity
+    id: Optional[int] = None
+    name: str
+    country: str
+    fantasy_position: str
+    is_forward: bool
+
+    # Price & ownership
+    price: Optional[float] = None
+    ownership_pct: Optional[float] = None
+
+    # Fixture context
+    opponent: Optional[str] = None
+    is_home: Optional[bool] = None
+    is_starting: Optional[bool] = None
+
+    # Try scorer odds & EV
+    anytime_try_odds: Optional[float] = None
+    implied_try_prob: Optional[float] = None
+    try_points: int = 10
+    expected_try_points: Optional[float] = None
+    try_ev_per_star: Optional[float] = None
+
+    # Historical averages (3 years Six Nations + club)
+    avg_fantasy_points: Optional[float] = None
+    avg_tries_per_game: Optional[float] = None
+    avg_tackles_per_game: Optional[float] = None
+    avg_metres_per_game: Optional[float] = None
+    avg_defenders_beaten_per_game: Optional[float] = None
+    avg_turnovers_per_game: Optional[float] = None
+    avg_offloads_per_game: Optional[float] = None
+    total_games: Optional[int] = None
+
+    # Combined value scores
+    predicted_points: Optional[float] = None
+    overall_ev_per_star: Optional[float] = None

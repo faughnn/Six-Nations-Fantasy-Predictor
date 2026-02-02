@@ -1,0 +1,118 @@
+{
+  "season": 2026,
+  "round": 1,
+  "scraped_at": "2026-02-01T23:30:57.942500",
+  "player_count": 10,
+  "players": [
+    {
+      "name": "D. SHEEHAN",
+      "price": 16.0,
+      "fantasy_position": "hooker",
+      "country": "Ireland",
+      "ownership_pct": 42.0,
+      "opponent": "FRA",
+      "is_home": false,
+      "raw_position": "HOOKER",
+      "raw_country": "IRE"
+    },
+    {
+      "name": "T. RAMOS",
+      "price": 16.0,
+      "fantasy_position": "back_3",
+      "country": "France",
+      "ownership_pct": 46.0,
+      "opponent": "IRE",
+      "is_home": true,
+      "raw_position": "BACK THREE",
+      "raw_country": "FRA"
+    },
+    {
+      "name": "L. BIELLE-BIARREY",
+      "price": 15.0,
+      "fantasy_position": "back_3",
+      "country": "France",
+      "ownership_pct": 51.0,
+      "opponent": "IRE",
+      "is_home": true,
+      "raw_position": "BACK THREE",
+      "raw_country": "FRA"
+    },
+    {
+      "name": "B. EARL",
+      "price": 15.0,
+      "fantasy_position": "back_row",
+      "country": "England",
+      "ownership_pct": 37.0,
+      "opponent": "WAL",
+      "is_home": true,
+      "raw_position": "BACK-ROW",
+      "raw_country": "ENG"
+    },
+    {
+      "name": "C. DORIS",
+      "price": 15.0,
+      "fantasy_position": "back_row",
+      "country": "Ireland",
+      "ownership_pct": 29.0,
+      "opponent": "FRA",
+      "is_home": false,
+      "raw_position": "BACK-ROW",
+      "raw_country": "IRE"
+    },
+    {
+      "name": "A. DUPONT",
+      "price": 15.0,
+      "fantasy_position": "scrum_half",
+      "country": "France",
+      "ownership_pct": 50.0,
+      "opponent": "IRE",
+      "is_home": true,
+      "raw_position": "SCRUM-HALF",
+      "raw_country": "FRA"
+    },
+    {
+      "name": "T. MENONCELLO",
+      "price": 14.0,
+      "fantasy_position": "centre",
+      "country": "Italy",
+      "ownership_pct": 32.0,
+      "opponent": "SCO",
+      "is_home": true,
+      "raw_position": "CENTRE",
+      "raw_country": "ITA"
+    },
+    {
+      "name": "T. FREEMAN",
+      "price": 14.0,
+      "fantasy_position": "back_3",
+      "country": "England",
+      "ownership_pct": 30.0,
+      "opponent": "WAL",
+      "is_home": true,
+      "raw_position": "BACK THREE",
+      "raw_country": "ENG"
+    },
+    {
+      "name": "D. VAN DER MERWE",
+      "price": 14.0,
+      "fantasy_position": "back_3",
+      "country": "Scotland",
+      "ownership_pct": 20.0,
+      "opponent": "ITA",
+      "is_home": false,
+      "raw_position": "BACK THREE",
+      "raw_country": "SCO"
+    },
+    {
+      "name": "S. UNDERHILL",
+      "price": 14.0,
+      "fantasy_position": "back_row",
+      "country": "England",
+      "ownership_pct": 7.0,
+      "opponent": "WAL",
+      "is_home": true,
+      "raw_position": "BACK-ROW",
+      "raw_country": "ENG"
+    }
+  ]
+}

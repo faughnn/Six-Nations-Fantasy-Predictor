@@ -1,0 +1,1414 @@
+{
+  "market_type": "handicaps",
+  "url": "https://www.oddschecker.com/rugby-union/six-nations/england-v-wales/handicaps",
+  "scraped_at": "2026-02-02T22:06:54.057843",
+  "bookmakers": [
+    "B3",
+    "WH",
+    "UN",
+    "FR",
+    "EE",
+    "SX",
+    "LD",
+    "VC",
+    "KN",
+    "BY",
+    "OE",
+    "S6",
+    "PUP",
+    "SI",
+    "VE",
+    "QN",
+    "WA",
+    "CE",
+    "G5",
+    "BTT",
+    "BRS",
+    "SK",
+    "PP",
+    "AKB",
+    "BF",
+    "MA"
+  ],
+  "handicap_data": [
+    {
+      "selection": "Wales +47.5",
+      "team": "Wales",
+      "line": 47.5,
+      "odds_by_bookmaker": {
+        "SX": 1.07,
+        "SI": 1.07
+      }
+    },
+    {
+      "selection": "England -11.5",
+      "team": "England",
+      "line": -11.5,
+      "odds_by_bookmaker": {
+        "SX": 1.07,
+        "SI": 1.07
+      }
+    },
+    {
+      "selection": "England -13",
+      "team": "England",
+      "line": -13.0,
+      "odds_by_bookmaker": {
+        "BY": 1.11
+      }
+    },
+    {
+      "selection": "Wales +44.5",
+      "team": "Wales",
+      "line": 44.5,
+      "odds_by_bookmaker": {
+        "SX": 1.13,
+        "SI": 1.13
+      }
+    },
+    {
+      "selection": "England -14.5",
+      "team": "England",
+      "line": -14.5,
+      "odds_by_bookmaker": {
+        "SX": 1.14,
+        "SI": 1.14
+      }
+    },
+    {
+      "selection": "England -15",
+      "team": "England",
+      "line": -15.0,
+      "odds_by_bookmaker": {
+        "BY": 1.17,
+        "SK": 1.17,
+        "PP": 1.17
+      }
+    },
+    {
+      "selection": "Wales +41.5",
+      "team": "Wales",
+      "line": 41.5,
+      "odds_by_bookmaker": {
+        "SX": 1.18,
+        "SI": 1.18
+      }
+    },
+    {
+      "selection": "England -17",
+      "team": "England",
+      "line": -17.0,
+      "odds_by_bookmaker": {
+        "BY": 1.2,
+        "QN": 1.18,
+        "SK": 1.17,
+        "PP": 1.17
+      }
+    },
+    {
+      "selection": "Wales +41",
+      "team": "Wales",
+      "line": 41.0,
+      "odds_by_bookmaker": {
+        "BY": 1.22,
+        "QN": 1.18,
+        "SK": 1.2,
+        "PP": 1.2
+      }
+    },
+    {
+      "selection": "England -17.5",
+      "team": "England",
+      "line": -17.5,
+      "odds_by_bookmaker": {
+        "SX": 1.22,
+        "SI": 1.22
+      }
+    },
+    {
+      "selection": "Wales +38.5",
+      "team": "Wales",
+      "line": 38.5,
+      "odds_by_bookmaker": {
+        "SX": 1.29,
+        "SI": 1.29
+      }
+    },
+    {
+      "selection": "England -19",
+      "team": "England",
+      "line": -19.0,
+      "odds_by_bookmaker": {
+        "BY": 1.29
+      }
+    },
+    {
+      "selection": "Wales +39",
+      "team": "Wales",
+      "line": 39.0,
+      "odds_by_bookmaker": {
+        "BY": 1.3,
+        "SK": 1.17,
+        "PP": 1.17
+      }
+    },
+    {
+      "selection": "England -20.5",
+      "team": "England",
+      "line": -20.5,
+      "odds_by_bookmaker": {
+        "SX": 1.33,
+        "SI": 1.33
+      }
+    },
+    {
+      "selection": "England -21",
+      "team": "England",
+      "line": -21.0,
+      "odds_by_bookmaker": {
+        "BY": 1.33,
+        "SK": 1.4,
+        "PP": 1.4
+      }
+    },
+    {
+      "selection": "Wales +37",
+      "team": "Wales",
+      "line": 37.0,
+      "odds_by_bookmaker": {
+        "BY": 1.36
+      }
+    },
+    {
+      "selection": "Wales +35.5",
+      "team": "Wales",
+      "line": 35.5,
+      "odds_by_bookmaker": {
+        "SX": 1.4,
+        "SI": 1.4
+      }
+    },
+    {
+      "selection": "England -23",
+      "team": "England",
+      "line": -23.0,
+      "odds_by_bookmaker": {
+        "BY": 1.44,
+        "OE": 1.44,
+        "QN": 1.45,
+        "WA": 1.45,
+        "SK": 1.4,
+        "PP": 1.4
+      }
+    },
+    {
+      "selection": "England -23.5",
+      "team": "England",
+      "line": -23.5,
+      "odds_by_bookmaker": {
+        "SX": 1.47,
+        "SI": 1.47,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +35",
+      "team": "Wales",
+      "line": 35.0,
+      "odds_by_bookmaker": {
+        "BY": 1.44,
+        "OE": 1.5,
+        "QN": 1.4,
+        "WA": 1.4,
+        "SK": 1.44,
+        "PP": 1.44
+      }
+    },
+    {
+      "selection": "Wales +33",
+      "team": "Wales",
+      "line": 33.0,
+      "odds_by_bookmaker": {
+        "BY": 1.54,
+        "SK": 1.44,
+        "PP": 1.44
+      }
+    },
+    {
+      "selection": "Wales +32.5",
+      "team": "Wales",
+      "line": 32.5,
+      "odds_by_bookmaker": {
+        "SX": 1.57,
+        "SI": 1.57,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -25",
+      "team": "England",
+      "line": -25.0,
+      "odds_by_bookmaker": {
+        "FR": 1.62,
+        "BY": 1.54,
+        "QN": 1.62
+      }
+    },
+    {
+      "selection": "England -26.5",
+      "team": "England",
+      "line": -26.5,
+      "odds_by_bookmaker": {
+        "SX": 1.67,
+        "SI": 1.67,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -27",
+      "team": "England",
+      "line": -27.0,
+      "odds_by_bookmaker": {
+        "B3": 1.91,
+        "FR": 1.91,
+        "BY": 1.67,
+        "SK": 1.91,
+        "PP": 1.91
+      }
+    },
+    {
+      "selection": "Wales +31",
+      "team": "Wales",
+      "line": 31.0,
+      "odds_by_bookmaker": {
+        "FR": 1.73,
+        "BY": 1.67,
+        "QN": 1.75
+      }
+    },
+    {
+      "selection": "Wales +29.5",
+      "team": "Wales",
+      "line": 29.5,
+      "odds_by_bookmaker": {
+        "EE": 1.9,
+        "SX": 1.8,
+        "VC": 1.85,
+        "KN": 1.85,
+        "OE": 1.8,
+        "SI": 1.8,
+        "VE": 1.83,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -28.5",
+      "team": "England",
+      "line": -28.5,
+      "odds_by_bookmaker": {
+        "EE": 1.85,
+        "SX": 1.9,
+        "VC": 1.85,
+        "KN": 1.85,
+        "OE": 1.8,
+        "SI": 1.9,
+        "VE": 1.9,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +28.5",
+      "team": "Wales",
+      "line": 28.5,
+      "odds_by_bookmaker": {
+        "EE": 1.91,
+        "SX": 1.9,
+        "VC": 1.85,
+        "KN": 1.85,
+        "OE": 1.91,
+        "SI": 1.9,
+        "VE": 1.9,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -29.5",
+      "team": "England",
+      "line": -29.5,
+      "odds_by_bookmaker": {
+        "EE": 1.9,
+        "SX": 1.95,
+        "VC": 1.85,
+        "KN": 1.85,
+        "OE": 1.91,
+        "SI": 1.95,
+        "VE": 1.97,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -29",
+      "team": "England",
+      "line": -29.0,
+      "odds_by_bookmaker": {
+        "B3": 2.0,
+        "WH": 1.91,
+        "FR": 1.91,
+        "EE": 1.91,
+        "LD": 1.91,
+        "VC": 1.93,
+        "KN": 1.93,
+        "BY": 1.91,
+        "OE": 1.91,
+        "QN": 1.91,
+        "WA": 1.9,
+        "CE": 1.91,
+        "G5": 1.91,
+        "BTT": 1.91,
+        "SK": 1.91,
+        "PP": 1.91
+      }
+    },
+    {
+      "selection": "Wales +29",
+      "team": "Wales",
+      "line": 29.0,
+      "odds_by_bookmaker": {
+        "B3": 2.0,
+        "WH": 1.91,
+        "FR": 1.91,
+        "EE": 1.91,
+        "LD": 1.91,
+        "VC": 1.83,
+        "KN": 1.85,
+        "BY": 1.91,
+        "OE": 1.91,
+        "QN": 1.83,
+        "WA": 1.83,
+        "CE": 1.91,
+        "G5": 1.91,
+        "BTT": 1.91,
+        "SK": 1.91,
+        "PP": 1.91
+      }
+    },
+    {
+      "selection": "Wales +26.5",
+      "team": "Wales",
+      "line": 26.5,
+      "odds_by_bookmaker": {
+        "SX": 2.1,
+        "SI": 2.1,
+        "BF": 2.0
+      }
+    },
+    {
+      "selection": "Wales +27",
+      "team": "Wales",
+      "line": 27.0,
+      "odds_by_bookmaker": {
+        "B3": 2.0,
+        "FR": 1.91,
+        "BY": 2.1,
+        "SK": 1.91,
+        "PP": 1.83
+      }
+    },
+    {
+      "selection": "England -31",
+      "team": "England",
+      "line": -31.0,
+      "odds_by_bookmaker": {
+        "FR": 2.1,
+        "BY": 2.1,
+        "QN": 2.15
+      }
+    },
+    {
+      "selection": "England -32.5",
+      "team": "England",
+      "line": -32.5,
+      "odds_by_bookmaker": {
+        "SX": 2.3,
+        "SI": 2.3,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +25",
+      "team": "Wales",
+      "line": 25.0,
+      "odds_by_bookmaker": {
+        "FR": 2.38,
+        "BY": 2.4,
+        "QN": 2.38
+      }
+    },
+    {
+      "selection": "England -33",
+      "team": "England",
+      "line": -33.0,
+      "odds_by_bookmaker": {
+        "BY": 2.4,
+        "SK": 2.75,
+        "PP": 2.75
+      }
+    },
+    {
+      "selection": "Wales +23.5",
+      "team": "Wales",
+      "line": 23.5,
+      "odds_by_bookmaker": {
+        "SX": 2.5,
+        "SI": 2.5,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -35",
+      "team": "England",
+      "line": -35.0,
+      "odds_by_bookmaker": {
+        "BY": 2.7,
+        "OE": 2.5,
+        "QN": 2.75,
+        "WA": 2.75,
+        "SK": 2.75,
+        "PP": 2.75
+      }
+    },
+    {
+      "selection": "England -35.5",
+      "team": "England",
+      "line": -35.5,
+      "odds_by_bookmaker": {
+        "SX": 2.8,
+        "SI": 2.8,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +23",
+      "team": "Wales",
+      "line": 23.0,
+      "odds_by_bookmaker": {
+        "BY": 2.7,
+        "OE": 2.63,
+        "QN": 2.6,
+        "WA": 2.5,
+        "SK": 2.88,
+        "PP": 2.88
+      }
+    },
+    {
+      "selection": "England -37",
+      "team": "England",
+      "line": -37.0,
+      "odds_by_bookmaker": {
+        "BY": 3.0
+      }
+    },
+    {
+      "selection": "Wales +21",
+      "team": "Wales",
+      "line": 21.0,
+      "odds_by_bookmaker": {
+        "BY": 3.1,
+        "SK": 2.75,
+        "PP": 2.75
+      }
+    },
+    {
+      "selection": "Wales +20.5",
+      "team": "Wales",
+      "line": 20.5,
+      "odds_by_bookmaker": {
+        "SX": 3.2,
+        "SI": 3.2,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -39",
+      "team": "England",
+      "line": -39.0,
+      "odds_by_bookmaker": {
+        "BY": 3.4,
+        "SK": 4.5,
+        "PP": 4.5
+      }
+    },
+    {
+      "selection": "England -38.5",
+      "team": "England",
+      "line": -38.5,
+      "odds_by_bookmaker": {
+        "SX": 3.5,
+        "SI": 3.5,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +19",
+      "team": "Wales",
+      "line": 19.0,
+      "odds_by_bookmaker": {
+        "BY": 3.5
+      }
+    },
+    {
+      "selection": "Wales +17.5",
+      "team": "Wales",
+      "line": 17.5,
+      "odds_by_bookmaker": {
+        "SX": 4.0,
+        "SI": 4.0,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -41",
+      "team": "England",
+      "line": -41.0,
+      "odds_by_bookmaker": {
+        "BY": 3.75,
+        "QN": 4.2,
+        "SK": 4.33,
+        "PP": 4.33
+      }
+    },
+    {
+      "selection": "England -41.5",
+      "team": "England",
+      "line": -41.5,
+      "odds_by_bookmaker": {
+        "SX": 4.33,
+        "SI": 4.33,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +17",
+      "team": "Wales",
+      "line": 17.0,
+      "odds_by_bookmaker": {
+        "BY": 4.0,
+        "QN": 4.2,
+        "SK": 4.5,
+        "PP": 4.5
+      }
+    },
+    {
+      "selection": "Wales +15",
+      "team": "Wales",
+      "line": 15.0,
+      "odds_by_bookmaker": {
+        "BY": 4.5,
+        "SK": 4.5,
+        "PP": 4.5
+      }
+    },
+    {
+      "selection": "Wales +14.5",
+      "team": "Wales",
+      "line": 14.5,
+      "odds_by_bookmaker": {
+        "SX": 5.25,
+        "SI": 5.25,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -44.5",
+      "team": "England",
+      "line": -44.5,
+      "odds_by_bookmaker": {
+        "SX": 5.5,
+        "SI": 5.5,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +13",
+      "team": "Wales",
+      "line": 13.0,
+      "odds_by_bookmaker": {
+        "BY": 5.5
+      }
+    },
+    {
+      "selection": "England -47.5",
+      "team": "England",
+      "line": -47.5,
+      "odds_by_bookmaker": {
+        "SX": 7.0,
+        "SI": 7.0,
+        "BF": 2.18
+      }
+    },
+    {
+      "selection": "Wales +11.5",
+      "team": "Wales",
+      "line": 11.5,
+      "odds_by_bookmaker": {
+        "SX": 7.0,
+        "SI": 7.0,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -33.5",
+      "team": "England",
+      "line": -33.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -34.5",
+      "team": "England",
+      "line": -34.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -24.5",
+      "team": "England",
+      "line": -24.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +24.5",
+      "team": "Wales",
+      "line": 24.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -27.5",
+      "team": "England",
+      "line": -27.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -48.5",
+      "team": "England",
+      "line": -48.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -42.5",
+      "team": "England",
+      "line": -42.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -25.5",
+      "team": "England",
+      "line": -25.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +25.5",
+      "team": "Wales",
+      "line": 25.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -37.5",
+      "team": "England",
+      "line": -37.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -31.5",
+      "team": "England",
+      "line": -31.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +31.5",
+      "team": "Wales",
+      "line": 31.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -40.5",
+      "team": "England",
+      "line": -40.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -30.5",
+      "team": "England",
+      "line": -30.5,
+      "odds_by_bookmaker": {
+        "SI": 1.83,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +30.5",
+      "team": "Wales",
+      "line": 30.5,
+      "odds_by_bookmaker": {
+        "SI": 1.83,
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -50.5",
+      "team": "England",
+      "line": -50.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -36.5",
+      "team": "England",
+      "line": -36.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -39.5",
+      "team": "England",
+      "line": -39.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -49.5",
+      "team": "England",
+      "line": -49.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "England -45.5",
+      "team": "England",
+      "line": -45.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -18.5",
+      "team": "Wales",
+      "line": -18.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -32.5",
+      "team": "Wales",
+      "line": -32.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -2.5",
+      "team": "Wales",
+      "line": -2.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -17.5",
+      "team": "Wales",
+      "line": -17.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -16.5",
+      "team": "Wales",
+      "line": -16.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -27.5",
+      "team": "Wales",
+      "line": -27.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -14.5",
+      "team": "Wales",
+      "line": -14.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -26.5",
+      "team": "Wales",
+      "line": -26.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -9.5",
+      "team": "Wales",
+      "line": -9.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -22.5",
+      "team": "Wales",
+      "line": -22.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -10.5",
+      "team": "Wales",
+      "line": -10.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -34.5",
+      "team": "Wales",
+      "line": -34.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -44.5",
+      "team": "Wales",
+      "line": -44.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -12.5",
+      "team": "Wales",
+      "line": -12.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +8.5",
+      "team": "Wales",
+      "line": 8.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +19.5",
+      "team": "Wales",
+      "line": 19.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -24.5",
+      "team": "Wales",
+      "line": -24.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -28.5",
+      "team": "Wales",
+      "line": -28.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +13.5",
+      "team": "Wales",
+      "line": 13.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -31.5",
+      "team": "Wales",
+      "line": -31.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -6.5",
+      "team": "Wales",
+      "line": -6.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -40.5",
+      "team": "Wales",
+      "line": -40.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -46.5",
+      "team": "Wales",
+      "line": -46.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -39.5",
+      "team": "Wales",
+      "line": -39.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -8.5",
+      "team": "Wales",
+      "line": -8.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -36.5",
+      "team": "Wales",
+      "line": -36.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -5.5",
+      "team": "Wales",
+      "line": -5.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -48.5",
+      "team": "Wales",
+      "line": -48.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -37.5",
+      "team": "Wales",
+      "line": -37.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -13.5",
+      "team": "Wales",
+      "line": -13.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -7.5",
+      "team": "Wales",
+      "line": -7.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -43.5",
+      "team": "Wales",
+      "line": -43.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -11.5",
+      "team": "Wales",
+      "line": -11.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -33.5",
+      "team": "Wales",
+      "line": -33.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +16.5",
+      "team": "Wales",
+      "line": 16.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -50.5",
+      "team": "Wales",
+      "line": -50.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +10.5",
+      "team": "Wales",
+      "line": 10.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -30.5",
+      "team": "Wales",
+      "line": -30.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +12.5",
+      "team": "Wales",
+      "line": 12.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -45.5",
+      "team": "Wales",
+      "line": -45.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -23.5",
+      "team": "Wales",
+      "line": -23.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -47.5",
+      "team": "Wales",
+      "line": -47.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -0.5",
+      "team": "Wales",
+      "line": -0.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +18.5",
+      "team": "Wales",
+      "line": 18.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +21.5",
+      "team": "Wales",
+      "line": 21.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +6.5",
+      "team": "Wales",
+      "line": 6.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +7.5",
+      "team": "Wales",
+      "line": 7.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +4.5",
+      "team": "Wales",
+      "line": 4.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +3.5",
+      "team": "Wales",
+      "line": 3.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -49.5",
+      "team": "Wales",
+      "line": -49.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -15.5",
+      "team": "Wales",
+      "line": -15.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -41.5",
+      "team": "Wales",
+      "line": -41.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -42.5",
+      "team": "Wales",
+      "line": -42.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -4.5",
+      "team": "Wales",
+      "line": -4.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -25.5",
+      "team": "Wales",
+      "line": -25.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -3.5",
+      "team": "Wales",
+      "line": -3.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -38.5",
+      "team": "Wales",
+      "line": -38.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales -1.5",
+      "team": "Wales",
+      "line": -1.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +15.5",
+      "team": "Wales",
+      "line": 15.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +2.5",
+      "team": "Wales",
+      "line": 2.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +5.5",
+      "team": "Wales",
+      "line": 5.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +9.5",
+      "team": "Wales",
+      "line": 9.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +1.5",
+      "team": "Wales",
+      "line": 1.5,
+      "odds_by_bookmaker": {
+        "BF": 1.01
+      }
+    },
+    {
+      "selection": "Wales +46.5",
+      "team": "Wales",
+      "line": 46.5,
+      "odds_by_bookmaker": {
+        "BF": 1.05
+      }
+    },
+    {
+      "selection": "Wales +27.5",
+      "team": "Wales",
+      "line": 27.5,
+      "odds_by_bookmaker": {
+        "BF": 1.98
+      }
+    },
+    {
+      "selection": "England -43.5",
+      "team": "England",
+      "line": -43.5,
+      "odds_by_bookmaker": {
+        "BF": 1.98
+      }
+    },
+    {
+      "selection": "England -46.5",
+      "team": "England",
+      "line": -46.5,
+      "odds_by_bookmaker": {
+        "BF": 1.98
+      }
+    },
+    {
+      "selection": "Wales -19.5",
+      "team": "Wales",
+      "line": -19.5,
+      "odds_by_bookmaker": {
+        "BF": 1.98
+      }
+    },
+    {
+      "selection": "Wales -35.5",
+      "team": "Wales",
+      "line": -35.5,
+      "odds_by_bookmaker": {
+        "BF": 1.98
+      }
+    },
+    {
+      "selection": "Wales -20.5",
+      "team": "Wales",
+      "line": -20.5,
+      "odds_by_bookmaker": {
+        "BF": 2.02
+      }
+    },
+    {
+      "selection": "Wales +22.5",
+      "team": "Wales",
+      "line": 22.5,
+      "odds_by_bookmaker": {
+        "BF": 2.18
+      }
+    },
+    {
+      "selection": "Wales -29.5",
+      "team": "Wales",
+      "line": -29.5,
+      "odds_by_bookmaker": {
+        "BF": 2.96
+      }
+    },
+    {
+      "selection": "Wales -21.5",
+      "team": "Wales",
+      "line": -21.5,
+      "odds_by_bookmaker": {
+        "BF": 2.96
+      }
+    },
+    {
+      "selection": "Wales +0.5",
+      "team": "Wales",
+      "line": 0.5,
+      "odds_by_bookmaker": {
+        "BF": 2.96
+      }
+    }
+  ]
+}

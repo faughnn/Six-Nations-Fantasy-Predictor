@@ -1,6 +1,7 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import type { PlayerDetail as PlayerDetailType } from '../../types';
-import { formatPrice, formatPoints, getPositionLabel, getCountryFlag } from '../../utils';
+import { CountryFlag } from '../common/CountryFlag';
+import { formatPrice, formatPoints, getPositionLabel } from '../../utils';
 
 interface PlayerDetailProps {
   player: PlayerDetailType;
@@ -25,8 +26,9 @@ export function PlayerDetail({ player, onClose }: PlayerDetailProps) {
         <div className="p-6">
           <div className="flex justify-between items-start mb-6">
             <div>
-              <h2 className="text-2xl font-bold">
-                {getCountryFlag(player.country)} {player.name}
+              <h2 className="text-2xl font-bold flex items-center gap-2">
+                <CountryFlag country={player.country} size="lg" />
+                {player.name}
               </h2>
               <p className="text-gray-500">
                 {getPositionLabel(player.fantasy_position)} | {player.country}

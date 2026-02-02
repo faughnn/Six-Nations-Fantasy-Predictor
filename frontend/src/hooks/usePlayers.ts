@@ -16,9 +16,3 @@ export function usePlayer(id: number, season = 2025, round = 1) {
   });
 }
 
-export function useComparePlayers(round: number, position?: string) {
-  return useQuery({
-    queryKey: ['compare', round, position],
-    queryFn: () => playersApi.compare(round, position),
-  });
-}

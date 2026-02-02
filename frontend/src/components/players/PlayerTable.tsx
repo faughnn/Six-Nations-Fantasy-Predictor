@@ -1,6 +1,7 @@
 import type { PlayerSummary } from '../../types';
 import { DataTable } from '../common/DataTable';
-import { formatPrice, formatPoints, getPositionLabel, getCountryFlag } from '../../utils';
+import { CountryFlag } from '../common/CountryFlag';
+import { formatPrice, formatPoints, getPositionLabel } from '../../utils';
 
 interface PlayerTableProps {
   players: PlayerSummary[];
@@ -21,8 +22,9 @@ export function PlayerTable({
       header: 'Name',
       sortable: true,
       render: (player: PlayerSummary) => (
-        <div className="font-medium text-gray-900">
-          {getCountryFlag(player.country)} {player.name}
+        <div className="font-medium text-gray-900 flex items-center gap-2">
+          <CountryFlag country={player.country} size="sm" />
+          {player.name}
         </div>
       ),
     },

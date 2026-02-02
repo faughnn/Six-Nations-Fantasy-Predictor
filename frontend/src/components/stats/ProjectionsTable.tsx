@@ -1,0 +1,282 @@
+import { useState, useMemo } from 'react';
+import type { PlayerProjection } from '../../types';
+import { cn } from '../../utils';
+import { CountryFlag } from '../common/CountryFlag';
+
+interface Column {
+  key: keyof PlayerProjection;
+  header: string;
+  format?: (value: number | null) => string;
+}
+
+interface ColumnGroup {
+  id: string;
+  label: string;
+  columns: Column[];
+}
+
+const COLUMN_GROUPS: ColumnGroup[] = [
+  {
+    id: 'cost',
+    label: 'Cost / Value',
+    columns: [
+      { key: 'price', header: 'Price', format: (v) => v !== null ? v.toFixed(1) : '-' },
+      { key: 'predicted_points', header: 'Pred Pts', format: (v) => v !== null ? v.toFixed(1) : '-' },
+      { key: 'points_per_star', header: 'Pts/Star', format: (v) => v !== null ? v.toFixed(2) : '-' },
+    ],
+  },
+  {
+    id: 'predicted',
+    label: 'Predicted Stats',
+    columns: [
+      { key: 'avg_tries', header: 'Tries/G', format: (v) => v !== null ? v.toFixed(2) : '-' },
+      { key: 'avg_tackles', header: 'Tck/G', format: (v) => v !== null ? v.toFixed(1) : '-' },
+      { key: 'avg_metres', header: 'Mtrs/G', format: (v) => v !== null ? v.toFixed(0) : '-' },
+      { key: 'avg_turnovers', header: 'TO/G', format: (v) => v !== null ? v.toFixed(2) : '-' },
+      { key: 'avg_defenders_beaten', header: 'DB/G', format: (v) => v !== null ? v.toFixed(1) : '-' },
+      { key: 'avg_offloads', header: 'Off/G', format: (v) => v !== null ? v.toFixed(2) : '-' },
+    ],
+  },
+  {
+    id: 'efficiency',
+    label: 'Efficiency',
+    columns: [
+      { key: 'expected_minutes', header: 'Exp Min', format: (v) => v !== null ? v.toFixed(0) : '-' },
+      { key: 'start_rate', header: 'Start %', format: (v) => v !== null ? `${v.toFixed(0)}%` : '-' },
+      { key: 'points_per_minute', header: 'Pts/Min', format: (v) => v !== null ? v.toFixed(3) : '-' },
+    ],
+  },
+  {
+    id: 'odds',
+    label: 'Odds / Fixture',
+    columns: [
+      { key: 'anytime_try_odds', header: 'Try Odds', format: (v) => v !== null ? v.toFixed(2) : '-' },
+      { key: 'opponent', header: 'Opp' },
+      { key: 'home_away', header: 'H/A' },
+      { key: 'total_games', header: 'Games' },
+    ],
+  },
+];
+
+const POSITION_ABBRS: Record<string, string> = {
+  prop: 'P',
+  hooker: 'HK',
+  second_row: 'SR',
+  back_row: 'BR',
+  scrum_half: 'SH',
+  out_half: 'FH',
+  centre: 'C',
+  back_3: 'B3',
+};
+
+function getValueTierClass(pointsPerStar: number | null): string {
+  if (pointsPerStar === null) return '';
+  if (pointsPerStar >= 15) return 'bg-green-50';
+  if (pointsPerStar >= 10) return 'bg-emerald-50';
+  if (pointsPerStar >= 7) return 'bg-yellow-50';
+  return '';
+}
+
+interface ProjectionsTableProps {
+  data: PlayerProjection[];
+}
+
+export function ProjectionsTable({ data }: ProjectionsTableProps) {
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
+    new Set(['cost', 'predicted', 'efficiency', 'odds'])
+  );
+  const [sortKey, setSortKey] = useState<keyof PlayerProjection | null>('predicted_points');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+
+  const toggleGroup = (groupId: string) => {
+    setExpandedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(groupId)) {
+        next.delete(groupId);
+      } else {
+        next.add(groupId);
+      }
+      return next;
+    });
+  };
+
+  const sortedData = useMemo(() => {
+    if (!sortKey) return data;
+
+    return [...data].sort((a, b) => {
+      const aVal = a[sortKey];
+      const bVal = b[sortKey];
+
+      if (aVal === null || aVal === undefined) return 1;
+      if (bVal === null || bVal === undefined) return -1;
+
+      if (typeof aVal === 'number' && typeof bVal === 'number') {
+        return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+      }
+
+      const aStr = String(aVal);
+      const bStr = String(bVal);
+      return sortDirection === 'asc'
+        ? aStr.localeCompare(bStr)
+        : bStr.localeCompare(aStr);
+    });
+  }, [data, sortKey, sortDirection]);
+
+  const handleSort = (key: keyof PlayerProjection) => {
+    if (sortKey === key) {
+      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortKey(key);
+      setSortDirection('desc');
+    }
+  };
+
+  const formatValue = (value: unknown, format?: (v: number | null) => string): string => {
+    if (value === null || value === undefined) return '-';
+    if (format && typeof value === 'number') return format(value);
+    if (typeof value === 'number') {
+      return Number.isInteger(value) ? String(value) : value.toFixed(1);
+    }
+    return String(value);
+  };
+
+  if (data.length === 0) {
+    return (
+      <div className="text-center py-8 text-gray-500">
+        No players found
+      </div>
+    );
+  }
+
+  return (
+    <div className="overflow-x-auto border rounded-lg mx-auto w-fit">
+      <table className="divide-y divide-gray-200 text-sm">
+        {/* Header Row 1: Group Headers */}
+        <thead className="bg-gray-100">
+          <tr>
+            {/* Fixed columns */}
+            <th className="px-2 py-2 text-left text-xs font-semibold text-gray-700 sticky left-0 bg-gray-100 z-10" rowSpan={2}>
+              Name
+            </th>
+            <th className="px-2 py-2 text-left text-xs font-semibold text-gray-700" rowSpan={2}>
+              Country
+            </th>
+            <th className="px-2 py-2 text-left text-xs font-semibold text-gray-700" rowSpan={2}>
+              Pos
+            </th>
+
+            {/* Collapsible group headers */}
+            {COLUMN_GROUPS.map((group) => {
+              const isExpanded = expandedGroups.has(group.id);
+              return (
+                <th
+                  key={group.id}
+                  colSpan={isExpanded ? group.columns.length : 1}
+                  className={cn(
+                    'px-2 py-2 text-center text-xs font-semibold cursor-pointer hover:bg-gray-200 border-l border-gray-300',
+                    isExpanded ? 'bg-primary-100 text-primary-800' : 'bg-gray-200 text-gray-600'
+                  )}
+                  onClick={() => toggleGroup(group.id)}
+                >
+                  <div className="flex items-center justify-center gap-1">
+                    <span>{isExpanded ? '▼' : '▶'}</span>
+                    <span>{group.label}</span>
+                  </div>
+                </th>
+              );
+            })}
+          </tr>
+
+          {/* Header Row 2: Column Headers */}
+          <tr className="bg-gray-50">
+            {COLUMN_GROUPS.map((group) => {
+              const isExpanded = expandedGroups.has(group.id);
+              if (!isExpanded) {
+                return (
+                  <th
+                    key={`${group.id}-collapsed`}
+                    className="px-2 py-1 text-center text-xs text-gray-400 border-l border-gray-300"
+                  >
+                    ...
+                  </th>
+                );
+              }
+              return group.columns.map((col, idx) => (
+                <th
+                  key={col.key}
+                  className={cn(
+                    'px-2 py-1 text-center text-xs font-medium text-gray-600 cursor-pointer hover:bg-gray-100',
+                    idx === 0 && 'border-l border-gray-300'
+                  )}
+                  onClick={() => handleSort(col.key)}
+                >
+                  <div className="flex items-center justify-center gap-0.5">
+                    {col.header}
+                    {sortKey === col.key && (
+                      <span className="text-primary-600">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                    )}
+                  </div>
+                </th>
+              ));
+            })}
+          </tr>
+        </thead>
+
+        <tbody className="bg-white divide-y divide-gray-200">
+          {sortedData.map((player) => (
+            <tr
+              key={player.id}
+              className={cn(
+                'hover:bg-gray-50',
+                getValueTierClass(player.points_per_star)
+              )}
+            >
+              {/* Fixed columns */}
+              <td className={cn(
+                'px-2 py-1 whitespace-nowrap font-medium text-gray-900 sticky left-0 z-10',
+                getValueTierClass(player.points_per_star) || 'bg-white'
+              )}>
+                {player.name}
+              </td>
+              <td className="px-2 py-1 whitespace-nowrap">
+                <span className="flex items-center gap-1">
+                  <CountryFlag country={player.country} size="sm" />
+                  <span className="text-gray-600 text-xs">{player.country.slice(0, 3).toUpperCase()}</span>
+                </span>
+              </td>
+              <td className="px-2 py-1 whitespace-nowrap text-gray-600">
+                {POSITION_ABBRS[player.fantasy_position] || player.fantasy_position}
+              </td>
+
+              {/* Collapsible group columns */}
+              {COLUMN_GROUPS.map((group) => {
+                const isExpanded = expandedGroups.has(group.id);
+                if (!isExpanded) {
+                  return (
+                    <td
+                      key={`${group.id}-collapsed`}
+                      className="px-2 py-2 text-center text-gray-400 border-l border-gray-200"
+                    >
+                      ...
+                    </td>
+                  );
+                }
+                return group.columns.map((col, colIdx) => (
+                  <td
+                    key={col.key}
+                    className={cn(
+                      'px-2 py-1 text-center whitespace-nowrap',
+                      colIdx === 0 && 'border-l border-gray-200'
+                    )}
+                  >
+                    {formatValue(player[col.key], col.format)}
+                  </td>
+                ));
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
