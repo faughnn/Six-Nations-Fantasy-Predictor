@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { PlayerSummary, PlayerDetail, OptimisedTeam, OptimiseRequest, PredictionDetail } from '../types';
+import type { PlayerSummary, PlayerDetail, PredictionDetail, PlayerStat, HistoricalSixNationsStat, HistoricalClubStat, MatchData, PlayerProjection } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -31,10 +31,6 @@ export const playersApi = {
     return response.data;
   },
 
-  compare: async (round: number, position?: string): Promise<PlayerSummary[]> => {
-    const response = await api.get('/api/players/compare', { params: { round, position } });
-    return response.data;
-  },
 };
 
 export const predictionsApi = {
@@ -56,46 +52,153 @@ export const predictionsApi = {
   },
 };
 
-export const optimiserApi = {
-  optimise: async (request: OptimiseRequest): Promise<OptimisedTeam> => {
-    const response = await api.post('/api/optimise', request);
+export interface GetStatsParams {
+  country?: string;
+  position?: string;
+}
+
+export const statsApi = {
+  getAll: async (params: GetStatsParams = {}): Promise<PlayerStat[]> => {
+    const response = await api.get('/api/stats/all', { params });
+    return response.data;
+  },
+
+  getCountries: async (): Promise<string[]> => {
+    const response = await api.get('/api/stats/countries');
+    return response.data;
+  },
+
+  getPositions: async (): Promise<string[]> => {
+    const response = await api.get('/api/stats/positions');
     return response.data;
   },
 };
+
+export interface GetHistoricalSixNationsParams {
+  country?: string;
+  position?: string;
+  season?: number;
+}
+
+export interface GetHistoricalClubParams {
+  country?: string;
+  position?: string;
+  league?: string;
+}
+
+export const historicalStatsApi = {
+  getSixNations: async (params: GetHistoricalSixNationsParams = {}): Promise<HistoricalSixNationsStat[]> => {
+    const response = await api.get('/api/stats/historical/six-nations', { params });
+    return response.data;
+  },
+
+  getClub: async (params: GetHistoricalClubParams = {}): Promise<HistoricalClubStat[]> => {
+    const response = await api.get('/api/stats/historical/club', { params });
+    return response.data;
+  },
+
+  getLeagues: async (): Promise<string[]> => {
+    const response = await api.get('/api/stats/historical/leagues');
+    return response.data;
+  },
+
+  getSeasons: async (): Promise<number[]> => {
+    const response = await api.get('/api/stats/historical/seasons');
+    return response.data;
+  },
+
+  getPositions: async (): Promise<string[]> => {
+    const response = await api.get('/api/stats/historical/positions');
+    return response.data;
+  },
+};
+
+export interface GetProjectionsParams {
+  country?: string;
+  position?: string;
+  sort_by?: string;
+  season?: number;
+  game_round?: number;
+}
+
+export const projectionsApi = {
+  getProjections: async (params: GetProjectionsParams = {}): Promise<PlayerProjection[]> => {
+    const response = await api.get('/api/players/projections', { params });
+    return response.data;
+  },
+};
+
+export interface CurrentRound {
+  season: number;
+  round: number;
+}
+
+export interface MatchScrapeStatus {
+  home_team: string;
+  away_team: string;
+  match_date: string;
+  has_handicap: boolean;
+  has_totals: boolean;
+  has_try_scorer: boolean;
+  try_scorer_count: number;
+}
+
+export interface RoundScrapeStatus {
+  season: number;
+  round: number;
+  matches: MatchScrapeStatus[];
+  missing_markets: string[];
+}
+
+export const matchesApi = {
+  getAll: async (season: number, gameRound: number): Promise<MatchData[]> => {
+    const response = await api.get('/api/matches', {
+      params: { season, game_round: gameRound },
+    });
+    return response.data;
+  },
+
+  getCurrentRound: async (): Promise<CurrentRound> => {
+    const response = await api.get('/api/matches/current-round');
+    return response.data;
+  },
+
+  getScrapeStatus: async (season: number, gameRound: number): Promise<RoundScrapeStatus> => {
+    const response = await api.get('/api/matches/status', {
+      params: { season, game_round: gameRound },
+    });
+    return response.data;
+  },
+};
+
+export interface ScrapeJobStatus {
+  status: string;
+  message?: string;
+  matches_found?: number;
+  matches_completed?: number;
+  current_match?: string;
+}
+
+export type ScrapeResponse = { status: string; job_id: string; message?: string };
 
 export const scrapeApi = {
-  scrapeOdds: async (round: number): Promise<{ status: string; job_id: string }> => {
-    const response = await api.post('/api/scrape/odds', { round });
+  scrapeAllMatchOdds: async (season: number, round: number): Promise<ScrapeResponse> => {
+    const response = await api.post('/api/scrape/all-match-odds', { season, round });
     return response.data;
   },
 
-  scrapePrices: async (round: number): Promise<{ status: string; job_id: string }> => {
-    const response = await api.post('/api/scrape/fantasy-prices', { round });
+  scrapeMarket: async (season: number, round: number, market: string): Promise<ScrapeResponse> => {
+    const response = await api.post('/api/scrape/market', { season, round, market });
     return response.data;
   },
 
-  getStatus: async (): Promise<Record<string, { status: string; message?: string }>> => {
-    const response = await api.get('/api/scrape/status');
-    return response.data;
-  },
-};
-
-export const importApi = {
-  importPrices: async (
-    round: number,
-    prices: { player_name: string; price: number }[],
-    season = 2025
-  ): Promise<{ status: string; imported: number; errors: string[] }> => {
-    const response = await api.post('/api/import/prices', { round, season, prices });
+  scrapeMissing: async (season: number, round: number): Promise<ScrapeResponse> => {
+    const response = await api.post('/api/scrape/missing', { season, round });
     return response.data;
   },
 
-  importTeamSelection: async (
-    round: number,
-    teams: Record<string, { player_name: string; squad_position: number }[]>,
-    season = 2025
-  ): Promise<{ status: string; imported: number; errors: string[] }> => {
-    const response = await api.post('/api/import/team-selection', { round, season, teams });
+  getJobStatus: async (jobId: string): Promise<ScrapeJobStatus> => {
+    const response = await api.get(`/api/scrape/status/${jobId}`);
     return response.data;
   },
 };

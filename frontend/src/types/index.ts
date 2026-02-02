@@ -56,34 +56,152 @@ export interface PredictionDetail {
   key_factors: string[];
 }
 
-export interface StartingXV {
-  props: PlayerSummary[];
-  hooker: PlayerSummary | null;
-  second_row: PlayerSummary[];
-  back_row: PlayerSummary[];
-  scrum_half: PlayerSummary | null;
-  out_half: PlayerSummary | null;
-  centres: PlayerSummary[];
-  back_3: PlayerSummary[];
+// Excel stats data types
+export type ExcelPosition = 'Back-row' | 'Prop' | 'Back Three' | 'Second-row' | 'Centre' | 'Scrum-half' | 'Fly-half' | 'Hooker';
+
+export interface PlayerStat {
+  name: string;
+  country: string;
+  position: ExcelPosition;
+  minutes: number;
+  tackles: number;
+  penalties_conceded: number | null;
+  defenders_beaten: number | null;
+  meters_carried: number | null;
+  kick_50_22: number | null;
+  lineouts_won: number | null;
+  breakdown_steal: number | null;
+  try_scored: number | null;
+  assist: number | null;
+  conversion: number | null;
+  penalty: number | null;
+  drop_goal: number | null;
+  yellow_card: number | null;
+  red_card: number | null;
+  motm: number | null;
+  att_scrum: number | null;
+  offloads: number | null;
+  wk1: number | null;
+  wk2: number | null;
+  wk3: number | null;
+  wk4: number | null;
+  wk5: number | null;
+  points: number;
+  value: number;
+  value_start: number;
+  change: number;
 }
 
-export interface OptimisedTeam {
-  starting_xv: StartingXV;
-  bench: PlayerSummary[];
-  captain: PlayerSummary | null;
-  super_sub: PlayerSummary | null;
-  total_cost: number;
-  total_predicted_points: number;
-  remaining_budget: number;
-  empty_slots: Position[];
-}
-
-export interface OptimiseRequest {
+// Historical stats from database (rugbypy)
+export interface HistoricalSixNationsStat {
+  player_id: number;
+  player_name: string;
+  country: string;
+  fantasy_position: string;
+  season: number;
   round: number;
-  budget?: number;
-  max_per_country?: number;
-  locked_players?: number[];
-  excluded_players?: number[];
-  min_players?: number;
-  include_bench?: boolean;
+  match_date: string;
+  opponent: string;
+  home_away: string;
+  actual_position: string | null;
+  started: boolean;
+  minutes_played: number | null;
+  tries: number;
+  try_assists: number;
+  conversions: number;
+  penalties_kicked: number;
+  drop_goals: number;
+  defenders_beaten: number;
+  metres_carried: number;
+  clean_breaks: number;
+  offloads: number;
+  fifty_22_kicks: number;
+  tackles_made: number;
+  tackles_missed: number;
+  turnovers_won: number;
+  lineout_steals: number;
+  scrums_won: number;
+  penalties_conceded: number;
+  yellow_cards: number;
+  red_cards: number;
+  player_of_match: boolean;
+  fantasy_points: number | null;
+}
+
+export interface MatchTryScorer {
+  player_id: number;
+  name: string;
+  country: string;
+  odds: number;
+  implied_prob: number;
+}
+
+export interface MatchData {
+  home_team: string;
+  away_team: string;
+  match_date: string;
+  home_win: number | null;
+  away_win: number | null;
+  draw: number | null;
+  handicap_line: number | null;
+  home_handicap_odds: number | null;
+  away_handicap_odds: number | null;
+  over_under_line: number | null;
+  over_odds: number | null;
+  under_odds: number | null;
+  top_try_scorers: MatchTryScorer[];
+}
+
+export interface PlayerProjection {
+  id: number;
+  name: string;
+  country: string;
+  fantasy_position: string;
+  price: number | null;
+  predicted_points: number | null;
+  points_per_star: number | null;
+  avg_tries: number | null;
+  avg_tackles: number | null;
+  avg_metres: number | null;
+  avg_turnovers: number | null;
+  avg_defenders_beaten: number | null;
+  avg_offloads: number | null;
+  expected_minutes: number | null;
+  start_rate: number | null;
+  points_per_minute: number | null;
+  anytime_try_odds: number | null;
+  opponent: string | null;
+  home_away: string | null;
+  total_games: number;
+}
+
+export interface HistoricalClubStat {
+  player_id: number;
+  player_name: string;
+  country: string;
+  fantasy_position: string;
+  league: string;
+  season: string;
+  match_date: string;
+  opponent: string;
+  home_away: string;
+  started: boolean;
+  minutes_played: number | null;
+  tries: number;
+  try_assists: number;
+  conversions: number;
+  penalties_kicked: number;
+  drop_goals: number;
+  defenders_beaten: number;
+  metres_carried: number;
+  clean_breaks: number;
+  offloads: number;
+  tackles_made: number;
+  tackles_missed: number;
+  turnovers_won: number;
+  lineout_steals: number;
+  scrums_won: number;
+  penalties_conceded: number;
+  yellow_cards: number;
+  red_cards: number;
 }
