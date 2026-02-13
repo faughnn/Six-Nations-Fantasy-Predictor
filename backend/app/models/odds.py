@@ -1,7 +1,7 @@
 from datetime import datetime, date
 from typing import Optional
 from decimal import Decimal
-from sqlalchemy import String, DateTime, Date, Integer, ForeignKey, Numeric
+from sqlalchemy import String, DateTime, Date, Integer, ForeignKey, Numeric, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -9,6 +9,9 @@ from app.database import Base
 
 class Odds(Base):
     __tablename__ = "odds"
+    __table_args__ = (
+        UniqueConstraint('player_id', 'season', 'round', name='uq_odds_player_season_round'),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     player_id: Mapped[int] = mapped_column(ForeignKey("players.id"), nullable=False)
@@ -32,6 +35,9 @@ class Odds(Base):
 
 class MatchOdds(Base):
     __tablename__ = "match_odds"
+    __table_args__ = (
+        UniqueConstraint('season', 'round', 'home_team', 'away_team', name='uq_match_odds_season_round_teams'),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     season: Mapped[int] = mapped_column(Integer, nullable=False)

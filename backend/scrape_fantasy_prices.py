@@ -42,6 +42,11 @@ async def main():
         default="https://fantasy.sixnationsrugby.com/m6n/#/game/play/me",
         help="Fantasy Six Nations URL to scrape",
     )
+    parser.add_argument(
+        "--clear-session",
+        action="store_true",
+        help="Delete saved session and force a fresh login",
+    )
     args = parser.parse_args()
 
     # Ensure output directory exists
@@ -49,6 +54,10 @@ async def main():
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     scraper = FantasySixNationsScraper()
+
+    if args.clear_session and scraper._session_path.exists():
+        scraper._session_path.unlink()
+        print("Cleared saved session — you will need to log in.")
 
     print(f"\nSeason: {args.season}, Round: {args.round}")
     print(f"Output: {args.output}\n")
@@ -91,7 +100,8 @@ async def main():
                 price_str = f"{p['price']:5.1f}*" if p.get("price") else "  ???"
                 pos_str = (p.get("fantasy_position") or "?").ljust(12)
                 own_str = f"{p['ownership_pct']:2.0f}%" if p.get("ownership_pct") is not None else "  ?"
-                print(f"  {price_str}  {pos_str} {p['name']:<30} {own_str}")
+                avail_str = {"starting": "XV", "substitute": "SUB", "not_playing": " - "}.get(p.get("availability") or "", "  ?")
+                print(f"  {price_str}  {pos_str} {p['name']:<30} {own_str:>4}  {avail_str}")
     else:
         print("\nNo players found. Check that the player list was visible in the browser.")
 

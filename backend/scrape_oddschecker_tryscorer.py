@@ -63,7 +63,10 @@ async def scrape_match(scraper: OddscheckerScraper, url: str, slug: str):
     return raw_data, parsed_data
 
 
-async def save_to_db(parsed_data, season: int, round_num: int, match_date: date):
+async def save_to_db(
+    parsed_data, season: int, round_num: int, match_date: date,
+    home_team: str = None, away_team: str = None,
+):
     """Persist averaged odds to the database via OddsService."""
     from app.database import async_session
     from app.services.odds_service import OddsService
@@ -75,6 +78,8 @@ async def save_to_db(parsed_data, season: int, round_num: int, match_date: date)
             season=season,
             round_num=round_num,
             match_date=match_date,
+            home_team=home_team,
+            away_team=away_team,
         )
     return result
 
@@ -181,6 +186,8 @@ async def main():
                         season=args.season,
                         round_num=args.round,
                         match_date=date.today(),
+                        home_team=match.get("home"),
+                        away_team=match.get("away"),
                     )
                     print(
                         f"\n  DB: saved={db_result['saved']}, "

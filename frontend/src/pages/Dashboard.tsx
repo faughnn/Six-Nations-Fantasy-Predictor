@@ -126,8 +126,9 @@ function ScrapeButton({
 
 export default function Dashboard() {
   const { data: currentRound, isLoading: roundLoading } = useCurrentRound();
+  const [roundOverride, setRoundOverride] = useState<number | null>(null);
   const season = currentRound?.season ?? 0;
-  const round = currentRound?.round ?? 0;
+  const round = roundOverride ?? currentRound?.round ?? 0;
 
   const { data: players, isLoading: playersLoading } = usePlayers({ is_available: true, season, round });
   const { data: matches, isLoading: matchesLoading } = useMatches(season, round);
@@ -164,7 +165,34 @@ export default function Dashboard() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <p className="text-gray-500">Round {round} Overview — {season} Six Nations</p>
+        <div className="flex items-center gap-3 mt-1">
+          <p className="text-gray-500">Round {round} Overview — {season} Six Nations</p>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setRoundOverride(Math.max(1, round - 1))}
+              disabled={round <= 1}
+              className="w-6 h-6 flex items-center justify-center rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed text-sm font-bold"
+            >
+              −
+            </button>
+            <span className="text-sm text-gray-500 w-6 text-center">{round}</span>
+            <button
+              onClick={() => setRoundOverride(Math.min(5, round + 1))}
+              disabled={round >= 5}
+              className="w-6 h-6 flex items-center justify-center rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed text-sm font-bold"
+            >
+              +
+            </button>
+            {roundOverride !== null && (
+              <button
+                onClick={() => setRoundOverride(null)}
+                className="ml-1 text-xs text-primary-600 hover:underline"
+              >
+                reset
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Scrape Controls */}
@@ -210,6 +238,11 @@ export default function Dashboard() {
             onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeAllMatchOdds(season, round))}
             disabled={scrapeJob.isBusy}
           />
+          <ScrapeButton
+            label="Import Prices"
+            onClick={() => scrapeJob.startJob(() => scrapeApi.importPrices(season, round))}
+            disabled={scrapeJob.isBusy}
+          />
         </div>
 
         {scrapeJob.status !== 'idle' && (
@@ -241,6 +274,14 @@ export default function Dashboard() {
                 </span>
               </div>
             ))}
+            <div className="flex items-center gap-1.5 text-gray-500">
+              <span className="font-medium">Prices:</span>
+              {scrapeStatus.has_prices ? (
+                <span className="text-green-600">({scrapeStatus.price_count})</span>
+              ) : (
+                <span className="text-red-400">(run CLI scraper)</span>
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -317,7 +358,7 @@ export default function Dashboard() {
         <div className="card">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold">Top Try Threats</h2>
-            <Link to="/players" className="text-primary-600 text-sm hover:underline">
+            <Link to="/tryscorers" className="text-primary-600 text-sm hover:underline">
               View All
             </Link>
           </div>

@@ -4,6 +4,7 @@ import Players from './pages/Players';
 import PlayersAllStats from './pages/PlayersAllStats';
 import HistoricalStats from './pages/HistoricalStats';
 import PlayerProjections from './pages/PlayerProjections';
+import Tryscorers from './pages/Tryscorers';
 
 function App() {
   return (
@@ -35,6 +36,16 @@ function App() {
                   }
                 >
                   Players
+                </NavLink>
+                <NavLink
+                  to="/tryscorers"
+                  className={({ isActive }) =>
+                    `px-3 py-2 rounded-md text-sm font-medium ${
+                      isActive ? 'bg-primary-800' : 'hover:bg-primary-600'
+                    }`
+                  }
+                >
+                  Try Scorers
                 </NavLink>
                 <NavLink
                   to="/players-all-stats"
@@ -88,6 +99,7 @@ function App() {
                 <HistoricalStats />
               </div>
             } />
+            <Route path="/tryscorers" element={<div className="max-w-7xl mx-auto px-4 py-6"><Tryscorers /></div>} />
             <Route path="/" element={<div className="max-w-7xl mx-auto px-4 py-6"><Dashboard /></div>} />
             <Route path="/players" element={<div className="max-w-7xl mx-auto px-4 py-6"><Players /></div>} />
           </Routes>

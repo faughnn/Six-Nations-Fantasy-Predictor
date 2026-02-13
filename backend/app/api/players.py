@@ -73,8 +73,16 @@ async def get_players(
             (s for s in player.team_selections if s.season == season and s.round == game_round),
             None
         )
-        available = selection is not None
-        starting = selection.is_starting if selection else None
+        if selection:
+            available = True
+            starting = selection.is_starting
+        elif price_record and price_record.availability:
+            # Fallback: derive from scraped availability on FantasyPrice
+            available = price_record.availability != "not_playing"
+            starting = price_record.availability == "starting"
+        else:
+            available = False
+            starting = None
 
         if is_available is not None and available != is_available:
             continue
@@ -184,12 +192,17 @@ async def get_value_analysis(
         expected_try_points = (implied_try_prob * try_points) if implied_try_prob else None
         try_ev_per_star = (expected_try_points / price) if expected_try_points and price else None
 
-        # Team selection
+        # Team selection (with availability fallback)
         selection = next(
             (s for s in player.team_selections if s.season == season and s.round == game_round),
             None,
         )
-        is_starting = selection.is_starting if selection else None
+        if selection:
+            is_starting = selection.is_starting
+        elif price_record and price_record.availability:
+            is_starting = price_record.availability == "starting"
+        else:
+            is_starting = None
 
         # Historical stats aggregation (all Six Nations + club stats)
         sn_stats = player.six_nations_stats or []
@@ -437,11 +450,20 @@ async def get_player(
     )
     price = float(price_record.price) if price_record else None
 
-    # Get team selection
+    # Get team selection (with availability fallback)
     selection = next(
         (s for s in player.team_selections if s.season == season and s.round == game_round),
         None
     )
+    if selection:
+        detail_available = True
+        detail_starting = selection.is_starting
+    elif price_record and price_record.availability:
+        detail_available = price_record.availability != "not_playing"
+        detail_starting = price_record.availability == "starting"
+    else:
+        detail_available = False
+        detail_starting = None
 
     # Get prediction
     prediction = next(
@@ -495,8 +517,8 @@ async def get_player(
         club=club_record.club if club_record else None,
         league=club_record.league if club_record else None,
         price=price,
-        is_available=selection is not None,
-        is_starting=selection.is_starting if selection else None,
+        is_available=detail_available,
+        is_starting=detail_starting,
         predicted_points=predicted_points,
         points_per_star=round(points_per_star, 2) if points_per_star else None,
         value_score=round(points_per_star, 2) if points_per_star else None,

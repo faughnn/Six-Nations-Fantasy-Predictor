@@ -86,10 +86,15 @@ class OddsService:
         return name
 
     async def find_player_by_name(
-        self, scraped_name: str
+        self, scraped_name: str, countries: Optional[List[str]] = None
     ) -> Tuple[Optional[Player], float]:
         """
         Find a player by name using fuzzy matching.
+
+        Args:
+            scraped_name: The player name scraped from odds source.
+            countries: Optional list of countries to restrict matching to
+                (e.g. the two teams in a match). Prevents cross-match mismatches.
 
         Returns:
             Tuple of (Player or None, confidence score 0-100)
@@ -97,12 +102,22 @@ class OddsService:
         cache = await self._build_player_cache()
         normalized_scraped = self._normalize_name(scraped_name)
 
-        # Try exact match first
-        if normalized_scraped in cache:
-            return cache[normalized_scraped], 100.0
+        # Build filtered cache if countries provided
+        if countries:
+            country_set = {c.lower() for c in countries}
+            filtered_cache = {
+                k: v for k, v in cache.items()
+                if v.country and v.country.lower() in country_set
+            }
+        else:
+            filtered_cache = cache
+
+        # Try exact match first (in filtered set)
+        if normalized_scraped in filtered_cache:
+            return filtered_cache[normalized_scraped], 100.0
 
         # Try fuzzy matching
-        player_names = list(cache.keys())
+        player_names = list(filtered_cache.keys())
         if not player_names:
             return None, 0.0
 
@@ -117,7 +132,7 @@ class OddsService:
         if matches and matches[0][1] >= FUZZY_MATCH_THRESHOLD:
             best_match_name = matches[0][0]
             confidence = matches[0][1]
-            return cache[best_match_name], confidence
+            return filtered_cache[best_match_name], confidence
 
         # Try with partial ratio for abbreviated names
         matches = process.extract(
@@ -130,7 +145,7 @@ class OddsService:
         if matches and matches[0][1] >= FUZZY_MATCH_THRESHOLD:
             best_match_name = matches[0][0]
             confidence = matches[0][1]
-            return cache[best_match_name], confidence
+            return filtered_cache[best_match_name], confidence
 
         return None, 0.0
 
@@ -140,6 +155,8 @@ class OddsService:
         season: int,
         round_num: int,
         match_date: date,
+        home_team: Optional[str] = None,
+        away_team: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Save scraped try scorer odds to database, matching players by name.
@@ -149,6 +166,8 @@ class OddsService:
             season: Season year (e.g., 2025)
             round_num: Round number
             match_date: Date of the match
+            home_team: Home team country name (constrains fuzzy matching)
+            away_team: Away team country name (constrains fuzzy matching)
 
         Returns:
             Dict with counts: saved, updated, not_found, low_confidence_matches
@@ -158,12 +177,17 @@ class OddsService:
         not_found = []
         low_confidence_matches = []
 
+        # Build country filter from match teams
+        countries = [home_team, away_team] if home_team and away_team else None
+
         for item in odds_data:
             player_name = item["player_name"]
             average_odds = Decimal(str(item["average_odds"]))
 
-            # Find player by name
-            player, confidence = await self.find_player_by_name(player_name)
+            # Find player by name, constrained to match countries when available
+            player, confidence = await self.find_player_by_name(
+                player_name, countries=countries
+            )
 
             if not player:
                 not_found.append(player_name)
@@ -188,6 +212,7 @@ class OddsService:
 
             if existing:
                 existing.anytime_try_scorer = average_odds
+                existing.match_date = match_date
                 existing.scraped_at = datetime.utcnow()
                 updated += 1
                 logger.debug(f"Updated odds for {player.name}: {average_odds}")
@@ -226,7 +251,6 @@ class OddsService:
             Odds.player_id == player_id,
             Odds.season == season,
             Odds.round == round_num,
-            Odds.match_date == match_date,
         )
         result = await self.db.execute(query)
         return result.scalars().first()
@@ -277,6 +301,7 @@ class OddsService:
             existing.over_under_line = line_value
             existing.over_odds = over_odds
             existing.under_odds = under_odds
+            existing.match_date = match_date
             existing.scraped_at = datetime.utcnow()
             status = "updated"
         else:
@@ -322,7 +347,6 @@ class OddsService:
         query = select(MatchOdds).where(
             MatchOdds.season == season,
             MatchOdds.round == round_num,
-            MatchOdds.match_date == match_date,
             MatchOdds.home_team == home_team,
             MatchOdds.away_team == away_team,
         )
@@ -373,6 +397,7 @@ class OddsService:
             existing.handicap_line = line_value
             existing.home_handicap_odds = home_odds
             existing.away_handicap_odds = away_odds
+            existing.match_date = match_date
             existing.scraped_at = datetime.utcnow()
             status = "updated"
         else:

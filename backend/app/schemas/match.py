@@ -47,3 +47,19 @@ class RoundScrapeStatusResponse(BaseModel):
     round: int
     matches: List[MatchScrapeStatus]
     missing_markets: List[str]
+    has_prices: bool = False
+    price_count: int = 0
+
+
+class TryScorerDetail(BaseModel):
+    player_id: int
+    name: str
+    country: str
+    fantasy_position: str
+    match: str
+    anytime_try_odds: Optional[float] = None
+    implied_prob: Optional[float] = None
+    expected_try_points: Optional[float] = None
+    price: Optional[float] = None
+    exp_pts_per_star: Optional[float] = None
+    availability: Optional[str] = None

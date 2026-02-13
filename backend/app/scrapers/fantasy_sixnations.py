@@ -10,6 +10,7 @@ Paginates through all pages of the player list.
 
 from typing import Dict, List, Any, Optional
 from datetime import datetime
+from pathlib import Path
 import logging
 import asyncio
 import re
@@ -34,6 +35,7 @@ POSITION_MAP = {
     "hooker": "hooker",
     "lock": "second_row",
     "second row": "second_row",
+    "2nd row": "second_row",
     "blindside flanker": "back_row",
     "openside flanker": "back_row",
     "flanker": "back_row",
@@ -88,6 +90,18 @@ COUNTRY_FROM_IMAGE = {
 BASE_URL = "https://fantasy.sixnationsrugby.com"
 GAME_URL = f"{BASE_URL}/m6n/#/game/play/me"
 
+# Default path for persisted browser session (cookies + localStorage)
+DEFAULT_SESSION_PATH = Path(__file__).parent.parent.parent / "data" / "session_state.json"
+
+# Availability CSS class suffix → raw label
+# The site uses French: T=Titulaire (starting), R=Remplaçant (sub)
+FORME_CLASS_MAP = {
+    "T": "starting",
+    "R": "substitute",
+    "N": "not_playing",   # unconfirmed letter — will log unknowns
+    "X": "not_playing",
+}
+
 
 class FantasySixNationsScraper(BaseScraper):
     """
@@ -98,13 +112,21 @@ class FantasySixNationsScraper(BaseScraper):
     2. Wait for game page with player list to load
     3. Scrape all sportif-item elements on each page
     4. Paginate through all pages using the next button
+
+    Session persistence:
+    - After a successful login the browser storage state (cookies +
+      localStorage) is saved to ``session_path``.
+    - On the next run the saved state is restored so login is automatic.
+    - If the saved session is stale the scraper falls back to manual login.
     """
 
     LOGIN_WAIT_TIMEOUT = 300  # 5 minutes max to wait for login
+    SESSION_CHECK_TIMEOUT = 30  # seconds to wait before declaring session stale
 
-    def __init__(self):
+    def __init__(self, session_path: Optional[Path] = None):
         self._browser: Optional[Browser] = None
         self._playwright = None
+        self._session_path = session_path or DEFAULT_SESSION_PATH
 
     async def _init_browser(self) -> Browser:
         """Initialize Playwright browser in headed mode for manual login."""
@@ -128,9 +150,11 @@ class FantasySixNationsScraper(BaseScraper):
             await self._playwright.stop()
             self._playwright = None
 
-    async def _create_context(self, browser: Browser) -> BrowserContext:
-        """Create browser context with realistic settings."""
-        context = await browser.new_context(
+    async def _create_context(
+        self, browser: Browser, storage_state: Optional[str] = None,
+    ) -> BrowserContext:
+        """Create browser context with realistic settings, optionally restoring session."""
+        kwargs: Dict[str, Any] = dict(
             user_agent=(
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                 "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -140,34 +164,85 @@ class FantasySixNationsScraper(BaseScraper):
             java_script_enabled=True,
             no_viewport=True,
         )
+        if storage_state:
+            kwargs["storage_state"] = storage_state
+        context = await browser.new_context(**kwargs)
         return context
+
+    async def _save_session(self, context: BrowserContext):
+        """Persist browser storage state (cookies + localStorage) to disk."""
+        try:
+            self._session_path.parent.mkdir(parents=True, exist_ok=True)
+            await context.storage_state(path=str(self._session_path))
+            logger.info(f"Session saved to {self._session_path}")
+            print(f"Session saved to {self._session_path}")
+        except Exception as e:
+            logger.warning(f"Failed to save session: {e}")
+
+    def _has_saved_session(self) -> bool:
+        return self._session_path.exists() and self._session_path.stat().st_size > 0
 
     async def scrape(self, url: str = GAME_URL, **kwargs) -> Dict[str, Any]:
         """
         Open browser, wait for login, then scrape all players across all pages.
+
+        If a saved session exists it is restored first.  When the session is
+        stale the browser context is recreated without the old state so the
+        user can log in manually.
         """
         self._browser = await self._init_browser()
 
         try:
-            context = await self._create_context(self._browser)
-            page = await context.new_page()
+            # --- try restoring a saved session first ---
+            context: Optional[BrowserContext] = None
+            page: Optional[Page] = None
+            logged_in = False
 
-            logger.info(f"Navigating to {url}")
-            print("\n" + "=" * 60)
-            print("FANTASY SIX NATIONS SCRAPER")
-            print("=" * 60)
-            print(f"\nNavigating to: {url}")
-            print("\nPlease log in to your Fantasy Six Nations account.")
-            print("The scraper will start once the player list is visible.")
-            print("=" * 60 + "\n")
+            if self._has_saved_session():
+                print("\nRestoring saved session...")
+                logger.info("Restoring saved session")
+                context = await self._create_context(
+                    self._browser, storage_state=str(self._session_path),
+                )
+                page = await context.new_page()
+                await page.goto(url, wait_until="domcontentloaded", timeout=60000)
+                await self._dismiss_overlays(page)
 
-            await page.goto(url, wait_until="domcontentloaded", timeout=60000)
+                # Quick check: does the player list appear within a short timeout?
+                try:
+                    await self._wait_for_player_list(
+                        page, timeout=self.SESSION_CHECK_TIMEOUT,
+                    )
+                    logged_in = True
+                    print("Saved session is valid — skipping login.")
+                except TimeoutError:
+                    print("Saved session expired — falling back to manual login.")
+                    logger.info("Saved session stale, will prompt for manual login")
+                    await page.close()
+                    await context.close()
+                    context = None
+                    page = None
 
-            # Dismiss cookie consent / overlays
-            await self._dismiss_overlays(page)
+            # --- fresh context (manual login) ---
+            if not logged_in:
+                context = await self._create_context(self._browser)
+                page = await context.new_page()
 
-            # Wait for the user to log in and player list to appear
-            await self._wait_for_player_list(page)
+                logger.info(f"Navigating to {url}")
+                print("\n" + "=" * 60)
+                print("FANTASY SIX NATIONS SCRAPER")
+                print("=" * 60)
+                print(f"\nNavigating to: {url}")
+                print("\nPlease log in to your Fantasy Six Nations account.")
+                print("The scraper will start once the player list is visible.")
+                print("=" * 60 + "\n")
+
+                await page.goto(url, wait_until="domcontentloaded", timeout=60000)
+                await self._dismiss_overlays(page)
+                await self._wait_for_player_list(page)
+
+            # Save session for next time (after successful login / session restore)
+            await self._save_session(context)
 
             # Dismiss overlays again (OAuth redirect can bring them back)
             await self._dismiss_overlays(page)
@@ -243,11 +318,12 @@ class FantasySixNationsScraper(BaseScraper):
         except Exception:
             pass
 
-    async def _wait_for_player_list(self, page: Page):
+    async def _wait_for_player_list(self, page: Page, timeout: Optional[int] = None):
         """Wait for user to log in and the player list to be visible."""
+        wait_seconds = timeout or self.LOGIN_WAIT_TIMEOUT
         print("Waiting for login and player list to load...")
 
-        for i in range(self.LOGIN_WAIT_TIMEOUT):
+        for i in range(wait_seconds):
             await asyncio.sleep(1)
 
             try:
@@ -290,7 +366,7 @@ class FantasySixNationsScraper(BaseScraper):
                 print(f"Still waiting for login/player list... ({i}s elapsed)")
 
         raise TimeoutError(
-            f"Timed out after {self.LOGIN_WAIT_TIMEOUT}s waiting for player list"
+            f"Timed out after {wait_seconds}s waiting for player list"
         )
 
     async def _scrape_all_pages(self, page: Page) -> List[Dict[str, Any]]:
@@ -424,6 +500,21 @@ class FantasySixNationsScraper(BaseScraper):
                 elif "flight_takeoff" in icon_text:
                     is_home = False
 
+            # Availability indicator: CSS class "forme forme-X" on the
+            # indicator div inside sportif-infos-forme.
+            # X = T (Titulaire/starting), R (Remplaçant/sub), etc.
+            availability = None
+            forme_elem = await elem.query_selector("sportif-infos-forme .forme")
+            if forme_elem:
+                forme_classes = (await forme_elem.get_attribute("class") or "").split()
+                for cls in forme_classes:
+                    if cls.startswith("forme-") and cls != "forme":
+                        suffix = cls.split("-", 1)[1]
+                        availability = FORME_CLASS_MAP.get(suffix)
+                        if availability is None:
+                            logger.warning(f"Unknown forme class suffix: {suffix!r}")
+                        break
+
             return {
                 "name": name,
                 "position": position,
@@ -432,6 +523,7 @@ class FantasySixNationsScraper(BaseScraper):
                 "ownership_pct": ownership_pct,
                 "opponent": opponent,
                 "is_home": is_home,
+                "availability": availability,
             }
 
         except Exception as e:
@@ -500,6 +592,7 @@ class FantasySixNationsScraper(BaseScraper):
             "ownership_pct": player.get("ownership_pct"),
             "opponent": player.get("opponent"),
             "is_home": player.get("is_home"),
+            "availability": player.get("availability"),  # already normalized by FORME_CLASS_MAP
             "raw_position": player.get("position"),
             "raw_country": player.get("country"),
         }

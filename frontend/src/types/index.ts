@@ -136,6 +136,20 @@ export interface MatchTryScorer {
   implied_prob: number;
 }
 
+export interface TryScorerDetail {
+  player_id: number;
+  name: string;
+  country: string;
+  fantasy_position: string;
+  match: string;
+  anytime_try_odds: number | null;
+  implied_prob: number | null;
+  expected_try_points: number | null;
+  price: number | null;
+  exp_pts_per_star: number | null;
+  availability?: 'starting' | 'substitute' | 'not_playing';
+}
+
 export interface MatchData {
   home_team: string;
   away_team: string;

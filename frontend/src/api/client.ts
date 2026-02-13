@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { PlayerSummary, PlayerDetail, PredictionDetail, PlayerStat, HistoricalSixNationsStat, HistoricalClubStat, MatchData, PlayerProjection } from '../types';
+import type { PlayerSummary, PlayerDetail, PredictionDetail, PlayerStat, HistoricalSixNationsStat, HistoricalClubStat, MatchData, PlayerProjection, TryScorerDetail } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -148,6 +148,8 @@ export interface RoundScrapeStatus {
   round: number;
   matches: MatchScrapeStatus[];
   missing_markets: string[];
+  has_prices: boolean;
+  price_count: number;
 }
 
 export const matchesApi = {
@@ -165,6 +167,13 @@ export const matchesApi = {
 
   getScrapeStatus: async (season: number, gameRound: number): Promise<RoundScrapeStatus> => {
     const response = await api.get('/api/matches/status', {
+      params: { season, game_round: gameRound },
+    });
+    return response.data;
+  },
+
+  getTryScorers: async (season: number, gameRound: number): Promise<TryScorerDetail[]> => {
+    const response = await api.get('/api/matches/tryscorers', {
       params: { season, game_round: gameRound },
     });
     return response.data;
@@ -194,6 +203,11 @@ export const scrapeApi = {
 
   scrapeMissing: async (season: number, round: number): Promise<ScrapeResponse> => {
     const response = await api.post('/api/scrape/missing', { season, round });
+    return response.data;
+  },
+
+  importPrices: async (season: number, round: number): Promise<ScrapeResponse> => {
+    const response = await api.post('/api/scrape/import-prices', { season, round });
     return response.data;
   },
 

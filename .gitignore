@@ -50,3 +50,7 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# Scraped data and session state
+backend/data/
+backend/nul

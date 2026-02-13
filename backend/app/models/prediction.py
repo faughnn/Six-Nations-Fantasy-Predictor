@@ -16,6 +16,7 @@ class FantasyPrice(Base):
     round: Mapped[int] = mapped_column(Integer, nullable=False)
     price: Mapped[Decimal] = mapped_column(Numeric(5, 1), nullable=False)
     ownership_pct: Mapped[Optional[Decimal]] = mapped_column(Numeric(5, 2), nullable=True)
+    availability: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     __table_args__ = (UniqueConstraint("player_id", "season", "round", name="uq_player_season_round"),)

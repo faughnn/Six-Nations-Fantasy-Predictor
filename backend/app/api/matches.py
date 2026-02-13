@@ -8,12 +8,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.models.odds import MatchOdds, Odds
 from app.models.player import Player
+from app.models.prediction import FantasyPrice
+from app.services.scoring import is_forward
 from app.schemas.match import (
     MatchResponse,
     MatchTryScorer,
     CurrentRoundResponse,
     MatchScrapeStatus,
     RoundScrapeStatusResponse,
+    TryScorerDetail,
 )
 
 router = APIRouter()
@@ -112,6 +115,13 @@ async def get_round_scrape_status(
             )
         )
 
+    # Query fantasy prices for this round
+    price_result = await db.execute(
+        select(func.count()).select_from(FantasyPrice)
+        .where(FantasyPrice.season == season, FantasyPrice.round == game_round)
+    )
+    price_count = price_result.scalar() or 0
+
     # Determine which markets are globally missing
     missing_markets = []
     if match_statuses:
@@ -125,12 +135,88 @@ async def get_round_scrape_status(
         # No matches at all — everything is missing
         missing_markets = ["handicaps", "totals", "try_scorer"]
 
+    if price_count == 0:
+        missing_markets.append("prices")
+
     return RoundScrapeStatusResponse(
         season=season,
         round=game_round,
         matches=match_statuses,
         missing_markets=missing_markets,
+        has_prices=price_count > 0,
+        price_count=price_count,
     )
+
+
+@router.get("/tryscorers", response_model=List[TryScorerDetail])
+async def get_tryscorers(
+    season: int = 2026,
+    game_round: int = 1,
+    db: AsyncSession = Depends(get_db),
+):
+    """Get all players with fantasy prices for a round, enriched with tryscorer odds."""
+    # Get matches for this round to map players to matches
+    match_result = await db.execute(
+        select(MatchOdds)
+        .where(MatchOdds.season == season, MatchOdds.round == game_round)
+    )
+    matches = match_result.scalars().all()
+
+    # Build country -> match label mapping
+    country_to_match: dict[str, str] = {}
+    for m in matches:
+        label = f"{m.home_team} v {m.away_team}"
+        country_to_match[m.home_team] = label
+        country_to_match[m.away_team] = label
+
+    # Get all players with a fantasy price for this round (the full roster)
+    price_result = await db.execute(
+        select(FantasyPrice, Player)
+        .join(Player, FantasyPrice.player_id == Player.id)
+        .where(FantasyPrice.season == season, FantasyPrice.round == game_round)
+    )
+
+    # Build player_id -> odds map
+    odds_result = await db.execute(
+        select(Odds)
+        .where(
+            Odds.season == season,
+            Odds.round == game_round,
+            Odds.anytime_try_scorer.isnot(None),
+        )
+    )
+    odds_map: dict[int, float] = {
+        o.player_id: float(o.anytime_try_scorer)
+        for o in odds_result.scalars().all()
+    }
+
+    results = []
+    for fp, player in price_result.all():
+        try_points = 15 if is_forward(player.fantasy_position or "") else 10
+        price_val = float(fp.price)
+        odds_val = odds_map.get(player.id)
+
+        implied_prob = round(1 / odds_val, 3) if odds_val and odds_val > 0 else None
+        expected_try_points = round(implied_prob * try_points, 2) if implied_prob else None
+        exp_pts_per_star = round(expected_try_points / price_val, 2) if expected_try_points and price_val else None
+
+        results.append(
+            TryScorerDetail(
+                player_id=player.id,
+                name=player.name,
+                country=player.country,
+                fantasy_position=player.fantasy_position or "unknown",
+                match=country_to_match.get(player.country, "Unknown"),
+                anytime_try_odds=odds_val,
+                implied_prob=implied_prob,
+                expected_try_points=expected_try_points,
+                price=price_val,
+                exp_pts_per_star=exp_pts_per_star,
+                availability=fp.availability,
+            )
+        )
+
+    return results
 
 
 @router.get("", response_model=List[MatchResponse])
