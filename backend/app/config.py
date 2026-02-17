@@ -16,11 +16,19 @@ class Settings(BaseSettings):
                 "DATABASE_URL environment variable is required. "
                 "Run via docker-compose to set it automatically."
             )
+        if not self.jwt_secret or self.jwt_secret == "change-me-in-production":
+            raise ValueError(
+                "JWT_SECRET environment variable must be set to a strong, unique value. "
+                "Generate one with: python -c \"import secrets; print(secrets.token_urlsafe(64))\""
+            )
     model_path: str = "models/fantasy_predictor_v1.pkl"
 
     # Auth settings
-    jwt_secret: str = os.environ.get("JWT_SECRET", "change-me-in-production")
+    jwt_secret: str = os.environ.get("JWT_SECRET", "")
     google_client_id: str = os.environ.get("GOOGLE_CLIENT_ID", "")
+
+    # CORS
+    cors_origins: str = os.environ.get("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000")
 
     model_config = SettingsConfigDict(env_file=".env")
 
