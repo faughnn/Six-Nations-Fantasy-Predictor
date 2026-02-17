@@ -5,6 +5,7 @@ import { matchesApi } from '../api/client';
 import { useCurrentRound } from '../hooks/useMatches';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { CountryFlag } from '../components/common/CountryFlag';
+import { Tooltip } from '../components/common/Tooltip';
 import type { TryScorerDetail, Country, Position } from '../types';
 
 type SortKey = 'name' | 'country' | 'fantasy_position' | 'match' | 'anytime_try_odds' | 'implied_prob' | 'expected_try_points' | 'price' | 'exp_pts_per_star';
@@ -145,12 +146,12 @@ export default function Tryscorers() {
     );
   }
 
-  const SortHeader = ({ label, field }: { label: string; field: SortKey }) => (
+  const SortHeader = ({ label, field, tooltip }: { label: string; field: SortKey; tooltip?: string }) => (
     <th
       className="pb-2 cursor-pointer select-none hover:text-slate-600 transition-colors"
       onClick={() => handleSort(field)}
     >
-      {label}
+      {tooltip ? <Tooltip text={tooltip}>{label}</Tooltip> : label}
       {sortKey === field && (
         <span className="ml-1 text-primary-500">{sortDir === 'asc' ? '↑' : '↓'}</span>
       )}
@@ -161,6 +162,9 @@ export default function Tryscorers() {
     <div className="space-y-4">
       <div>
         <h1 className="text-2xl font-bold text-slate-800">Anytime Try Scorers</h1>
+        <p className="text-sm text-slate-400 mt-1 mb-2">
+          Compare anytime try scorer odds across every player. See who offers the best expected fantasy points per star based on bookmaker prices.
+        </p>
         <div className="flex items-center gap-3 mt-1">
           <p className="text-slate-400">Round {round} — {season} Six Nations</p>
           <div className="flex items-center gap-1">
@@ -250,23 +254,23 @@ export default function Tryscorers() {
             <thead>
               <tr className="text-left text-slate-400 text-xs uppercase">
                 <SortHeader label="Player" field="name" />
-                <SortHeader label="Country" field="country" />
-                <SortHeader label="Position" field="fantasy_position" />
-                <SortHeader label="Match" field="match" />
+                <SortHeader label="Country" field="country" tooltip="National team" />
+                <SortHeader label="Position" field="fantasy_position" tooltip="Fantasy position category" />
+                <SortHeader label="Match" field="match" tooltip="Upcoming fixture" />
                 <th className="pb-2 text-right cursor-pointer select-none hover:text-slate-600" onClick={() => handleSort('anytime_try_odds')}>
-                  Odds{sortKey === 'anytime_try_odds' && <span className="ml-1 text-primary-500">{sortDir === 'asc' ? '↑' : '↓'}</span>}
+                  <Tooltip text="Bookmaker anytime try scorer decimal odds">Odds</Tooltip>{sortKey === 'anytime_try_odds' && <span className="ml-1 text-primary-500">{sortDir === 'asc' ? '↑' : '↓'}</span>}
                 </th>
                 <th className="pb-2 text-right cursor-pointer select-none hover:text-slate-600" onClick={() => handleSort('implied_prob')}>
-                  Implied %{sortKey === 'implied_prob' && <span className="ml-1 text-primary-500">{sortDir === 'asc' ? '↑' : '↓'}</span>}
+                  <Tooltip text="Implied probability of scoring a try (100 / odds)">Implied %</Tooltip>{sortKey === 'implied_prob' && <span className="ml-1 text-primary-500">{sortDir === 'asc' ? '↑' : '↓'}</span>}
                 </th>
                 <th className="pb-2 text-right cursor-pointer select-none hover:text-slate-600" onClick={() => handleSort('expected_try_points')}>
-                  Exp Pts{sortKey === 'expected_try_points' && <span className="ml-1 text-primary-500">{sortDir === 'asc' ? '↑' : '↓'}</span>}
+                  <Tooltip text="Expected fantasy points from try scoring alone">Exp Pts</Tooltip>{sortKey === 'expected_try_points' && <span className="ml-1 text-primary-500">{sortDir === 'asc' ? '↑' : '↓'}</span>}
                 </th>
                 <th className="pb-2 text-right cursor-pointer select-none hover:text-slate-600" onClick={() => handleSort('price')}>
-                  Price{sortKey === 'price' && <span className="ml-1 text-primary-500">{sortDir === 'asc' ? '↑' : '↓'}</span>}
+                  <Tooltip text="Fantasy cost in stars">Price</Tooltip>{sortKey === 'price' && <span className="ml-1 text-primary-500">{sortDir === 'asc' ? '↑' : '↓'}</span>}
                 </th>
                 <th className="pb-2 text-right cursor-pointer select-none hover:text-slate-600" onClick={() => handleSort('exp_pts_per_star')}>
-                  Exp/Star{sortKey === 'exp_pts_per_star' && <span className="ml-1 text-primary-500">{sortDir === 'asc' ? '↑' : '↓'}</span>}
+                  <Tooltip text="Expected try points divided by price — higher is better value">Exp/Star</Tooltip>{sortKey === 'exp_pts_per_star' && <span className="ml-1 text-primary-500">{sortDir === 'asc' ? '↑' : '↓'}</span>}
                 </th>
               </tr>
             </thead>

@@ -2,12 +2,14 @@ import { useState, useMemo } from 'react';
 import type { HistoricalSixNationsStat, HistoricalClubStat } from '../../types';
 import { cn } from '../../utils';
 import { CountryFlag } from '../common/CountryFlag';
+import { Tooltip } from '../common/Tooltip';
 
 type StatRecord = HistoricalSixNationsStat | HistoricalClubStat;
 
 interface ColumnDef<T> {
   key: keyof T | string;
   header: string;
+  tooltip?: string;
   format?: (value: unknown, record: T) => string;
 }
 
@@ -22,63 +24,63 @@ const SIX_NATIONS_COLUMN_GROUPS: ColumnGroup<HistoricalSixNationsStat>[] = [
     id: 'match',
     label: 'Match Info',
     columns: [
-      { key: 'season', header: 'Szn' },
-      { key: 'round', header: 'Rd' },
-      { key: 'match_date', header: 'Date', format: (v) => v ? String(v).slice(5) : '-' },
-      { key: 'opponent', header: 'Opp' },
-      { key: 'home_away', header: 'H/A' },
+      { key: 'season', header: 'Szn', tooltip: 'Six Nations season year' },
+      { key: 'round', header: 'Rd', tooltip: 'Tournament round number' },
+      { key: 'match_date', header: 'Date', tooltip: 'Match date', format: (v) => v ? String(v).slice(5) : '-' },
+      { key: 'opponent', header: 'Opp', tooltip: 'Opposing team' },
+      { key: 'home_away', header: 'H/A', tooltip: 'Home or Away fixture' },
     ],
   },
   {
     id: 'participation',
     label: 'Participation',
     columns: [
-      { key: 'started', header: 'Start', format: (v) => v ? 'Y' : 'N' },
-      { key: 'minutes_played', header: 'Min' },
+      { key: 'started', header: 'Start', tooltip: 'Started in the XV', format: (v) => v ? 'Y' : 'N' },
+      { key: 'minutes_played', header: 'Min', tooltip: 'Minutes played' },
     ],
   },
   {
     id: 'attacking',
     label: 'Attacking',
     columns: [
-      { key: 'tries', header: 'Try' },
-      { key: 'try_assists', header: 'Ast' },
-      { key: 'conversions', header: 'Con' },
-      { key: 'penalties_kicked', header: 'PK' },
-      { key: 'drop_goals', header: 'DG' },
-      { key: 'defenders_beaten', header: 'Def B' },
-      { key: 'metres_carried', header: 'Mtrs' },
-      { key: 'clean_breaks', header: 'Brk' },
-      { key: 'offloads', header: 'Off' },
-      { key: 'fifty_22_kicks', header: '50-22' },
+      { key: 'tries', header: 'Try', tooltip: 'Tries scored' },
+      { key: 'try_assists', header: 'Ast', tooltip: 'Try assists' },
+      { key: 'conversions', header: 'Con', tooltip: 'Conversions kicked' },
+      { key: 'penalties_kicked', header: 'PK', tooltip: 'Penalty goals kicked' },
+      { key: 'drop_goals', header: 'DG', tooltip: 'Drop goals' },
+      { key: 'defenders_beaten', header: 'Def B', tooltip: 'Defenders beaten in carry' },
+      { key: 'metres_carried', header: 'Mtrs', tooltip: 'Metres gained carrying the ball' },
+      { key: 'clean_breaks', header: 'Brk', tooltip: 'Clean line breaks' },
+      { key: 'offloads', header: 'Off', tooltip: 'Offloads in contact' },
+      { key: 'fifty_22_kicks', header: '50-22', tooltip: 'Successful 50:22 kicks' },
     ],
   },
   {
     id: 'defensive',
     label: 'Defensive',
     columns: [
-      { key: 'tackles_made', header: 'Tck' },
-      { key: 'tackles_missed', header: 'Miss' },
-      { key: 'turnovers_won', header: 'TO' },
-      { key: 'lineout_steals', header: 'LO St' },
-      { key: 'scrums_won', header: 'Scr' },
+      { key: 'tackles_made', header: 'Tck', tooltip: 'Tackles made' },
+      { key: 'tackles_missed', header: 'Miss', tooltip: 'Tackles missed' },
+      { key: 'turnovers_won', header: 'TO', tooltip: 'Turnovers won at the breakdown' },
+      { key: 'lineout_steals', header: 'LO St', tooltip: 'Lineout steals' },
+      { key: 'scrums_won', header: 'Scr', tooltip: 'Scrums won' },
     ],
   },
   {
     id: 'discipline',
     label: 'Discipline',
     columns: [
-      { key: 'penalties_conceded', header: 'Pen' },
-      { key: 'yellow_cards', header: 'YC' },
-      { key: 'red_cards', header: 'RC' },
+      { key: 'penalties_conceded', header: 'Pen', tooltip: 'Penalties conceded' },
+      { key: 'yellow_cards', header: 'YC', tooltip: 'Yellow cards' },
+      { key: 'red_cards', header: 'RC', tooltip: 'Red cards' },
     ],
   },
   {
     id: 'awards',
     label: 'Awards',
     columns: [
-      { key: 'player_of_match', header: 'POTM', format: (v) => v ? 'Y' : '-' },
-      { key: 'fantasy_points', header: 'FPts', format: (v) => v !== null ? String(v) : '-' },
+      { key: 'player_of_match', header: 'POTM', tooltip: 'Player of the Match award', format: (v) => v ? 'Y' : '-' },
+      { key: 'fantasy_points', header: 'FPts', tooltip: 'Fantasy points scored in this match', format: (v) => v !== null ? String(v) : '-' },
     ],
   },
 ];
@@ -88,54 +90,54 @@ const CLUB_COLUMN_GROUPS: ColumnGroup<HistoricalClubStat>[] = [
     id: 'match',
     label: 'Match Info',
     columns: [
-      { key: 'league', header: 'League' },
-      { key: 'season', header: 'Szn' },
-      { key: 'match_date', header: 'Date', format: (v) => v ? String(v).slice(5) : '-' },
-      { key: 'opponent', header: 'Opp' },
-      { key: 'home_away', header: 'H/A' },
+      { key: 'league', header: 'League', tooltip: 'Club competition name' },
+      { key: 'season', header: 'Szn', tooltip: 'Season year' },
+      { key: 'match_date', header: 'Date', tooltip: 'Match date', format: (v) => v ? String(v).slice(5) : '-' },
+      { key: 'opponent', header: 'Opp', tooltip: 'Opposing club' },
+      { key: 'home_away', header: 'H/A', tooltip: 'Home or Away fixture' },
     ],
   },
   {
     id: 'participation',
     label: 'Participation',
     columns: [
-      { key: 'started', header: 'Start', format: (v) => v ? 'Y' : 'N' },
-      { key: 'minutes_played', header: 'Min' },
+      { key: 'started', header: 'Start', tooltip: 'Started the match', format: (v) => v ? 'Y' : 'N' },
+      { key: 'minutes_played', header: 'Min', tooltip: 'Minutes played' },
     ],
   },
   {
     id: 'attacking',
     label: 'Attacking',
     columns: [
-      { key: 'tries', header: 'Try' },
-      { key: 'try_assists', header: 'Ast' },
-      { key: 'conversions', header: 'Con' },
-      { key: 'penalties_kicked', header: 'PK' },
-      { key: 'drop_goals', header: 'DG' },
-      { key: 'defenders_beaten', header: 'Def B' },
-      { key: 'metres_carried', header: 'Mtrs' },
-      { key: 'clean_breaks', header: 'Brk' },
-      { key: 'offloads', header: 'Off' },
+      { key: 'tries', header: 'Try', tooltip: 'Tries scored' },
+      { key: 'try_assists', header: 'Ast', tooltip: 'Try assists' },
+      { key: 'conversions', header: 'Con', tooltip: 'Conversions kicked' },
+      { key: 'penalties_kicked', header: 'PK', tooltip: 'Penalty goals kicked' },
+      { key: 'drop_goals', header: 'DG', tooltip: 'Drop goals' },
+      { key: 'defenders_beaten', header: 'Def B', tooltip: 'Defenders beaten in carry' },
+      { key: 'metres_carried', header: 'Mtrs', tooltip: 'Metres gained carrying the ball' },
+      { key: 'clean_breaks', header: 'Brk', tooltip: 'Clean line breaks' },
+      { key: 'offloads', header: 'Off', tooltip: 'Offloads in contact' },
     ],
   },
   {
     id: 'defensive',
     label: 'Defensive',
     columns: [
-      { key: 'tackles_made', header: 'Tck' },
-      { key: 'tackles_missed', header: 'Miss' },
-      { key: 'turnovers_won', header: 'TO' },
-      { key: 'lineout_steals', header: 'LO St' },
-      { key: 'scrums_won', header: 'Scr' },
+      { key: 'tackles_made', header: 'Tck', tooltip: 'Tackles made' },
+      { key: 'tackles_missed', header: 'Miss', tooltip: 'Tackles missed' },
+      { key: 'turnovers_won', header: 'TO', tooltip: 'Turnovers won at the breakdown' },
+      { key: 'lineout_steals', header: 'LO St', tooltip: 'Lineout steals' },
+      { key: 'scrums_won', header: 'Scr', tooltip: 'Scrums won' },
     ],
   },
   {
     id: 'discipline',
     label: 'Discipline',
     columns: [
-      { key: 'penalties_conceded', header: 'Pen' },
-      { key: 'yellow_cards', header: 'YC' },
-      { key: 'red_cards', header: 'RC' },
+      { key: 'penalties_conceded', header: 'Pen', tooltip: 'Penalties conceded' },
+      { key: 'yellow_cards', header: 'YC', tooltip: 'Yellow cards' },
+      { key: 'red_cards', header: 'RC', tooltip: 'Red cards' },
     ],
   },
 ];
@@ -232,8 +234,10 @@ export function HistoricalStatsTable({ data, type }: HistoricalStatsTableProps) 
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-slate-200 mx-auto w-fit">
-      <table className="divide-y divide-slate-100 text-sm">
+    <div>
+      <div className="text-xs text-slate-400 mb-1.5 md:hidden">Swipe to see more columns</div>
+      <div className="overflow-x-auto rounded-xl border border-slate-200 mx-auto w-fit">
+        <table className="divide-y divide-slate-100 text-sm">
         <thead>
           <tr className="bg-slate-50">
             <th className="px-3 py-2.5 text-left text-xs font-semibold text-slate-600 sticky left-0 bg-slate-50 z-10" rowSpan={2}>
@@ -292,7 +296,11 @@ export function HistoricalStatsTable({ data, type }: HistoricalStatsTableProps) 
                   onClick={() => handleSort(String(col.key))}
                 >
                   <div className="flex items-center justify-center gap-0.5">
-                    {col.header}
+                    {col.tooltip ? (
+                      <Tooltip text={col.tooltip}>{col.header}</Tooltip>
+                    ) : (
+                      col.header
+                    )}
                     {sortKey === col.key && (
                       <span className="text-primary-500">{sortDirection === 'asc' ? '\u2191' : '\u2193'}</span>
                     )}
@@ -345,8 +353,9 @@ export function HistoricalStatsTable({ data, type }: HistoricalStatsTableProps) 
               })}
             </tr>
           ))}
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

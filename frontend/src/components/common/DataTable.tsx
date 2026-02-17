@@ -1,9 +1,11 @@
 import { useState, useMemo, type ReactNode } from 'react';
 import { cn } from '../../utils';
+import { Tooltip } from './Tooltip';
 
 interface Column<T> {
   key: string;
   header: string;
+  tooltip?: string;
   render?: (item: T) => ReactNode;
   sortable?: boolean;
   className?: string;
@@ -82,7 +84,11 @@ export function DataTable<T extends Record<string, unknown>>({
                 onClick={() => column.sortable && handleSort(column.key)}
               >
                 <div className="flex items-center gap-1">
-                  {column.header}
+                  {column.tooltip ? (
+                    <Tooltip text={column.tooltip}>{column.header}</Tooltip>
+                  ) : (
+                    column.header
+                  )}
                   {column.sortable && sortKey === column.key && (
                     <span className="text-primary-500">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                   )}

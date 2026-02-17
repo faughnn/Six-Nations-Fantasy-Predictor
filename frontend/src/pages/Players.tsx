@@ -42,7 +42,10 @@ export default function Players() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-800 mb-6">Players</h1>
+      <h1 className="text-2xl font-bold text-slate-800">Players</h1>
+      <p className="text-sm text-slate-400 mt-1 mb-6">
+        Browse all Six Nations players with their fantasy prices, predicted points, and value ratings. Click a player for a detailed breakdown.
+      </p>
 
       <PlayerFilters filters={filters} onChange={setFilters} />
 

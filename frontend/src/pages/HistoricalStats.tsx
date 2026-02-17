@@ -77,11 +77,14 @@ export default function HistoricalStats() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-800 mb-6">Historical Stats</h1>
+      <h1 className="text-2xl font-bold text-slate-800">Historical Stats</h1>
+      <p className="text-sm text-slate-400 mt-1 mb-6">
+        Match-by-match performance history for every player. Toggle between Six Nations internationals and club games to compare form across competitions.
+      </p>
 
       {/* Stats Type Toggle */}
       <div className="card mb-6">
-        <div className="flex flex-wrap gap-4 items-center">
+        <div className="flex flex-wrap gap-3 sm:gap-4 items-center">
           <div className="flex gap-0.5 bg-slate-100 rounded-lg p-0.5">
             <button
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${

@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import type { PlayerStat } from '../../types';
 import { cn } from '../../utils';
 import { CountryFlag } from '../common/CountryFlag';
+import { Tooltip } from '../common/Tooltip';
 
 interface ColumnGroup {
   id: string;
@@ -9,6 +10,7 @@ interface ColumnGroup {
   columns: {
     key: keyof PlayerStat;
     header: string;
+    tooltip?: string;
     format?: (value: number | null) => string;
   }[];
 }
@@ -18,63 +20,63 @@ const COLUMN_GROUPS: ColumnGroup[] = [
     id: 'game',
     label: 'Game Stats',
     columns: [
-      { key: 'minutes', header: 'Min' },
-      { key: 'tackles', header: 'Tck' },
-      { key: 'penalties_conceded', header: 'Pen' },
-      { key: 'defenders_beaten', header: 'Def Beat' },
-      { key: 'meters_carried', header: 'Meters' },
-      { key: 'offloads', header: 'Off' },
+      { key: 'minutes', header: 'Min', tooltip: 'Minutes played this season' },
+      { key: 'tackles', header: 'Tck', tooltip: 'Total tackles made' },
+      { key: 'penalties_conceded', header: 'Pen', tooltip: 'Penalties conceded' },
+      { key: 'defenders_beaten', header: 'Def Beat', tooltip: 'Defenders beaten in carry' },
+      { key: 'meters_carried', header: 'Meters', tooltip: 'Metres gained carrying the ball' },
+      { key: 'offloads', header: 'Off', tooltip: 'Offloads in contact' },
     ],
   },
   {
     id: 'setpiece',
     label: 'Set Piece',
     columns: [
-      { key: 'kick_50_22', header: '50-22' },
-      { key: 'lineouts_won', header: 'LO Won' },
-      { key: 'breakdown_steal', header: 'TO Won' },
-      { key: 'att_scrum', header: 'Scrum' },
+      { key: 'kick_50_22', header: '50-22', tooltip: 'Successful 50:22 kicks' },
+      { key: 'lineouts_won', header: 'LO Won', tooltip: 'Lineouts won on own throw' },
+      { key: 'breakdown_steal', header: 'TO Won', tooltip: 'Turnovers won at the breakdown' },
+      { key: 'att_scrum', header: 'Scrum', tooltip: 'Attacking scrums' },
     ],
   },
   {
     id: 'scoring',
     label: 'Scoring',
     columns: [
-      { key: 'try_scored', header: 'Try' },
-      { key: 'assist', header: 'Ast' },
-      { key: 'conversion', header: 'Con' },
-      { key: 'penalty', header: 'PK' },
-      { key: 'drop_goal', header: 'DG' },
+      { key: 'try_scored', header: 'Try', tooltip: 'Tries scored' },
+      { key: 'assist', header: 'Ast', tooltip: 'Try assists' },
+      { key: 'conversion', header: 'Con', tooltip: 'Conversions kicked' },
+      { key: 'penalty', header: 'PK', tooltip: 'Penalty goals kicked' },
+      { key: 'drop_goal', header: 'DG', tooltip: 'Drop goals' },
     ],
   },
   {
     id: 'cards',
     label: 'Cards',
     columns: [
-      { key: 'yellow_card', header: 'YC' },
-      { key: 'red_card', header: 'RC' },
-      { key: 'motm', header: 'MOTM' },
+      { key: 'yellow_card', header: 'YC', tooltip: 'Yellow cards received' },
+      { key: 'red_card', header: 'RC', tooltip: 'Red cards received' },
+      { key: 'motm', header: 'MOTM', tooltip: 'Man of the Match awards' },
     ],
   },
   {
     id: 'weekly',
     label: 'Weekly Pts',
     columns: [
-      { key: 'wk1', header: 'W1' },
-      { key: 'wk2', header: 'W2' },
-      { key: 'wk3', header: 'W3' },
-      { key: 'wk4', header: 'W4' },
-      { key: 'wk5', header: 'W5' },
+      { key: 'wk1', header: 'W1', tooltip: 'Fantasy points scored in Round 1' },
+      { key: 'wk2', header: 'W2', tooltip: 'Fantasy points scored in Round 2' },
+      { key: 'wk3', header: 'W3', tooltip: 'Fantasy points scored in Round 3' },
+      { key: 'wk4', header: 'W4', tooltip: 'Fantasy points scored in Round 4' },
+      { key: 'wk5', header: 'W5', tooltip: 'Fantasy points scored in Round 5' },
     ],
   },
   {
     id: 'fantasy',
     label: 'Fantasy',
     columns: [
-      { key: 'points', header: 'Pts' },
-      { key: 'value', header: 'Price', format: (v) => v !== null ? `${v.toFixed(1)}` : '-' },
-      { key: 'value_start', header: 'Start', format: (v) => v !== null ? `${v.toFixed(1)}` : '-' },
-      { key: 'change', header: '+/-', format: (v) => v !== null ? (v >= 0 ? `+${v.toFixed(1)}` : v.toFixed(1)) : '-' },
+      { key: 'points', header: 'Pts', tooltip: 'Total fantasy points this season' },
+      { key: 'value', header: 'Price', tooltip: 'Current fantasy price in stars', format: (v) => v !== null ? `${v.toFixed(1)}` : '-' },
+      { key: 'value_start', header: 'Start', tooltip: 'Starting price at the beginning of the season', format: (v) => v !== null ? `${v.toFixed(1)}` : '-' },
+      { key: 'change', header: '+/-', tooltip: 'Price change since season start', format: (v) => v !== null ? (v >= 0 ? `+${v.toFixed(1)}` : v.toFixed(1)) : '-' },
     ],
   },
 ];
@@ -151,10 +153,12 @@ export function StatsTable({ data }: StatsTableProps) {
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-slate-200 mx-auto w-fit">
-      <table className="divide-y divide-slate-100 text-sm">
-        {/* Header Row 1: Group Headers */}
-        <thead>
+    <div>
+      <div className="text-xs text-slate-400 mb-1.5 md:hidden">Swipe to see more columns</div>
+      <div className="overflow-x-auto rounded-xl border border-slate-200 mx-auto w-fit">
+        <table className="divide-y divide-slate-100 text-sm">
+          {/* Header Row 1: Group Headers */}
+          <thead>
           <tr className="bg-slate-50">
             {/* Fixed columns */}
             <th className="px-3 py-2.5 text-left text-xs font-semibold text-slate-600 sticky left-0 bg-slate-50 z-10" rowSpan={2}>
@@ -215,7 +219,11 @@ export function StatsTable({ data }: StatsTableProps) {
                   onClick={() => handleSort(col.key)}
                 >
                   <div className="flex items-center justify-center gap-0.5">
-                    {col.header}
+                    {col.tooltip ? (
+                      <Tooltip text={col.tooltip}>{col.header}</Tooltip>
+                    ) : (
+                      col.header
+                    )}
                     {sortKey === col.key && (
                       <span className="text-primary-500">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                     )}
@@ -275,6 +283,7 @@ export function StatsTable({ data }: StatsTableProps) {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
