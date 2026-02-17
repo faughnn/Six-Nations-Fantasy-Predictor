@@ -28,7 +28,12 @@ async def init_db():
 
     # Lightweight column migrations (no Alembic)
     async with engine.begin() as conn:
-        # Add is_admin column if it doesn't exist yet
         await conn.execute(text(
             "ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN NOT NULL DEFAULT false"
+        ))
+        await conn.execute(text(
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMP"
+        ))
+        await conn.execute(text(
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS login_count INTEGER NOT NULL DEFAULT 0"
         ))

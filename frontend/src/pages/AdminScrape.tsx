@@ -1,11 +1,41 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../hooks/useAuth';
 import { useCurrentRound, useRoundScrapeStatus } from '../hooks/useMatches';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
-import { scrapeApi } from '../api/client';
+import api, { scrapeApi } from '../api/client';
 import type { ScrapeResponse } from '../api/client';
+
+interface MetricsUser {
+  id: number;
+  name: string;
+  email: string;
+  created_at: string | null;
+  last_login_at: string | null;
+  login_count: number;
+  is_admin: boolean;
+  auth_method: 'google' | 'email';
+}
+
+interface UserMetrics {
+  total_users: number;
+  active_7d: number;
+  active_30d: number;
+  new_signups_7d: number;
+  users: MetricsUser[];
+}
+
+function useUserMetrics() {
+  return useQuery<UserMetrics>({
+    queryKey: ['adminMetrics'],
+    queryFn: async () => {
+      const res = await api.get('/api/auth/admin/metrics');
+      return res.data;
+    },
+    refetchInterval: 60_000,
+  });
+}
 
 type ScrapeState = 'idle' | 'scraping' | 'done' | 'error';
 
@@ -121,6 +151,18 @@ function ScrapeButton({
   );
 }
 
+function timeAgo(iso: string | null): string {
+  if (!iso) return 'Never';
+  const diff = Date.now() - new Date(iso + 'Z').getTime();
+  const mins = Math.floor(diff / 60_000);
+  if (mins < 1) return 'Just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
+}
+
 export default function AdminScrape() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -130,6 +172,7 @@ export default function AdminScrape() {
   const round = roundOverride ?? currentRound?.round ?? 0;
 
   const { data: scrapeStatus } = useRoundScrapeStatus(season, round);
+  const { data: metrics } = useUserMetrics();
   const scrapeJob = useScrapeJob();
 
   // Redirect non-admins
@@ -156,9 +199,9 @@ export default function AdminScrape() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-800">Scraper Controls</h1>
+        <h1 className="text-2xl font-bold text-slate-800">Admin</h1>
         <p className="text-sm text-slate-400 mt-1 mb-2">
-          Admin-only page for triggering data scraping and imports.
+          Scraper controls and user metrics.
         </p>
         <div className="flex items-center gap-3 mt-1">
           <p className="text-slate-400">Round {round} — {season} Six Nations</p>
@@ -272,6 +315,75 @@ export default function AdminScrape() {
           </div>
         )}
       </div>
+
+      {/* User Metrics */}
+      {metrics && (
+        <>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="card text-center">
+              <p className="text-2xl font-bold text-slate-800 tabular-nums">{metrics.total_users}</p>
+              <p className="text-xs text-slate-400 mt-1">Total Users</p>
+            </div>
+            <div className="card text-center">
+              <p className="text-2xl font-bold text-emerald-600 tabular-nums">{metrics.active_7d}</p>
+              <p className="text-xs text-slate-400 mt-1">Active (7d)</p>
+            </div>
+            <div className="card text-center">
+              <p className="text-2xl font-bold text-primary-600 tabular-nums">{metrics.active_30d}</p>
+              <p className="text-xs text-slate-400 mt-1">Active (30d)</p>
+            </div>
+            <div className="card text-center">
+              <p className="text-2xl font-bold text-amber-600 tabular-nums">{metrics.new_signups_7d}</p>
+              <p className="text-xs text-slate-400 mt-1">New (7d)</p>
+            </div>
+          </div>
+
+          <div className="card">
+            <h3 className="font-semibold text-sm text-slate-600 mb-3">Recent Users</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-slate-400 text-xs uppercase">
+                    <th className="pb-2">Name</th>
+                    <th className="pb-2">Email</th>
+                    <th className="pb-2">Method</th>
+                    <th className="pb-2 text-right">Logins</th>
+                    <th className="pb-2 text-right">Last Active</th>
+                    <th className="pb-2 text-right">Joined</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {metrics.users.map((u) => (
+                    <tr key={u.id} className="border-t border-slate-100">
+                      <td className="py-1.5 font-medium text-slate-700">
+                        {u.name}
+                        {u.is_admin && (
+                          <span className="ml-1.5 text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full font-semibold">
+                            admin
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-1.5 text-slate-400">{u.email}</td>
+                      <td className="py-1.5">
+                        <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
+                          u.auth_method === 'google'
+                            ? 'bg-blue-50 text-blue-600'
+                            : 'bg-slate-100 text-slate-500'
+                        }`}>
+                          {u.auth_method}
+                        </span>
+                      </td>
+                      <td className="py-1.5 text-right tabular-nums text-slate-500">{u.login_count}</td>
+                      <td className="py-1.5 text-right text-slate-400">{timeAgo(u.last_login_at)}</td>
+                      <td className="py-1.5 text-right text-slate-400">{timeAgo(u.created_at)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
