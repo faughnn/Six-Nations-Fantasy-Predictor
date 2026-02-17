@@ -27,6 +27,10 @@ class Settings(BaseSettings):
     jwt_secret: str = os.environ.get("JWT_SECRET", "")
     google_client_id: str = os.environ.get("GOOGLE_CLIENT_ID", "")
 
+    # GitHub Issues
+    github_token: str = os.environ.get("GITHUB_TOKEN", "")
+    github_repo: str = os.environ.get("GITHUB_REPO", "")
+
     # CORS
     cors_origins: str = os.environ.get("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000")
 

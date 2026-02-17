@@ -9,6 +9,7 @@ import HistoricalStats from './pages/HistoricalStats';
 import PlayerProjections from './pages/PlayerProjections';
 import Tryscorers from './pages/Tryscorers';
 import AdminScrape from './pages/AdminScrape';
+import IssueModal from './components/IssueModal';
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', end: true },
@@ -122,6 +123,7 @@ function MobileMenu({ open, onClose, isAdmin }: { open: boolean; onClose: () => 
 function App() {
   const { user, isLoading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [issueModalOpen, setIssueModalOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -229,6 +231,19 @@ function App() {
             <Route path="/players" element={<div className="max-w-7xl mx-auto px-4 py-6"><Players /></div>} />
           </Routes>
         </main>
+
+        <footer className="border-t border-slate-200 bg-white mt-8">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-center">
+            <button
+              onClick={() => setIssueModalOpen(true)}
+              className="text-sm text-slate-500 hover:text-primary-600 transition-colors"
+            >
+              Report a Bug or Request a Feature
+            </button>
+          </div>
+        </footer>
+
+        <IssueModal open={issueModalOpen} onClose={() => setIssueModalOpen(false)} />
       </div>
     </Router>
   );
