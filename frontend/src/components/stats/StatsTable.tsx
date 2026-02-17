@@ -153,10 +153,12 @@ export function StatsTable({ data }: StatsTableProps) {
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-slate-200 mx-auto w-fit">
-      <table className="divide-y divide-slate-100 text-sm">
-        {/* Header Row 1: Group Headers */}
-        <thead>
+    <div>
+      <div className="text-xs text-slate-400 mb-1.5 md:hidden">Swipe to see more columns</div>
+      <div className="overflow-x-auto rounded-xl border border-slate-200 mx-auto w-fit">
+        <table className="divide-y divide-slate-100 text-sm">
+          {/* Header Row 1: Group Headers */}
+          <thead>
           <tr className="bg-slate-50">
             {/* Fixed columns */}
             <th className="px-3 py-2.5 text-left text-xs font-semibold text-slate-600 sticky left-0 bg-slate-50 z-10" rowSpan={2}>
@@ -281,6 +283,7 @@ export function StatsTable({ data }: StatsTableProps) {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

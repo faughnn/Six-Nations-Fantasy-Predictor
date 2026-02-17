@@ -45,7 +45,7 @@ export default function Login() {
       window.google.accounts.id.renderButton(node, {
         theme: 'outline',
         size: 'large',
-        width: 360,
+        width: Math.min(node.offsetWidth, 360),
         text: 'continue_with',
       });
     }

@@ -1,5 +1,5 @@
-import { BrowserRouter as Router, Routes, Route, Link, NavLink } from 'react-router-dom';
-import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, NavLink, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { useAuth } from './hooks/useAuth';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -9,7 +9,16 @@ import HistoricalStats from './pages/HistoricalStats';
 import PlayerProjections from './pages/PlayerProjections';
 import Tryscorers from './pages/Tryscorers';
 
-function UserMenu() {
+const NAV_ITEMS = [
+  { to: '/', label: 'Dashboard', end: true },
+  { to: '/players', label: 'Players' },
+  { to: '/tryscorers', label: 'Try Scorers' },
+  { to: '/players-all-stats', label: '2025 F6N Stats' },
+  { to: '/projections', label: 'Projections' },
+  { to: '/historical-stats', label: 'Historical Stats' },
+];
+
+function UserMenu({ onAction }: { onAction?: () => void }) {
   const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
 
@@ -19,12 +28,12 @@ function UserMenu() {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-slate-50 transition-colors"
+        className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-slate-50 transition-colors"
       >
         {user.avatar_url ? (
-          <img src={user.avatar_url} alt="" className="w-6 h-6 rounded-full" />
+          <img src={user.avatar_url} alt="" className="w-7 h-7 rounded-full" />
         ) : (
-          <div className="w-6 h-6 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-xs font-semibold">
+          <div className="w-7 h-7 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-xs font-semibold">
             {user.name.charAt(0).toUpperCase()}
           </div>
         )}
@@ -42,6 +51,7 @@ function UserMenu() {
               onClick={() => {
                 logout();
                 setOpen(false);
+                onAction?.();
               }}
               className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
             >
@@ -54,8 +64,49 @@ function UserMenu() {
   );
 }
 
+function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const location = useLocation();
+
+  // Close on route change
+  useEffect(() => {
+    onClose();
+  }, [location.pathname]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (!open) return null;
+
+  return (
+    <>
+      <div className="fixed inset-0 bg-black/30 z-40 md:hidden" onClick={onClose} />
+      <div className="fixed top-14 left-0 right-0 bg-white border-b border-slate-200 shadow-lg z-50 md:hidden">
+        <div className="px-4 py-3 space-y-1">
+          {NAV_ITEMS.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.end}
+              className={({ isActive }) =>
+                `block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  isActive
+                    ? 'bg-primary-50 text-primary-700'
+                    : 'text-slate-600 hover:bg-slate-50'
+                }`
+              }
+            >
+              {item.label}
+            </NavLink>
+          ))}
+          <div className="border-t border-slate-100 pt-2 mt-2">
+            <UserMenu onAction={onClose} />
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
 function App() {
   const { user, isLoading } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -75,89 +126,56 @@ function App() {
         <nav className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-card">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-between h-14">
-              <Link to="/" className="text-lg font-bold text-slate-900">
+              <Link to="/" className="text-lg font-bold text-slate-900 shrink-0">
                 <span className="text-primary-600">Fantasy</span> Six Nations
               </Link>
-              <div className="flex items-center space-x-1">
-                <NavLink
-                  to="/"
-                  end
-                  className={({ isActive }) =>
-                    `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                      isActive
-                        ? 'bg-primary-50 text-primary-700'
-                        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
-                    }`
-                  }
-                >
-                  Dashboard
-                </NavLink>
-                <NavLink
-                  to="/players"
-                  className={({ isActive }) =>
-                    `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                      isActive
-                        ? 'bg-primary-50 text-primary-700'
-                        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
-                    }`
-                  }
-                >
-                  Players
-                </NavLink>
-                <NavLink
-                  to="/tryscorers"
-                  className={({ isActive }) =>
-                    `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                      isActive
-                        ? 'bg-primary-50 text-primary-700'
-                        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
-                    }`
-                  }
-                >
-                  Try Scorers
-                </NavLink>
-                <NavLink
-                  to="/players-all-stats"
-                  className={({ isActive }) =>
-                    `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                      isActive
-                        ? 'bg-primary-50 text-primary-700'
-                        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
-                    }`
-                  }
-                >
-                  2025 F6N Stats
-                </NavLink>
-                <NavLink
-                  to="/projections"
-                  className={({ isActive }) =>
-                    `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                      isActive
-                        ? 'bg-primary-50 text-primary-700'
-                        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
-                    }`
-                  }
-                >
-                  Projections
-                </NavLink>
-                <NavLink
-                  to="/historical-stats"
-                  className={({ isActive }) =>
-                    `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                      isActive
-                        ? 'bg-primary-50 text-primary-700'
-                        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
-                    }`
-                  }
-                >
-                  Historical Stats
-                </NavLink>
+
+              {/* Desktop nav */}
+              <div className="hidden md:flex items-center space-x-1">
+                {NAV_ITEMS.map((item) => (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    end={item.end}
+                    className={({ isActive }) =>
+                      `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                        isActive
+                          ? 'bg-primary-50 text-primary-700'
+                          : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+                      }`
+                    }
+                  >
+                    {item.label}
+                  </NavLink>
+                ))}
                 <div className="w-px h-6 bg-slate-200 mx-1" />
                 <UserMenu />
+              </div>
+
+              {/* Mobile hamburger + user avatar */}
+              <div className="flex items-center gap-2 md:hidden">
+                <UserMenu />
+                <button
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="p-2 rounded-lg hover:bg-slate-50 text-slate-600"
+                  aria-label="Toggle menu"
+                >
+                  {mobileMenuOpen ? (
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                  )}
+                </button>
               </div>
             </div>
           </div>
         </nav>
+
+        <MobileMenu open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
 
         <main>
           <Routes>

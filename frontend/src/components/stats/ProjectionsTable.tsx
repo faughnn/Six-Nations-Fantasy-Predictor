@@ -151,8 +151,10 @@ export function ProjectionsTable({ data }: ProjectionsTableProps) {
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-slate-200 mx-auto w-fit">
-      <table className="divide-y divide-slate-100 text-sm">
+    <div>
+      <div className="text-xs text-slate-400 mb-1.5 md:hidden">Swipe to see more columns</div>
+      <div className="overflow-x-auto rounded-xl border border-slate-200 mx-auto w-fit">
+        <table className="divide-y divide-slate-100 text-sm">
         {/* Header Row 1: Group Headers */}
         <thead>
           <tr className="bg-slate-50">
@@ -283,8 +285,9 @@ export function ProjectionsTable({ data }: ProjectionsTableProps) {
               })}
             </tr>
           ))}
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

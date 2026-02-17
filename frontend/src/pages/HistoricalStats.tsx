@@ -84,7 +84,7 @@ export default function HistoricalStats() {
 
       {/* Stats Type Toggle */}
       <div className="card mb-6">
-        <div className="flex flex-wrap gap-4 items-center">
+        <div className="flex flex-wrap gap-3 sm:gap-4 items-center">
           <div className="flex gap-0.5 bg-slate-100 rounded-lg p-0.5">
             <button
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${

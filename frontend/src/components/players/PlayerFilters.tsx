@@ -29,7 +29,7 @@ const POSITIONS: Position[] = [
 export function PlayerFilters({ filters, onChange }: PlayerFiltersProps) {
   return (
     <div className="card mb-4">
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4">
         <div>
           <label htmlFor="country-filter" className="label">
             Country

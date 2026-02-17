@@ -95,14 +95,14 @@ export function MatchCard({ match }: MatchCardProps) {
   return (
     <div className="card hover:shadow-card-hover transition-shadow">
       {/* Teams header */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between mb-3 gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
           <CountryFlag country={match.home_team} size="lg" />
-          <span className="font-bold text-lg text-slate-800">{match.home_team}</span>
+          <span className="font-bold text-base sm:text-lg text-slate-800 truncate">{match.home_team}</span>
         </div>
-        <span className="text-slate-300 font-semibold text-xs uppercase tracking-wider">vs</span>
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-lg text-slate-800">{match.away_team}</span>
+        <span className="text-slate-300 font-semibold text-xs uppercase tracking-wider shrink-0">vs</span>
+        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+          <span className="font-bold text-base sm:text-lg text-slate-800 truncate">{match.away_team}</span>
           <CountryFlag country={match.away_team} size="lg" />
         </div>
       </div>
