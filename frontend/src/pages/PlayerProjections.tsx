@@ -35,7 +35,10 @@ export default function PlayerProjections() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-800 mb-6">Player Projections</h1>
+      <h1 className="text-2xl font-bold text-slate-800">Player Projections</h1>
+      <p className="text-sm text-slate-400 mt-1 mb-6">
+        ML-predicted stats and value ratings for the upcoming round. Rows are highlighted by value tier — green means higher predicted points per star.
+      </p>
 
       {/* Filters */}
       <div className="card mb-6">

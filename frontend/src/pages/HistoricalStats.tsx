@@ -77,7 +77,10 @@ export default function HistoricalStats() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-800 mb-6">Historical Stats</h1>
+      <h1 className="text-2xl font-bold text-slate-800">Historical Stats</h1>
+      <p className="text-sm text-slate-400 mt-1 mb-6">
+        Match-by-match performance history for every player. Toggle between Six Nations internationals and club games to compare form across competitions.
+      </p>
 
       {/* Stats Type Toggle */}
       <div className="card mb-6">

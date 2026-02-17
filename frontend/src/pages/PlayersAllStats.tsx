@@ -25,7 +25,10 @@ export default function PlayersAllStats() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-800 mb-6">Players (All Stats)</h1>
+      <h1 className="text-2xl font-bold text-slate-800">Players (All Stats)</h1>
+      <p className="text-sm text-slate-400 mt-1 mb-6">
+        Full 2025 Fantasy Six Nations stats for every player — game actions, set pieces, scoring, cards, weekly points, and price movements.
+      </p>
 
       {/* Filters */}
       <div className="card mb-6">

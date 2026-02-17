@@ -20,6 +20,7 @@ export function PlayerTable({
     {
       key: 'name',
       header: 'Name',
+      tooltip: 'Player full name',
       sortable: true,
       render: (player: PlayerSummary) => (
         <div className="font-medium text-slate-800 flex items-center gap-2">
@@ -31,6 +32,7 @@ export function PlayerTable({
     {
       key: 'fantasy_position',
       header: 'Position',
+      tooltip: 'Fantasy game position category',
       sortable: true,
       render: (player: PlayerSummary) => (
         <span className="text-slate-500">{getPositionLabel(player.fantasy_position)}</span>
@@ -39,11 +41,13 @@ export function PlayerTable({
     {
       key: 'country',
       header: 'Country',
+      tooltip: 'National team',
       sortable: true,
     },
     {
       key: 'price',
       header: 'Price',
+      tooltip: 'Fantasy cost in stars (budget units)',
       sortable: true,
       render: (player: PlayerSummary) => (
         <span className="tabular-nums">{formatPrice(player.price)}</span>
@@ -52,6 +56,7 @@ export function PlayerTable({
     {
       key: 'predicted_points',
       header: 'Predicted',
+      tooltip: 'ML-predicted fantasy points for this round',
       sortable: true,
       render: (player: PlayerSummary) => (
         <span className="font-semibold text-primary-600 tabular-nums">
@@ -62,6 +67,7 @@ export function PlayerTable({
     {
       key: 'points_per_star',
       header: 'Value',
+      tooltip: 'Predicted points per star — higher is better value',
       sortable: true,
       render: (player: PlayerSummary) => (
         <span className="tabular-nums">{formatPoints(player.points_per_star)}</span>
@@ -70,6 +76,7 @@ export function PlayerTable({
     {
       key: 'is_available',
       header: 'Status',
+      tooltip: 'Whether the player is in the matchday squad',
       render: (player: PlayerSummary) => (
         <span
           className={

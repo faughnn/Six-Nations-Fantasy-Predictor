@@ -2,10 +2,12 @@ import { useState, useMemo } from 'react';
 import type { PlayerProjection } from '../../types';
 import { cn } from '../../utils';
 import { CountryFlag } from '../common/CountryFlag';
+import { Tooltip } from '../common/Tooltip';
 
 interface Column {
   key: keyof PlayerProjection;
   header: string;
+  tooltip?: string;
   format?: (value: number | null) => string;
 }
 
@@ -20,40 +22,40 @@ const COLUMN_GROUPS: ColumnGroup[] = [
     id: 'cost',
     label: 'Cost / Value',
     columns: [
-      { key: 'price', header: 'Price', format: (v) => v !== null ? v.toFixed(1) : '-' },
-      { key: 'predicted_points', header: 'Pred Pts', format: (v) => v !== null ? v.toFixed(1) : '-' },
-      { key: 'points_per_star', header: 'Pts/Star', format: (v) => v !== null ? v.toFixed(2) : '-' },
+      { key: 'price', header: 'Price', tooltip: 'Current fantasy price in stars', format: (v) => v !== null ? v.toFixed(1) : '-' },
+      { key: 'predicted_points', header: 'Pred Pts', tooltip: 'ML-predicted fantasy points for this round', format: (v) => v !== null ? v.toFixed(1) : '-' },
+      { key: 'points_per_star', header: 'Pts/Star', tooltip: 'Predicted points divided by price — higher is better value', format: (v) => v !== null ? v.toFixed(2) : '-' },
     ],
   },
   {
     id: 'predicted',
     label: 'Predicted Stats',
     columns: [
-      { key: 'avg_tries', header: 'Tries/G', format: (v) => v !== null ? v.toFixed(2) : '-' },
-      { key: 'avg_tackles', header: 'Tck/G', format: (v) => v !== null ? v.toFixed(1) : '-' },
-      { key: 'avg_metres', header: 'Mtrs/G', format: (v) => v !== null ? v.toFixed(0) : '-' },
-      { key: 'avg_turnovers', header: 'TO/G', format: (v) => v !== null ? v.toFixed(2) : '-' },
-      { key: 'avg_defenders_beaten', header: 'DB/G', format: (v) => v !== null ? v.toFixed(1) : '-' },
-      { key: 'avg_offloads', header: 'Off/G', format: (v) => v !== null ? v.toFixed(2) : '-' },
+      { key: 'avg_tries', header: 'Tries/G', tooltip: 'Average tries per game', format: (v) => v !== null ? v.toFixed(2) : '-' },
+      { key: 'avg_tackles', header: 'Tck/G', tooltip: 'Average tackles per game', format: (v) => v !== null ? v.toFixed(1) : '-' },
+      { key: 'avg_metres', header: 'Mtrs/G', tooltip: 'Average metres carried per game', format: (v) => v !== null ? v.toFixed(0) : '-' },
+      { key: 'avg_turnovers', header: 'TO/G', tooltip: 'Average turnovers won per game', format: (v) => v !== null ? v.toFixed(2) : '-' },
+      { key: 'avg_defenders_beaten', header: 'DB/G', tooltip: 'Average defenders beaten per game', format: (v) => v !== null ? v.toFixed(1) : '-' },
+      { key: 'avg_offloads', header: 'Off/G', tooltip: 'Average offloads per game', format: (v) => v !== null ? v.toFixed(2) : '-' },
     ],
   },
   {
     id: 'efficiency',
     label: 'Efficiency',
     columns: [
-      { key: 'expected_minutes', header: 'Exp Min', format: (v) => v !== null ? v.toFixed(0) : '-' },
-      { key: 'start_rate', header: 'Start %', format: (v) => v !== null ? `${v.toFixed(0)}%` : '-' },
-      { key: 'points_per_minute', header: 'Pts/Min', format: (v) => v !== null ? v.toFixed(3) : '-' },
+      { key: 'expected_minutes', header: 'Exp Min', tooltip: 'Expected minutes on the pitch', format: (v) => v !== null ? v.toFixed(0) : '-' },
+      { key: 'start_rate', header: 'Start %', tooltip: 'Historical starting XV selection rate', format: (v) => v !== null ? `${v.toFixed(0)}%` : '-' },
+      { key: 'points_per_minute', header: 'Pts/Min', tooltip: 'Fantasy points generated per minute played', format: (v) => v !== null ? v.toFixed(3) : '-' },
     ],
   },
   {
     id: 'odds',
     label: 'Odds / Fixture',
     columns: [
-      { key: 'anytime_try_odds', header: 'Try Odds', format: (v) => v !== null ? v.toFixed(2) : '-' },
-      { key: 'opponent', header: 'Opp' },
-      { key: 'home_away', header: 'H/A' },
-      { key: 'total_games', header: 'Games' },
+      { key: 'anytime_try_odds', header: 'Try Odds', tooltip: 'Bookmaker anytime try scorer odds', format: (v) => v !== null ? v.toFixed(2) : '-' },
+      { key: 'opponent', header: 'Opp', tooltip: 'Upcoming opponent' },
+      { key: 'home_away', header: 'H/A', tooltip: 'Home or Away fixture' },
+      { key: 'total_games', header: 'Games', tooltip: 'Total games in historical sample' },
     ],
   },
 ];
@@ -213,7 +215,11 @@ export function ProjectionsTable({ data }: ProjectionsTableProps) {
                   onClick={() => handleSort(col.key)}
                 >
                   <div className="flex items-center justify-center gap-0.5">
-                    {col.header}
+                    {col.tooltip ? (
+                      <Tooltip text={col.tooltip}>{col.header}</Tooltip>
+                    ) : (
+                      col.header
+                    )}
                     {sortKey === col.key && (
                       <span className="text-primary-500">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                     )}

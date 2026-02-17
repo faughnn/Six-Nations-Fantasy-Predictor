@@ -8,6 +8,7 @@ import { CountryFlag } from '../components/common/CountryFlag';
 import { MatchCard } from '../components/matches/MatchCard';
 import { scrapeApi } from '../api/client';
 import type { ScrapeResponse } from '../api/client';
+import { Tooltip } from '../components/common/Tooltip';
 
 type ScrapeState = 'idle' | 'scraping' | 'done' | 'error';
 
@@ -165,6 +166,9 @@ export default function Dashboard() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-slate-800">Dashboard</h1>
+        <p className="text-sm text-slate-400 mt-1 mb-2">
+          Your command centre for the current round. Scrape the latest odds, view upcoming fixtures, and spot the best value picks and try threats at a glance.
+        </p>
         <div className="flex items-center gap-3 mt-1">
           <p className="text-slate-400">Round {round} Overview — {season} Six Nations</p>
           <div className="flex items-center gap-1">
@@ -312,10 +316,10 @@ export default function Dashboard() {
               <thead>
                 <tr className="text-left text-slate-400 text-xs uppercase">
                   <th className="pb-2">Player</th>
-                  <th className="pb-2">Pos</th>
-                  <th className="pb-2 text-right">Price</th>
-                  <th className="pb-2 text-right">Pred</th>
-                  <th className="pb-2 text-right">Value</th>
+                  <th className="pb-2"><Tooltip text="Fantasy position category">Pos</Tooltip></th>
+                  <th className="pb-2 text-right"><Tooltip text="Fantasy cost in stars">Price</Tooltip></th>
+                  <th className="pb-2 text-right"><Tooltip text="ML-predicted fantasy points">Pred</Tooltip></th>
+                  <th className="pb-2 text-right"><Tooltip text="Predicted points per star — higher is better">Value</Tooltip></th>
                 </tr>
               </thead>
               <tbody>
@@ -359,8 +363,8 @@ export default function Dashboard() {
               <thead>
                 <tr className="text-left text-slate-400 text-xs uppercase">
                   <th className="pb-2">Player</th>
-                  <th className="pb-2 text-right">Try Odds</th>
-                  <th className="pb-2 text-right">Implied %</th>
+                  <th className="pb-2 text-right"><Tooltip text="Bookmaker anytime try scorer odds">Try Odds</Tooltip></th>
+                  <th className="pb-2 text-right"><Tooltip text="Implied probability of scoring a try (100 / odds)">Implied %</Tooltip></th>
                 </tr>
               </thead>
               <tbody>
