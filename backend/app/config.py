@@ -18,6 +18,10 @@ class Settings(BaseSettings):
             )
     model_path: str = "models/fantasy_predictor_v1.pkl"
 
+    # Auth settings
+    jwt_secret: str = os.environ.get("JWT_SECRET", "change-me-in-production")
+    google_client_id: str = os.environ.get("GOOGLE_CLIENT_ID", "")
+
     model_config = SettingsConfigDict(env_file=".env")
 
 

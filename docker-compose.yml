@@ -9,6 +9,7 @@ services:
       - backend
     environment:
       - VITE_API_URL=http://localhost:8000
+      - VITE_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -26,6 +27,8 @@ services:
     environment:
       - DATABASE_URL=postgresql+asyncpg://rugby:rugbypass@db:5432/fantasy_rugby
       - PYTHONPATH=/app
+      - JWT_SECRET=change-me-in-production
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
 
   db:
     image: postgres:16
