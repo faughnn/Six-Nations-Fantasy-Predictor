@@ -9,19 +9,22 @@ import Tryscorers from './pages/Tryscorers';
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-100">
-        <nav className="bg-primary-700 text-white shadow-lg">
+      <div className="min-h-screen bg-slate-50">
+        <nav className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-card">
           <div className="max-w-7xl mx-auto px-4">
-            <div className="flex items-center justify-between h-16">
-              <Link to="/" className="text-xl font-bold">
-                Fantasy Six Nations
+            <div className="flex items-center justify-between h-14">
+              <Link to="/" className="text-lg font-bold text-slate-900">
+                <span className="text-primary-600">Fantasy</span> Six Nations
               </Link>
-              <div className="flex space-x-4">
+              <div className="flex space-x-1">
                 <NavLink
                   to="/"
+                  end
                   className={({ isActive }) =>
-                    `px-3 py-2 rounded-md text-sm font-medium ${
-                      isActive ? 'bg-primary-800' : 'hover:bg-primary-600'
+                    `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'bg-primary-50 text-primary-700'
+                        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
                     }`
                   }
                 >
@@ -30,8 +33,10 @@ function App() {
                 <NavLink
                   to="/players"
                   className={({ isActive }) =>
-                    `px-3 py-2 rounded-md text-sm font-medium ${
-                      isActive ? 'bg-primary-800' : 'hover:bg-primary-600'
+                    `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'bg-primary-50 text-primary-700'
+                        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
                     }`
                   }
                 >
@@ -40,8 +45,10 @@ function App() {
                 <NavLink
                   to="/tryscorers"
                   className={({ isActive }) =>
-                    `px-3 py-2 rounded-md text-sm font-medium ${
-                      isActive ? 'bg-primary-800' : 'hover:bg-primary-600'
+                    `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'bg-primary-50 text-primary-700'
+                        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
                     }`
                   }
                 >
@@ -50,8 +57,10 @@ function App() {
                 <NavLink
                   to="/players-all-stats"
                   className={({ isActive }) =>
-                    `px-3 py-2 rounded-md text-sm font-medium ${
-                      isActive ? 'bg-primary-800' : 'hover:bg-primary-600'
+                    `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'bg-primary-50 text-primary-700'
+                        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
                     }`
                   }
                 >
@@ -60,8 +69,10 @@ function App() {
                 <NavLink
                   to="/projections"
                   className={({ isActive }) =>
-                    `px-3 py-2 rounded-md text-sm font-medium ${
-                      isActive ? 'bg-primary-800' : 'hover:bg-primary-600'
+                    `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'bg-primary-50 text-primary-700'
+                        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
                     }`
                   }
                 >
@@ -70,8 +81,10 @@ function App() {
                 <NavLink
                   to="/historical-stats"
                   className={({ isActive }) =>
-                    `px-3 py-2 rounded-md text-sm font-medium ${
-                      isActive ? 'bg-primary-800' : 'hover:bg-primary-600'
+                    `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'bg-primary-50 text-primary-700'
+                        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
                     }`
                   }
                 >

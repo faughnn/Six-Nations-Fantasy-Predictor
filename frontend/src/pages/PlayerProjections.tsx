@@ -27,7 +27,7 @@ export default function PlayerProjections() {
 
   if (error) {
     return (
-      <div className="text-center py-12 text-red-600">
+      <div className="text-center py-12 text-red-500">
         Error loading projections. Make sure the backend is running.
       </div>
     );
@@ -35,7 +35,7 @@ export default function PlayerProjections() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Player Projections</h1>
+      <h1 className="text-2xl font-bold text-slate-800 mb-6">Player Projections</h1>
 
       {/* Filters */}
       <div className="card mb-6">
@@ -92,7 +92,7 @@ export default function PlayerProjections() {
           </div>
 
           <div className="flex items-end">
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-slate-400">
               {projections?.length || 0} players
             </span>
           </div>
@@ -100,7 +100,7 @@ export default function PlayerProjections() {
       </div>
 
       {/* Help text */}
-      <div className="mb-4 text-sm text-gray-600">
+      <div className="mb-4 text-sm text-slate-400">
         Click column group headers to expand/collapse. Click column headers to sort. Rows highlighted by value tier (Pts/Star).
       </div>
 

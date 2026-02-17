@@ -34,7 +34,7 @@ export default function Players() {
 
   if (error) {
     return (
-      <div className="text-center py-12 text-red-600">
+      <div className="text-center py-12 text-red-500">
         Error loading players
       </div>
     );
@@ -42,7 +42,7 @@ export default function Players() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Players</h1>
+      <h1 className="text-2xl font-bold text-slate-800 mb-6">Players</h1>
 
       <PlayerFilters filters={filters} onChange={setFilters} />
 

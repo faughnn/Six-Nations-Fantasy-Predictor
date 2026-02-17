@@ -60,7 +60,7 @@ export function DataTable<T extends Record<string, unknown>>({
 
   if (data.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
+      <div className="text-center py-8 text-slate-400">
         {emptyMessage}
       </div>
     );
@@ -68,15 +68,15 @@ export function DataTable<T extends Record<string, unknown>>({
 
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
+      <table className="min-w-full divide-y divide-slate-100">
+        <thead>
           <tr>
             {columns.map((column) => (
               <th
                 key={column.key}
                 className={cn(
-                  'px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider',
-                  column.sortable && 'cursor-pointer hover:bg-gray-100',
+                  'px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider',
+                  column.sortable && 'cursor-pointer hover:text-slate-700',
                   column.className
                 )}
                 onClick={() => column.sortable && handleSort(column.key)}
@@ -84,19 +84,19 @@ export function DataTable<T extends Record<string, unknown>>({
                 <div className="flex items-center gap-1">
                   {column.header}
                   {column.sortable && sortKey === column.key && (
-                    <span>{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                    <span className="text-primary-500">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                   )}
                 </div>
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
+        <tbody className="divide-y divide-slate-100">
           {sortedData.map((item) => (
             <tr
               key={keyExtractor(item)}
               className={cn(
-                'hover:bg-gray-50',
+                'hover:bg-primary-50/30 transition-colors',
                 onRowClick && 'cursor-pointer'
               )}
               onClick={() => onRowClick?.(item)}
@@ -104,7 +104,7 @@ export function DataTable<T extends Record<string, unknown>>({
               {columns.map((column) => (
                 <td
                   key={column.key}
-                  className={cn('px-4 py-3 whitespace-nowrap text-sm', column.className)}
+                  className={cn('px-4 py-3 whitespace-nowrap text-sm text-slate-700', column.className)}
                 >
                   {column.render
                     ? column.render(item)

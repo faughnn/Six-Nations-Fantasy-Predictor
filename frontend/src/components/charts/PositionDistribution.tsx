@@ -25,15 +25,15 @@ export function PositionDistribution({ players }: PositionDistributionProps) {
 
   return (
     <div className="card">
-      <h3 className="font-semibold mb-4">Average Points by Position</h3>
+      <h3 className="font-semibold mb-4 text-slate-800">Average Points by Position</h3>
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="position" />
-            <YAxis />
+            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+            <XAxis dataKey="position" tick={{ fontSize: 12, fill: '#64748b' }} />
+            <YAxis tick={{ fontSize: 12, fill: '#64748b' }} />
             <Tooltip />
-            <Bar dataKey="avgPoints" fill="#0ea5e9" />
+            <Bar dataKey="avgPoints" fill="#6366f1" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>

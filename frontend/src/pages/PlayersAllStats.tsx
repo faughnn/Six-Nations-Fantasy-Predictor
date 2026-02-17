@@ -17,7 +17,7 @@ export default function PlayersAllStats() {
 
   if (error) {
     return (
-      <div className="text-center py-12 text-red-600">
+      <div className="text-center py-12 text-red-500">
         Error loading stats. Make sure the Excel file is in place.
       </div>
     );
@@ -25,7 +25,7 @@ export default function PlayersAllStats() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Players (All Stats)</h1>
+      <h1 className="text-2xl font-bold text-slate-800 mb-6">Players (All Stats)</h1>
 
       {/* Filters */}
       <div className="card mb-6">
@@ -82,7 +82,7 @@ export default function PlayersAllStats() {
           </div>
 
           <div className="flex items-end">
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-slate-400">
               {stats?.length || 0} players
             </span>
           </div>
@@ -90,7 +90,7 @@ export default function PlayersAllStats() {
       </div>
 
       {/* Help text */}
-      <div className="mb-4 text-sm text-gray-600">
+      <div className="mb-4 text-sm text-slate-400">
         Click column group headers to expand/collapse. Click column headers to sort.
       </div>
 

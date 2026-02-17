@@ -13,9 +13,9 @@ type SortDir = 'asc' | 'desc';
 type Availability = 'starting' | 'substitute' | 'not_playing';
 
 const AVAILABILITY_INDICATOR: Record<Availability, { dot: string; label: string }> = {
-  starting: { dot: 'bg-green-500', label: 'XV' },
+  starting: { dot: 'bg-emerald-500', label: 'XV' },
   substitute: { dot: 'bg-amber-400', label: 'SUB' },
-  not_playing: { dot: 'bg-gray-300', label: 'Out' },
+  not_playing: { dot: 'bg-slate-300', label: 'Out' },
 };
 
 const AVAILABILITY_OPTIONS: { value: Availability | 'all'; label: string }[] = [
@@ -147,12 +147,12 @@ export default function Tryscorers() {
 
   const SortHeader = ({ label, field }: { label: string; field: SortKey }) => (
     <th
-      className="pb-2 cursor-pointer select-none hover:text-gray-700"
+      className="pb-2 cursor-pointer select-none hover:text-slate-600 transition-colors"
       onClick={() => handleSort(field)}
     >
       {label}
       {sortKey === field && (
-        <span className="ml-1">{sortDir === 'asc' ? '↑' : '↓'}</span>
+        <span className="ml-1 text-primary-500">{sortDir === 'asc' ? '↑' : '↓'}</span>
       )}
     </th>
   );
@@ -160,33 +160,25 @@ export default function Tryscorers() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold">Anytime Try Scorers</h1>
+        <h1 className="text-2xl font-bold text-slate-800">Anytime Try Scorers</h1>
         <div className="flex items-center gap-3 mt-1">
-          <p className="text-gray-500">Round {round} — {season} Six Nations</p>
+          <p className="text-slate-400">Round {round} — {season} Six Nations</p>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setRoundOverride(Math.max(1, round - 1))}
               disabled={round <= 1}
-              className="w-6 h-6 flex items-center justify-center rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed text-sm font-bold"
+              className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed text-sm font-bold transition-colors"
             >
               −
             </button>
-            <span className="text-sm text-gray-500 w-6 text-center">{round}</span>
+            <span className="text-sm text-slate-500 w-6 text-center tabular-nums font-medium">{round}</span>
             <button
               onClick={() => setRoundOverride(Math.min(5, round + 1))}
               disabled={round >= 5}
-              className="w-6 h-6 flex items-center justify-center rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed text-sm font-bold"
+              className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed text-sm font-bold transition-colors"
             >
               +
             </button>
-            {roundOverride !== null && (
-              <button
-                onClick={() => setRoundOverride(null)}
-                className="ml-1 text-xs text-primary-600 hover:underline"
-              >
-                reset
-              </button>
-            )}
           </div>
         </div>
       </div>
@@ -194,16 +186,16 @@ export default function Tryscorers() {
       {/* Filters */}
       <div className="space-y-2">
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-xs text-gray-500 uppercase font-medium mr-1">Country</span>
+          <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mr-1">Country</span>
           {COUNTRIES.map(c => (
             <button
               key={c}
               onClick={() => toggleCountry(c)}
               onContextMenu={(e) => { e.preventDefault(); soloCountry(c); }}
-              className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
+              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
                 excludedCountries.has(c)
-                  ? 'bg-gray-100 text-gray-400 border-gray-200 line-through'
-                  : 'bg-primary-100 text-primary-700 border-primary-300'
+                  ? 'bg-slate-50 text-slate-300 ring-1 ring-inset ring-slate-200 line-through'
+                  : 'bg-primary-50 text-primary-700 ring-1 ring-inset ring-primary-200'
               }`}
             >
               {c}
@@ -211,16 +203,16 @@ export default function Tryscorers() {
           ))}
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-xs text-gray-500 uppercase font-medium mr-1">Position</span>
+          <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mr-1">Position</span>
           {POSITIONS.map(p => (
             <button
               key={p}
               onClick={() => togglePosition(p)}
               onContextMenu={(e) => { e.preventDefault(); soloPosition(p); }}
-              className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
+              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
                 excludedPositions.has(p)
-                  ? 'bg-gray-100 text-gray-400 border-gray-200 line-through'
-                  : 'bg-primary-100 text-primary-700 border-primary-300'
+                  ? 'bg-slate-50 text-slate-300 ring-1 ring-inset ring-slate-200 line-through'
+                  : 'bg-primary-50 text-primary-700 ring-1 ring-inset ring-primary-200'
               }`}
             >
               {p.replace('_', ' ')}
@@ -228,15 +220,15 @@ export default function Tryscorers() {
           ))}
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-xs text-gray-500 uppercase font-medium mr-1">Status</span>
+          <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mr-1">Status</span>
           {AVAILABILITY_OPTIONS.map(opt => (
             <button
               key={opt.value}
               onClick={() => setAvailFilter(opt.value)}
-              className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
+              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
                 availFilter === opt.value
-                  ? 'bg-primary-100 text-primary-700 border-primary-300'
-                  : 'bg-gray-100 text-gray-400 border-gray-200'
+                  ? 'bg-primary-50 text-primary-700 ring-1 ring-inset ring-primary-200'
+                  : 'bg-slate-50 text-slate-400 ring-1 ring-inset ring-slate-200'
               }`}
             >
               {opt.value !== 'all' && (
@@ -246,41 +238,41 @@ export default function Tryscorers() {
             </button>
           ))}
         </div>
-        <span className="text-sm text-gray-500">
+        <span className="text-sm text-slate-400">
           {filtered.length} player{filtered.length !== 1 ? 's' : ''}
         </span>
       </div>
 
       {/* Table */}
       {filtered.length > 0 ? (
-        <div className="card overflow-x-auto">
+        <div className="rounded-xl border border-slate-200 overflow-x-auto bg-white">
           <table className="w-full">
             <thead>
-              <tr className="text-left text-gray-500 text-xs uppercase">
+              <tr className="text-left text-slate-400 text-xs uppercase">
                 <SortHeader label="Player" field="name" />
                 <SortHeader label="Country" field="country" />
                 <SortHeader label="Position" field="fantasy_position" />
                 <SortHeader label="Match" field="match" />
-                <th className="pb-2 text-right cursor-pointer select-none hover:text-gray-700" onClick={() => handleSort('anytime_try_odds')}>
-                  Odds{sortKey === 'anytime_try_odds' && <span className="ml-1">{sortDir === 'asc' ? '↑' : '↓'}</span>}
+                <th className="pb-2 text-right cursor-pointer select-none hover:text-slate-600" onClick={() => handleSort('anytime_try_odds')}>
+                  Odds{sortKey === 'anytime_try_odds' && <span className="ml-1 text-primary-500">{sortDir === 'asc' ? '↑' : '↓'}</span>}
                 </th>
-                <th className="pb-2 text-right cursor-pointer select-none hover:text-gray-700" onClick={() => handleSort('implied_prob')}>
-                  Implied %{sortKey === 'implied_prob' && <span className="ml-1">{sortDir === 'asc' ? '↑' : '↓'}</span>}
+                <th className="pb-2 text-right cursor-pointer select-none hover:text-slate-600" onClick={() => handleSort('implied_prob')}>
+                  Implied %{sortKey === 'implied_prob' && <span className="ml-1 text-primary-500">{sortDir === 'asc' ? '↑' : '↓'}</span>}
                 </th>
-                <th className="pb-2 text-right cursor-pointer select-none hover:text-gray-700" onClick={() => handleSort('expected_try_points')}>
-                  Exp Pts{sortKey === 'expected_try_points' && <span className="ml-1">{sortDir === 'asc' ? '↑' : '↓'}</span>}
+                <th className="pb-2 text-right cursor-pointer select-none hover:text-slate-600" onClick={() => handleSort('expected_try_points')}>
+                  Exp Pts{sortKey === 'expected_try_points' && <span className="ml-1 text-primary-500">{sortDir === 'asc' ? '↑' : '↓'}</span>}
                 </th>
-                <th className="pb-2 text-right cursor-pointer select-none hover:text-gray-700" onClick={() => handleSort('price')}>
-                  Price{sortKey === 'price' && <span className="ml-1">{sortDir === 'asc' ? '↑' : '↓'}</span>}
+                <th className="pb-2 text-right cursor-pointer select-none hover:text-slate-600" onClick={() => handleSort('price')}>
+                  Price{sortKey === 'price' && <span className="ml-1 text-primary-500">{sortDir === 'asc' ? '↑' : '↓'}</span>}
                 </th>
-                <th className="pb-2 text-right cursor-pointer select-none hover:text-gray-700" onClick={() => handleSort('exp_pts_per_star')}>
-                  Exp/Star{sortKey === 'exp_pts_per_star' && <span className="ml-1">{sortDir === 'asc' ? '↑' : '↓'}</span>}
+                <th className="pb-2 text-right cursor-pointer select-none hover:text-slate-600" onClick={() => handleSort('exp_pts_per_star')}>
+                  Exp/Star{sortKey === 'exp_pts_per_star' && <span className="ml-1 text-primary-500">{sortDir === 'asc' ? '↑' : '↓'}</span>}
                 </th>
               </tr>
             </thead>
             <tbody>
               {filtered.map((p) => (
-                <tr key={p.player_id} className="border-t hover:bg-gray-50">
+                <tr key={p.player_id} className="border-t border-slate-100 hover:bg-primary-50/30 transition-colors">
                   <td className="py-1.5">
                     <div className="flex items-center gap-1.5">
                       <CountryFlag country={p.country} size="sm" />
@@ -290,25 +282,25 @@ export default function Tryscorers() {
                           title={AVAILABILITY_INDICATOR[p.availability].label}
                         />
                       )}
-                      <Link to={`/players/${p.player_id}`} className="font-medium hover:text-primary-600">
+                      <Link to={`/players/${p.player_id}`} className="font-medium text-slate-700 hover:text-primary-600">
                         {p.name}
                       </Link>
                     </div>
                   </td>
-                  <td className="py-1.5 text-sm text-gray-600">{p.country}</td>
-                  <td className="py-1.5 text-sm text-gray-600">{p.fantasy_position.replace('_', ' ')}</td>
-                  <td className="py-1.5 text-sm text-gray-600">{p.match}</td>
-                  <td className="py-1.5 text-sm text-right font-medium">{p.anytime_try_odds?.toFixed(2) ?? '-'}</td>
-                  <td className="py-1.5 text-sm text-right font-semibold text-green-600">
+                  <td className="py-1.5 text-sm text-slate-500">{p.country}</td>
+                  <td className="py-1.5 text-sm text-slate-500">{p.fantasy_position.replace('_', ' ')}</td>
+                  <td className="py-1.5 text-sm text-slate-500">{p.match}</td>
+                  <td className="py-1.5 text-sm text-right font-medium tabular-nums">{p.anytime_try_odds?.toFixed(2) ?? '-'}</td>
+                  <td className="py-1.5 text-sm text-right font-semibold text-emerald-600 tabular-nums">
                     {p.implied_prob != null ? `${(p.implied_prob * 100).toFixed(0)}%` : '-'}
                   </td>
-                  <td className="py-1.5 text-sm text-right font-bold text-primary-600">
+                  <td className="py-1.5 text-sm text-right font-bold text-primary-600 tabular-nums">
                     {p.expected_try_points?.toFixed(1) ?? '-'}
                   </td>
-                  <td className="py-1.5 text-sm text-right text-gray-600">
+                  <td className="py-1.5 text-sm text-right text-slate-500 tabular-nums">
                     {p.price?.toFixed(1) ?? '-'}
                   </td>
-                  <td className="py-1.5 text-sm text-right font-bold text-green-600">
+                  <td className="py-1.5 text-sm text-right font-bold text-emerald-600 tabular-nums">
                     {p.exp_pts_per_star?.toFixed(2) ?? '-'}
                   </td>
                 </tr>
@@ -317,7 +309,7 @@ export default function Tryscorers() {
           </table>
         </div>
       ) : (
-        <div className="card text-center text-gray-500 py-8">
+        <div className="card text-center text-slate-400 py-8">
           No tryscorer odds available for this round yet
         </div>
       )}

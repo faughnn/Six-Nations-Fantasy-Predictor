@@ -93,55 +93,57 @@ export function MatchCard({ match }: MatchCardProps) {
   const isFT = countdown === 'FT';
 
   return (
-    <div className="card">
+    <div className="card hover:shadow-card-hover transition-shadow">
       {/* Teams header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <CountryFlag country={match.home_team} size="lg" />
-          <span className="font-bold text-lg">{match.home_team}</span>
+          <span className="font-bold text-lg text-slate-800">{match.home_team}</span>
         </div>
-        <span className="text-gray-400 font-semibold text-sm">vs</span>
+        <span className="text-slate-300 font-semibold text-xs uppercase tracking-wider">vs</span>
         <div className="flex items-center gap-2">
-          <span className="font-bold text-lg">{match.away_team}</span>
+          <span className="font-bold text-lg text-slate-800">{match.away_team}</span>
           <CountryFlag country={match.away_team} size="lg" />
         </div>
       </div>
 
       {/* Date, time, countdown */}
       <div className="text-center mb-4">
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-slate-400">
           {formattedDate}{formattedTime ? ` — ${formattedTime}` : ''}
         </div>
         {countdown && (
-          <div className={`text-xs font-semibold mt-0.5 ${
-            isLive ? 'text-red-500 animate-pulse' : isFT ? 'text-gray-400' : 'text-primary-600'
+          <div className={`text-xs font-semibold mt-0.5 tabular-nums ${
+            isLive ? 'text-red-500 animate-pulse' : isFT ? 'text-slate-400' : 'text-primary-600'
           }`}>
             {isLive ? 'LIVE NOW' : isFT ? 'Full Time' : countdown}
           </div>
         )}
       </div>
 
+      <div className="border-t border-slate-100" />
+
       {/* Betting lines */}
       <div className="grid grid-cols-2 gap-3 mt-4">
         {match.handicap_line != null && (
-          <div className="bg-gray-50 rounded-lg p-2 text-center">
-            <div className="text-xs text-gray-500 mb-1">Handicap</div>
-            <div className="font-semibold text-sm">
+          <div className="bg-slate-50 rounded-lg p-2.5 text-center">
+            <div className="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1">Handicap</div>
+            <div className="font-semibold text-sm text-slate-700 tabular-nums">
               {match.home_team.split(' ')[0]} {match.handicap_line > 0 ? '+' : ''}{match.handicap_line}
             </div>
             {match.home_handicap_odds != null && match.away_handicap_odds != null && (
-              <div className="text-xs text-gray-500 mt-0.5">
+              <div className="text-xs text-slate-400 mt-0.5 tabular-nums">
                 {match.home_handicap_odds.toFixed(2)} / {match.away_handicap_odds.toFixed(2)}
               </div>
             )}
           </div>
         )}
         {match.over_under_line != null && (
-          <div className="bg-gray-50 rounded-lg p-2 text-center">
-            <div className="text-xs text-gray-500 mb-1">Total Points</div>
-            <div className="font-semibold text-sm">O/U {match.over_under_line}</div>
+          <div className="bg-slate-50 rounded-lg p-2.5 text-center">
+            <div className="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1">Total Points</div>
+            <div className="font-semibold text-sm text-slate-700 tabular-nums">O/U {match.over_under_line}</div>
             {match.over_odds != null && match.under_odds != null && (
-              <div className="text-xs text-gray-500 mt-0.5">
+              <div className="text-xs text-slate-400 mt-0.5 tabular-nums">
                 {match.over_odds.toFixed(2)} / {match.under_odds.toFixed(2)}
               </div>
             )}
@@ -152,17 +154,17 @@ export function MatchCard({ match }: MatchCardProps) {
       {/* Top try scorers */}
       {match.top_try_scorers.length > 0 && (
         <div className="mt-4">
-          <div className="text-xs text-gray-500 font-medium mb-2">Top Try Threats</div>
-          <div className="space-y-1">
+          <div className="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-2">Top Try Threats</div>
+          <div className="space-y-1.5">
             {match.top_try_scorers.map((scorer) => (
               <div key={scorer.player_id} className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-1.5">
                   <CountryFlag country={scorer.country} size="sm" />
-                  <span>{scorer.name}</span>
+                  <span className="text-slate-700">{scorer.name}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-500">{scorer.odds.toFixed(2)}</span>
-                  <span className="font-medium text-green-600">
+                <div className="flex items-center gap-2 tabular-nums">
+                  <span className="text-slate-400">{scorer.odds.toFixed(2)}</span>
+                  <span className="font-medium text-emerald-600">
                     {(scorer.implied_prob * 100).toFixed(0)}%
                   </span>
                 </div>

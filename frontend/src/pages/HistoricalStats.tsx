@@ -69,7 +69,7 @@ export default function HistoricalStats() {
 
   if (error) {
     return (
-      <div className="text-center py-12 text-red-600">
+      <div className="text-center py-12 text-red-500">
         Error loading historical stats. Make sure the database has been populated.
       </div>
     );
@@ -77,17 +77,17 @@ export default function HistoricalStats() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Historical Stats</h1>
+      <h1 className="text-2xl font-bold text-slate-800 mb-6">Historical Stats</h1>
 
       {/* Stats Type Toggle */}
       <div className="card mb-6">
         <div className="flex flex-wrap gap-4 items-center">
-          <div className="flex gap-2">
+          <div className="flex gap-0.5 bg-slate-100 rounded-lg p-0.5">
             <button
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
                 statsType === 'six-nations'
-                  ? 'bg-primary-600 text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  ? 'bg-white text-primary-700 shadow-sm'
+                  : 'text-slate-500 hover:text-slate-700'
               }`}
               onClick={() => {
                 setStatsType('six-nations');
@@ -97,10 +97,10 @@ export default function HistoricalStats() {
               Six Nations
             </button>
             <button
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
                 statsType === 'club'
-                  ? 'bg-primary-600 text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  ? 'bg-white text-primary-700 shadow-sm'
+                  : 'text-slate-500 hover:text-slate-700'
               }`}
               onClick={() => {
                 setStatsType('club');
@@ -111,7 +111,7 @@ export default function HistoricalStats() {
             </button>
           </div>
 
-          <div className="h-6 w-px bg-gray-300" />
+          <div className="h-6 w-px bg-slate-200" />
 
           {/* Filters */}
           <div className="flex flex-wrap gap-4 items-end">
@@ -210,7 +210,7 @@ export default function HistoricalStats() {
               Clear Filters
             </button>
 
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-slate-400">
               {stats?.length || 0} records
             </span>
           </div>
@@ -218,7 +218,7 @@ export default function HistoricalStats() {
       </div>
 
       {/* Help text */}
-      <div className="mb-4 text-sm text-gray-600">
+      <div className="mb-4 text-sm text-slate-400">
         Click column group headers to expand/collapse. Click column headers to sort.
       </div>
 

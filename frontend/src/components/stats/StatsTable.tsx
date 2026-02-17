@@ -144,26 +144,26 @@ export function StatsTable({ data }: StatsTableProps) {
 
   if (data.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
+      <div className="text-center py-8 text-slate-400">
         No players found
       </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto border rounded-lg mx-auto w-fit">
-      <table className="divide-y divide-gray-200 text-sm">
+    <div className="overflow-x-auto rounded-xl border border-slate-200 mx-auto w-fit">
+      <table className="divide-y divide-slate-100 text-sm">
         {/* Header Row 1: Group Headers */}
-        <thead className="bg-gray-100">
-          <tr>
+        <thead>
+          <tr className="bg-slate-50">
             {/* Fixed columns */}
-            <th className="px-2 py-2 text-left text-xs font-semibold text-gray-700 sticky left-0 bg-gray-100 z-10" rowSpan={2}>
+            <th className="px-3 py-2.5 text-left text-xs font-semibold text-slate-600 sticky left-0 bg-slate-50 z-10" rowSpan={2}>
               Name
             </th>
-            <th className="px-2 py-2 text-left text-xs font-semibold text-gray-700" rowSpan={2}>
+            <th className="px-2 py-2.5 text-left text-xs font-semibold text-slate-600" rowSpan={2}>
               Country
             </th>
-            <th className="px-2 py-2 text-left text-xs font-semibold text-gray-700" rowSpan={2}>
+            <th className="px-2 py-2.5 text-left text-xs font-semibold text-slate-600" rowSpan={2}>
               Pos
             </th>
 
@@ -175,13 +175,15 @@ export function StatsTable({ data }: StatsTableProps) {
                   key={group.id}
                   colSpan={isExpanded ? group.columns.length : 1}
                   className={cn(
-                    'px-2 py-2 text-center text-xs font-semibold cursor-pointer hover:bg-gray-200 border-l border-gray-300',
-                    isExpanded ? 'bg-primary-100 text-primary-800' : 'bg-gray-200 text-gray-600'
+                    'px-2 py-2.5 text-center text-xs font-semibold cursor-pointer border-l border-slate-200 transition-colors',
+                    isExpanded
+                      ? 'bg-primary-50 text-primary-700 hover:bg-primary-100'
+                      : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
                   )}
                   onClick={() => toggleGroup(group.id)}
                 >
                   <div className="flex items-center justify-center gap-1">
-                    <span>{isExpanded ? '▼' : '▶'}</span>
+                    <span className="text-[10px]">{isExpanded ? '▼' : '▶'}</span>
                     <span>{group.label}</span>
                   </div>
                 </th>
@@ -190,14 +192,14 @@ export function StatsTable({ data }: StatsTableProps) {
           </tr>
 
           {/* Header Row 2: Column Headers */}
-          <tr className="bg-gray-50">
+          <tr className="bg-white">
             {COLUMN_GROUPS.map((group) => {
               const isExpanded = expandedGroups.has(group.id);
               if (!isExpanded) {
                 return (
                   <th
                     key={`${group.id}-collapsed`}
-                    className="px-2 py-1 text-center text-xs text-gray-400 border-l border-gray-300"
+                    className="px-2 py-1.5 text-center text-xs text-slate-300 border-l border-slate-200"
                   >
                     ...
                   </th>
@@ -207,15 +209,15 @@ export function StatsTable({ data }: StatsTableProps) {
                 <th
                   key={col.key}
                   className={cn(
-                    'px-2 py-1 text-center text-xs font-medium text-gray-600 cursor-pointer hover:bg-gray-100',
-                    idx === 0 && 'border-l border-gray-300'
+                    'px-2 py-1.5 text-center text-xs font-medium text-slate-500 cursor-pointer hover:text-slate-700',
+                    idx === 0 && 'border-l border-slate-200'
                   )}
                   onClick={() => handleSort(col.key)}
                 >
                   <div className="flex items-center justify-center gap-0.5">
                     {col.header}
                     {sortKey === col.key && (
-                      <span className="text-primary-600">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                      <span className="text-primary-500">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                     )}
                   </div>
                 </th>
@@ -224,20 +226,20 @@ export function StatsTable({ data }: StatsTableProps) {
           </tr>
         </thead>
 
-        <tbody className="bg-white divide-y divide-gray-200">
+        <tbody className="divide-y divide-slate-100">
           {sortedData.map((player, idx) => (
-            <tr key={`${player.name}-${idx}`} className="hover:bg-gray-50">
+            <tr key={`${player.name}-${idx}`} className="hover:bg-primary-50/30 transition-colors">
               {/* Fixed columns */}
-              <td className="px-2 py-1 whitespace-nowrap font-medium text-gray-900 sticky left-0 bg-white z-10">
+              <td className="px-3 py-1.5 whitespace-nowrap font-medium text-slate-800 sticky left-0 bg-white z-10">
                 {player.name}
               </td>
-              <td className="px-2 py-1 whitespace-nowrap">
+              <td className="px-2 py-1.5 whitespace-nowrap">
                 <span className="flex items-center gap-1">
                   <CountryFlag country={player.country} size="sm" />
-                  <span className="text-gray-600 text-xs">{player.country.slice(0, 3).toUpperCase()}</span>
+                  <span className="text-slate-500 text-xs">{player.country.slice(0, 3).toUpperCase()}</span>
                 </span>
               </td>
-              <td className="px-2 py-1 whitespace-nowrap text-gray-600">
+              <td className="px-2 py-1.5 whitespace-nowrap text-slate-500">
                 {getPositionAbbr(player.position)}
               </td>
 
@@ -248,7 +250,7 @@ export function StatsTable({ data }: StatsTableProps) {
                   return (
                     <td
                       key={`${group.id}-collapsed`}
-                      className="px-2 py-2 text-center text-gray-400 border-l border-gray-200"
+                      className="px-2 py-2 text-center text-slate-300 border-l border-slate-100"
                     >
                       ...
                     </td>
@@ -258,10 +260,10 @@ export function StatsTable({ data }: StatsTableProps) {
                   <td
                     key={col.key}
                     className={cn(
-                      'px-2 py-1 text-center whitespace-nowrap',
-                      colIdx === 0 && 'border-l border-gray-200',
+                      'px-2 py-1.5 text-center whitespace-nowrap tabular-nums',
+                      colIdx === 0 && 'border-l border-slate-100',
                       col.key === 'change' && player.change !== null && (
-                        player.change > 0 ? 'text-green-600' : player.change < 0 ? 'text-red-600' : ''
+                        player.change > 0 ? 'text-emerald-600' : player.change < 0 ? 'text-red-500' : ''
                       )
                     )}
                   >

@@ -24,20 +24,20 @@ export function PlayerCard({
   return (
     <div
       className={cn(
-        'card cursor-pointer transition-all',
+        'card cursor-pointer transition-all hover:shadow-card-hover',
         selected && 'ring-2 ring-primary-500',
-        isCaptain && 'border-2 border-yellow-500',
-        isSuperSub && 'border-2 border-purple-500'
+        isCaptain && 'border-2 border-yellow-400',
+        isSuperSub && 'border-2 border-purple-400'
       )}
       onClick={onClick}
     >
       <div className="flex justify-between items-start">
         <div>
-          <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+          <h3 className="font-semibold text-slate-800 flex items-center gap-2">
             <CountryFlag country={player.country} size="sm" />
             {player.name}
           </h3>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-slate-400">
             {getPositionLabel(player.fantasy_position)} | {player.country}
           </p>
         </div>
@@ -47,21 +47,23 @@ export function PlayerCard({
               e.stopPropagation();
               onRemove?.();
             }}
-            className="text-red-500 hover:text-red-700"
+            className="text-red-400 hover:text-red-600 transition-colors"
           >
-            X
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         )}
       </div>
 
       <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
         <div>
-          <span className="text-gray-500">Price:</span>{' '}
-          <span className="font-medium">{formatPrice(player.price)}</span>
+          <span className="text-slate-400">Price:</span>{' '}
+          <span className="font-medium tabular-nums">{formatPrice(player.price)}</span>
         </div>
         <div>
-          <span className="text-gray-500">Predicted:</span>{' '}
-          <span className="font-medium text-primary-600">
+          <span className="text-slate-400">Predicted:</span>{' '}
+          <span className="font-medium text-primary-600 tabular-nums">
             {formatPoints(player.predicted_points)}
           </span>
         </div>
@@ -70,12 +72,12 @@ export function PlayerCard({
       {(isCaptain || isSuperSub) && (
         <div className="mt-2">
           {isCaptain && (
-            <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-medium">
+            <span className="badge-yellow">
               Captain (2x)
             </span>
           )}
           {isSuperSub && (
-            <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs font-medium">
+            <span className="badge-purple">
               Super Sub (3x)
             </span>
           )}

@@ -11,16 +11,16 @@ interface FormChartProps {
   color?: string;
 }
 
-export function FormChart({ data, title, color = '#0ea5e9' }: FormChartProps) {
+export function FormChart({ data, title, color = '#6366f1' }: FormChartProps) {
   return (
     <div className="card">
-      {title && <h3 className="font-semibold mb-4">{title}</h3>}
+      {title && <h3 className="font-semibold mb-4 text-slate-800">{title}</h3>}
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="label" />
-            <YAxis />
+            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+            <XAxis dataKey="label" tick={{ fontSize: 12, fill: '#64748b' }} />
+            <YAxis tick={{ fontSize: 12, fill: '#64748b' }} />
             <Tooltip />
             <Line
               type="monotone"

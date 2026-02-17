@@ -112,10 +112,10 @@ function ScrapeButton({
   disabled: boolean;
   variant?: 'default' | 'primary';
 }) {
-  const base = 'px-3 py-1.5 text-sm rounded border transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
+  const base = 'px-3 py-1.5 text-sm rounded-lg border transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium';
   const styles = variant === 'primary'
-    ? `${base} border-primary-500 text-primary-600 hover:bg-primary-50 font-medium`
-    : `${base} border-gray-300 text-gray-600 hover:bg-gray-50`;
+    ? `${base} border-primary-200 text-primary-600 hover:bg-primary-50 bg-white`
+    : `${base} border-slate-200 text-slate-600 hover:bg-slate-50 bg-white`;
 
   return (
     <button onClick={onClick} disabled={disabled} className={styles}>
@@ -164,33 +164,25 @@ export default function Dashboard() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-slate-800">Dashboard</h1>
         <div className="flex items-center gap-3 mt-1">
-          <p className="text-gray-500">Round {round} Overview — {season} Six Nations</p>
+          <p className="text-slate-400">Round {round} Overview — {season} Six Nations</p>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setRoundOverride(Math.max(1, round - 1))}
               disabled={round <= 1}
-              className="w-6 h-6 flex items-center justify-center rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed text-sm font-bold"
+              className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed text-sm font-bold transition-colors"
             >
               −
             </button>
-            <span className="text-sm text-gray-500 w-6 text-center">{round}</span>
+            <span className="text-sm text-slate-500 w-6 text-center tabular-nums font-medium">{round}</span>
             <button
               onClick={() => setRoundOverride(Math.min(5, round + 1))}
               disabled={round >= 5}
-              className="w-6 h-6 flex items-center justify-center rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed text-sm font-bold"
+              className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed text-sm font-bold transition-colors"
             >
               +
             </button>
-            {roundOverride !== null && (
-              <button
-                onClick={() => setRoundOverride(null)}
-                className="ml-1 text-xs text-primary-600 hover:underline"
-              >
-                reset
-              </button>
-            )}
           </div>
         </div>
       </div>
@@ -198,11 +190,11 @@ export default function Dashboard() {
       {/* Scrape Controls */}
       <div className="card">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-sm text-gray-700">Data Controls</h3>
+          <h3 className="font-semibold text-sm text-slate-600">Data Controls</h3>
           {scrapeStatus && (
             <div className="flex items-center gap-2 text-xs">
-              <span className={`inline-block w-2 h-2 rounded-full ${missing.length === 0 ? 'bg-green-500' : 'bg-yellow-500'}`} />
-              <span className="text-gray-500">
+              <span className={`inline-block w-2 h-2 rounded-full ${missing.length === 0 ? 'bg-emerald-500' : 'bg-yellow-500'}`} />
+              <span className="text-slate-400">
                 {missing.length === 0
                   ? 'All markets scraped'
                   : `Missing: ${missing.join(', ')}`}
@@ -247,9 +239,9 @@ export default function Dashboard() {
 
         {scrapeJob.status !== 'idle' && (
           <div className={`mt-2 text-sm flex items-center gap-2 ${
-            scrapeJob.status === 'scraping' ? 'text-gray-500'
-              : scrapeJob.status === 'done' ? 'text-green-600'
-              : 'text-red-600'
+            scrapeJob.status === 'scraping' ? 'text-slate-400'
+              : scrapeJob.status === 'done' ? 'text-emerald-600'
+              : 'text-red-500'
           }`}>
             {scrapeJob.status === 'scraping' && (
               <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24">
@@ -265,19 +257,19 @@ export default function Dashboard() {
         {scrapeStatus && scrapeStatus.matches.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-3 text-xs">
             {scrapeStatus.matches.map((m) => (
-              <div key={`${m.home_team}-${m.away_team}`} className="flex items-center gap-1.5 text-gray-500">
-                <span className="font-medium">{m.home_team} v {m.away_team}:</span>
-                <span className={m.has_handicap ? 'text-green-600' : 'text-gray-300'}>H</span>
-                <span className={m.has_totals ? 'text-green-600' : 'text-gray-300'}>T</span>
-                <span className={m.has_try_scorer ? 'text-green-600' : 'text-gray-300'}>
+              <div key={`${m.home_team}-${m.away_team}`} className="flex items-center gap-1.5 text-slate-400">
+                <span className="font-medium text-slate-500">{m.home_team} v {m.away_team}:</span>
+                <span className={m.has_handicap ? 'text-emerald-600' : 'text-slate-300'}>H</span>
+                <span className={m.has_totals ? 'text-emerald-600' : 'text-slate-300'}>T</span>
+                <span className={m.has_try_scorer ? 'text-emerald-600' : 'text-slate-300'}>
                   TS{m.has_try_scorer ? `(${m.try_scorer_count})` : ''}
                 </span>
               </div>
             ))}
-            <div className="flex items-center gap-1.5 text-gray-500">
-              <span className="font-medium">Prices:</span>
+            <div className="flex items-center gap-1.5 text-slate-400">
+              <span className="font-medium text-slate-500">Prices:</span>
               {scrapeStatus.has_prices ? (
-                <span className="text-green-600">({scrapeStatus.price_count})</span>
+                <span className="text-emerald-600">({scrapeStatus.price_count})</span>
               ) : (
                 <span className="text-red-400">(run CLI scraper)</span>
               )}
@@ -288,7 +280,7 @@ export default function Dashboard() {
 
       {/* Upcoming Matches */}
       <div>
-        <h2 className="text-xl font-bold mb-3">Upcoming Matches</h2>
+        <h2 className="text-xl font-bold text-slate-800 mb-3">Upcoming Matches</h2>
         {matchList.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
             {matchList.map((match) => (
@@ -299,7 +291,7 @@ export default function Dashboard() {
             ))}
           </div>
         ) : (
-          <div className="card text-center text-gray-500 py-8">
+          <div className="card text-center text-slate-400 py-8">
             No match odds available for this round yet — use the scrape controls above
           </div>
         )}
@@ -310,15 +302,15 @@ export default function Dashboard() {
         {/* Top Value Picks */}
         <div className="card">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold">Top Value Picks</h2>
-            <Link to="/players" className="text-primary-600 text-sm hover:underline">
+            <h2 className="text-lg font-bold text-slate-800">Top Value Picks</h2>
+            <Link to="/players" className="text-primary-600 text-sm hover:underline font-medium">
               View All
             </Link>
           </div>
           {valuePicks.length > 0 ? (
             <table className="w-full">
               <thead>
-                <tr className="text-left text-gray-500 text-xs uppercase">
+                <tr className="text-left text-slate-400 text-xs uppercase">
                   <th className="pb-2">Player</th>
                   <th className="pb-2">Pos</th>
                   <th className="pb-2 text-right">Price</th>
@@ -328,21 +320,21 @@ export default function Dashboard() {
               </thead>
               <tbody>
                 {valuePicks.map((player) => (
-                  <tr key={player.id} className="border-t">
+                  <tr key={player.id} className="border-t border-slate-100">
                     <td className="py-1.5">
                       <div className="flex items-center gap-1.5">
                         <CountryFlag country={player.country} size="sm" />
-                        <Link to={`/players/${player.id}`} className="font-medium hover:text-primary-600">
+                        <Link to={`/players/${player.id}`} className="font-medium text-slate-700 hover:text-primary-600">
                           {player.name}
                         </Link>
                       </div>
                     </td>
-                    <td className="py-1.5 text-gray-500 text-sm">{player.fantasy_position}</td>
-                    <td className="py-1.5 text-right text-sm">{player.price ?? '-'}</td>
-                    <td className="py-1.5 text-right text-sm font-medium text-primary-600">
+                    <td className="py-1.5 text-slate-400 text-sm">{player.fantasy_position}</td>
+                    <td className="py-1.5 text-right text-sm tabular-nums">{player.price ?? '-'}</td>
+                    <td className="py-1.5 text-right text-sm font-medium text-primary-600 tabular-nums">
                       {player.predicted_points?.toFixed(1) ?? '-'}
                     </td>
-                    <td className="py-1.5 text-right text-sm font-semibold text-green-600">
+                    <td className="py-1.5 text-right text-sm font-semibold text-emerald-600 tabular-nums">
                       {player.value_score?.toFixed(2) ?? '-'}
                     </td>
                   </tr>
@@ -350,22 +342,22 @@ export default function Dashboard() {
               </tbody>
             </table>
           ) : (
-            <p className="text-gray-500">No value data available yet</p>
+            <p className="text-slate-400">No value data available yet</p>
           )}
         </div>
 
         {/* Top Try Threats */}
         <div className="card">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold">Top Try Threats</h2>
-            <Link to="/tryscorers" className="text-primary-600 text-sm hover:underline">
+            <h2 className="text-lg font-bold text-slate-800">Top Try Threats</h2>
+            <Link to="/tryscorers" className="text-primary-600 text-sm hover:underline font-medium">
               View All
             </Link>
           </div>
           {tryThreats.length > 0 ? (
             <table className="w-full">
               <thead>
-                <tr className="text-left text-gray-500 text-xs uppercase">
+                <tr className="text-left text-slate-400 text-xs uppercase">
                   <th className="pb-2">Player</th>
                   <th className="pb-2 text-right">Try Odds</th>
                   <th className="pb-2 text-right">Implied %</th>
@@ -373,19 +365,19 @@ export default function Dashboard() {
               </thead>
               <tbody>
                 {tryThreats.map((player) => (
-                  <tr key={player.id} className="border-t">
+                  <tr key={player.id} className="border-t border-slate-100">
                     <td className="py-1.5">
                       <div className="flex items-center gap-1.5">
                         <CountryFlag country={player.country} size="sm" />
-                        <Link to={`/players/${player.id}`} className="font-medium hover:text-primary-600">
+                        <Link to={`/players/${player.id}`} className="font-medium text-slate-700 hover:text-primary-600">
                           {player.name}
                         </Link>
                       </div>
                     </td>
-                    <td className="py-1.5 text-right text-sm">
+                    <td className="py-1.5 text-right text-sm tabular-nums">
                       {player.anytime_try_odds?.toFixed(2) ?? '-'}
                     </td>
-                    <td className="py-1.5 text-right text-sm font-semibold text-green-600">
+                    <td className="py-1.5 text-right text-sm font-semibold text-emerald-600 tabular-nums">
                       {player.anytime_try_odds
                         ? `${(100 / player.anytime_try_odds).toFixed(0)}%`
                         : '-'}
@@ -395,7 +387,7 @@ export default function Dashboard() {
               </tbody>
             </table>
           ) : (
-            <p className="text-gray-500">No try odds available yet</p>
+            <p className="text-slate-400">No try odds available yet</p>
           )}
         </div>
       </div>
@@ -404,12 +396,12 @@ export default function Dashboard() {
       <div>
         <Link
           to="/players"
-          className="card hover:shadow-lg transition-shadow group inline-block"
+          className="card hover:shadow-card-hover transition-shadow group inline-block"
         >
-          <h3 className="font-semibold group-hover:text-primary-600">
+          <h3 className="font-semibold text-slate-700 group-hover:text-primary-600 transition-colors">
             Browse Players
           </h3>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-slate-400 mt-1">
             View all available players and their stats
           </p>
         </Link>
