@@ -4,8 +4,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
+from app.auth import require_admin
 from app.database import get_db
 from app.models import Player, Prediction, FantasyPrice
+from app.models.user import User
 from app.schemas.prediction import PredictionResponse, PredictionDetail, PredictionBreakdown
 from app.schemas.player import Position
 from app.services.predictor import Predictor, PlayerFeatures
@@ -162,6 +164,7 @@ async def generate_predictions(
     round: int,
     season: int = 2025,
     db: AsyncSession = Depends(get_db),
+    _admin: User = Depends(require_admin),
 ):
     """Generate predictions for all available players in a round"""
     query = select(Player).options(
