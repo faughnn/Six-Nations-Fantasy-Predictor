@@ -5,6 +5,7 @@ export interface AuthUser {
   email: string;
   name: string;
   avatar_url: string | null;
+  is_admin: boolean;
 }
 
 export interface AuthResponse {

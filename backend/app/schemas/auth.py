@@ -26,5 +26,6 @@ class UserResponse(BaseModel):
     email: str
     name: str
     avatar_url: str | None = None
+    is_admin: bool = False
 
     model_config = {"from_attributes": True}

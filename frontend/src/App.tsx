@@ -8,6 +8,7 @@ import PlayersAllStats from './pages/PlayersAllStats';
 import HistoricalStats from './pages/HistoricalStats';
 import PlayerProjections from './pages/PlayerProjections';
 import Tryscorers from './pages/Tryscorers';
+import AdminScrape from './pages/AdminScrape';
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', end: true },
@@ -64,7 +65,7 @@ function UserMenu({ onAction }: { onAction?: () => void }) {
   );
 }
 
-function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
+function MobileMenu({ open, onClose, isAdmin }: { open: boolean; onClose: () => void; isAdmin: boolean }) {
   const location = useLocation();
 
   // Close on route change
@@ -95,6 +96,20 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
               {item.label}
             </NavLink>
           ))}
+          {isAdmin && (
+            <NavLink
+              to="/admin/scrape"
+              className={({ isActive }) =>
+                `block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  isActive
+                    ? 'bg-amber-50 text-amber-700'
+                    : 'text-amber-500 hover:bg-amber-50'
+                }`
+              }
+            >
+              Admin
+            </NavLink>
+          )}
           <div className="border-t border-slate-100 pt-2 mt-2">
             <UserMenu onAction={onClose} />
           </div>
@@ -148,6 +163,20 @@ function App() {
                     {item.label}
                   </NavLink>
                 ))}
+                {user.is_admin && (
+                  <NavLink
+                    to="/admin/scrape"
+                    className={({ isActive }) =>
+                      `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                        isActive
+                          ? 'bg-amber-50 text-amber-700'
+                          : 'text-amber-500 hover:text-amber-700 hover:bg-amber-50'
+                      }`
+                    }
+                  >
+                    Admin
+                  </NavLink>
+                )}
                 <div className="w-px h-6 bg-slate-200 mx-1" />
                 <UserMenu />
               </div>
@@ -175,7 +204,7 @@ function App() {
           </div>
         </nav>
 
-        <MobileMenu open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
+        <MobileMenu open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} isAdmin={user.is_admin} />
 
         <main>
           <Routes>
@@ -195,6 +224,7 @@ function App() {
               </div>
             } />
             <Route path="/tryscorers" element={<div className="max-w-7xl mx-auto px-4 py-6"><Tryscorers /></div>} />
+            <Route path="/admin/scrape" element={<div className="max-w-7xl mx-auto px-4 py-6"><AdminScrape /></div>} />
             <Route path="/" element={<div className="max-w-7xl mx-auto px-4 py-6"><Dashboard /></div>} />
             <Route path="/players" element={<div className="max-w-7xl mx-auto px-4 py-6"><Players /></div>} />
           </Routes>

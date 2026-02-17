@@ -1,129 +1,11 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
 import { usePlayers } from '../hooks/usePlayers';
 import { useMatches, useCurrentRound, useRoundScrapeStatus } from '../hooks/useMatches';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { CountryFlag } from '../components/common/CountryFlag';
 import { MatchCard } from '../components/matches/MatchCard';
-import { scrapeApi } from '../api/client';
-import type { ScrapeResponse } from '../api/client';
 import { Tooltip } from '../components/common/Tooltip';
-
-type ScrapeState = 'idle' | 'scraping' | 'done' | 'error';
-
-function useScrapeJob(season: number, round: number) {
-  const queryClient = useQueryClient();
-  const [status, setStatus] = useState<ScrapeState>('idle');
-  const [message, setMessage] = useState('');
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const stopPolling = useCallback(() => {
-    if (pollRef.current) {
-      clearInterval(pollRef.current);
-      pollRef.current = null;
-    }
-  }, []);
-
-  useEffect(() => {
-    return () => stopPolling();
-  }, [stopPolling]);
-
-  const invalidateAll = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: ['matches'] });
-    queryClient.invalidateQueries({ queryKey: ['roundScrapeStatus'] });
-    queryClient.invalidateQueries({ queryKey: ['players'] });
-  }, [queryClient]);
-
-  const startJob = useCallback(async (apiCall: () => Promise<ScrapeResponse>) => {
-    setStatus('scraping');
-    setMessage('Starting...');
-
-    try {
-      const response = await apiCall();
-
-      if (response.status === 'completed') {
-        // Immediate completion (e.g. "nothing missing")
-        setStatus('done');
-        setMessage(response.message || 'Done');
-        invalidateAll();
-        setTimeout(() => setStatus('idle'), 5000);
-        return;
-      }
-
-      if (!response.job_id) {
-        setStatus('error');
-        setMessage(response.message || 'No job started');
-        setTimeout(() => setStatus('idle'), 8000);
-        return;
-      }
-
-      const startTime = Date.now();
-      const MAX_POLL_MS = 10 * 60 * 1000;
-
-      pollRef.current = setInterval(async () => {
-        if (Date.now() - startTime > MAX_POLL_MS) {
-          stopPolling();
-          setStatus('error');
-          setMessage('Scrape timed out');
-          setTimeout(() => setStatus('idle'), 8000);
-          return;
-        }
-
-        try {
-          const jobStatus = await scrapeApi.getJobStatus(response.job_id);
-          setMessage(jobStatus.message || 'Scraping...');
-
-          if (jobStatus.status === 'completed') {
-            stopPolling();
-            setStatus('done');
-            invalidateAll();
-            setTimeout(() => setStatus('idle'), 5000);
-          } else if (jobStatus.status === 'failed') {
-            stopPolling();
-            setStatus('error');
-            setMessage(jobStatus.message || 'Scrape failed');
-            setTimeout(() => setStatus('idle'), 8000);
-          }
-        } catch {
-          stopPolling();
-          setStatus('error');
-          setMessage('Failed to check scrape status');
-          setTimeout(() => setStatus('idle'), 8000);
-        }
-      }, 3000);
-    } catch {
-      setStatus('error');
-      setMessage('Failed to start scrape');
-      setTimeout(() => setStatus('idle'), 8000);
-    }
-  }, [stopPolling, invalidateAll]);
-
-  return { status, message, startJob, isBusy: status === 'scraping' };
-}
-
-function ScrapeButton({
-  label,
-  onClick,
-  disabled,
-  variant = 'default',
-}: {
-  label: string;
-  onClick: () => void;
-  disabled: boolean;
-  variant?: 'default' | 'primary';
-}) {
-  const base = 'px-3 py-1.5 text-sm rounded-lg border transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium';
-  const styles = variant === 'primary'
-    ? `${base} border-primary-200 text-primary-600 hover:bg-primary-50 bg-white`
-    : `${base} border-slate-200 text-slate-600 hover:bg-slate-50 bg-white`;
-
-  return (
-    <button onClick={onClick} disabled={disabled} className={styles}>
-      {label}
-    </button>
-  );
-}
 
 export default function Dashboard() {
   const { data: currentRound, isLoading: roundLoading } = useCurrentRound();
@@ -134,8 +16,6 @@ export default function Dashboard() {
   const { data: players, isLoading: playersLoading } = usePlayers({ is_available: true, season, round });
   const { data: matches, isLoading: matchesLoading } = useMatches(season, round);
   const { data: scrapeStatus } = useRoundScrapeStatus(season, round);
-
-  const scrapeJob = useScrapeJob(season, round);
 
   const isLoading = roundLoading || playersLoading || matchesLoading;
 
@@ -167,7 +47,7 @@ export default function Dashboard() {
       <div>
         <h1 className="text-2xl font-bold text-slate-800">Dashboard</h1>
         <p className="text-sm text-slate-400 mt-1 mb-2">
-          Your command centre for the current round. Scrape the latest odds, view upcoming fixtures, and spot the best value picks and try threats at a glance.
+          Your command centre for the current round. View upcoming fixtures and spot the best value picks and try threats at a glance.
         </p>
         <div className="flex items-center gap-3 mt-1">
           <p className="text-slate-400">Round {round} Overview — {season} Six Nations</p>
@@ -191,10 +71,10 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Scrape Controls */}
+      {/* Data Status */}
       <div className="card">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-sm text-slate-600">Data Controls</h3>
+        <div className="flex items-center justify-between">
+          <h3 className="font-semibold text-sm text-slate-600">Data Status</h3>
           {scrapeStatus && (
             <div className="flex items-center gap-2 text-xs">
               <span className={`inline-block w-2 h-2 rounded-full ${missing.length === 0 ? 'bg-emerald-500' : 'bg-yellow-500'}`} />
@@ -206,56 +86,6 @@ export default function Dashboard() {
             </div>
           )}
         </div>
-
-        <div className="flex flex-wrap gap-2">
-          <ScrapeButton
-            label="Scrape Missing"
-            onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeMissing(season, round))}
-            disabled={scrapeJob.isBusy || missing.length === 0}
-            variant="primary"
-          />
-          <ScrapeButton
-            label="Handicaps"
-            onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeMarket(season, round, 'handicaps'))}
-            disabled={scrapeJob.isBusy}
-          />
-          <ScrapeButton
-            label="Totals"
-            onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeMarket(season, round, 'totals'))}
-            disabled={scrapeJob.isBusy}
-          />
-          <ScrapeButton
-            label="Try Scorers"
-            onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeMarket(season, round, 'try_scorer'))}
-            disabled={scrapeJob.isBusy}
-          />
-          <ScrapeButton
-            label="Refresh All"
-            onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeAllMatchOdds(season, round))}
-            disabled={scrapeJob.isBusy}
-          />
-          <ScrapeButton
-            label="Import Prices"
-            onClick={() => scrapeJob.startJob(() => scrapeApi.importPrices(season, round))}
-            disabled={scrapeJob.isBusy}
-          />
-        </div>
-
-        {scrapeJob.status !== 'idle' && (
-          <div className={`mt-2 text-sm flex items-center gap-2 ${
-            scrapeJob.status === 'scraping' ? 'text-slate-400'
-              : scrapeJob.status === 'done' ? 'text-emerald-600'
-              : 'text-red-500'
-          }`}>
-            {scrapeJob.status === 'scraping' && (
-              <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-              </svg>
-            )}
-            {scrapeJob.message}
-          </div>
-        )}
 
         {/* Per-match status indicators */}
         {scrapeStatus && scrapeStatus.matches.length > 0 && (
@@ -275,7 +105,7 @@ export default function Dashboard() {
               {scrapeStatus.has_prices ? (
                 <span className="text-emerald-600">({scrapeStatus.price_count})</span>
               ) : (
-                <span className="text-red-400">(run CLI scraper)</span>
+                <span className="text-red-400">(not imported)</span>
               )}
             </div>
           </div>
@@ -296,7 +126,7 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="card text-center text-slate-400 py-8">
-            No match odds available for this round yet — use the scrape controls above
+            No match odds available for this round yet
           </div>
         )}
       </div>

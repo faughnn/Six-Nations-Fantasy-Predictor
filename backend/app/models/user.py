@@ -13,4 +13,5 @@ class User(Base):
     google_id = Column(String, unique=True, nullable=True, index=True)
     avatar_url = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
+    is_admin = Column(Boolean, default=False, nullable=False, server_default="false")
     created_at = Column(DateTime, default=datetime.utcnow)
