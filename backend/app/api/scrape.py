@@ -17,9 +17,11 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.auth import require_admin
 from app.database import get_db, async_session
 from app.models.odds import MatchOdds, Odds
 from app.models.player import Player
+from app.models.user import User
 from app.schemas.odds import AllMatchOddsScrapeRequest, OddsScrapeResponse
 
 router = APIRouter()
@@ -248,7 +250,10 @@ def _create_job(markets_label: str) -> str:
 
 
 @router.post("/all-match-odds", response_model=OddsScrapeResponse)
-async def scrape_all_match_odds(request: AllMatchOddsScrapeRequest):
+async def scrape_all_match_odds(
+    request: AllMatchOddsScrapeRequest,
+    _admin: User = Depends(require_admin),
+):
     """Scrape all markets (handicaps, totals, try scorer) for all matches."""
     job_id = _create_job("all markets")
     asyncio.create_task(_run_scraper(job_id, request.season, request.round, ALL_MARKETS))
@@ -265,7 +270,10 @@ class MarketScrapeRequest(AllMatchOddsScrapeRequest):
 
 
 @router.post("/market", response_model=OddsScrapeResponse)
-async def scrape_single_market(request: MarketScrapeRequest):
+async def scrape_single_market(
+    request: MarketScrapeRequest,
+    _admin: User = Depends(require_admin),
+):
     """Scrape a single market type for all matches."""
     market = request.market
     if market not in MARKET_URL_MAP:
@@ -292,6 +300,7 @@ async def scrape_single_market(request: MarketScrapeRequest):
 async def scrape_missing_markets(
     request: AllMatchOddsScrapeRequest,
     db: AsyncSession = Depends(get_db),
+    _admin: User = Depends(require_admin),
 ):
     """Auto-detect which markets are missing per match and scrape only those."""
     season = request.season
@@ -379,6 +388,7 @@ async def scrape_missing_markets(
 async def import_prices(
     request: AllMatchOddsScrapeRequest,
     db: AsyncSession = Depends(get_db),
+    _admin: User = Depends(require_admin),
 ):
     """Import fantasy prices from the latest JSON file for the given season/round."""
     import json

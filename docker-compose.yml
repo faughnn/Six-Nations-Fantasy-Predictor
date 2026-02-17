@@ -25,19 +25,20 @@ services:
       db:
         condition: service_healthy
     environment:
-      - DATABASE_URL=postgresql+asyncpg://rugby:rugbypass@db:5432/fantasy_rugby
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-rugby}:${POSTGRES_PASSWORD:-rugbypass}@db:5432/${POSTGRES_DB:-fantasy_rugby}
       - PYTHONPATH=/app
-      - JWT_SECRET=change-me-in-production
+      - JWT_SECRET=${JWT_SECRET:?Set JWT_SECRET in .env}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
 
   db:
     image: postgres:16
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: fantasy_rugby
-      POSTGRES_USER: rugby
-      POSTGRES_PASSWORD: rugbypass
+      POSTGRES_DB: ${POSTGRES_DB:-fantasy_rugby}
+      POSTGRES_USER: ${POSTGRES_USER:-rugby}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-rugbypass}
     ports:
       - "5432:5432"
     healthcheck:

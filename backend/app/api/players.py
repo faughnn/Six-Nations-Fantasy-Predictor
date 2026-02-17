@@ -4,8 +4,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
+from app.auth import require_admin
 from app.database import get_db
 from app.models import Player, FantasyPrice, TeamSelection, Prediction, Odds, PlayerClub
+from app.models.user import User
 from app.schemas.player import (
     PlayerCreate,
     PlayerResponse,
@@ -532,6 +534,7 @@ async def get_player(
 async def create_player(
     player: PlayerCreate,
     db: AsyncSession = Depends(get_db),
+    _admin: User = Depends(require_admin),
 ):
     """Create a new player"""
     db_player = Player(

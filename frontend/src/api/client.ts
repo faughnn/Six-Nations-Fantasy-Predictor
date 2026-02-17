@@ -217,4 +217,22 @@ export const scrapeApi = {
   },
 };
 
+export interface CreateIssueRequest {
+  type: 'bug' | 'feature';
+  title: string;
+  description: string;
+}
+
+export interface CreateIssueResponse {
+  issue_url: string;
+  issue_number: number;
+}
+
+export const issuesApi = {
+  create: async (data: CreateIssueRequest): Promise<CreateIssueResponse> => {
+    const response = await api.post('/api/issues', data);
+    return response.data;
+  },
+};
+
 export default api;
