@@ -18,6 +18,9 @@ services:
     build: ./backend
     ports:
       - "8000:8000"
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     volumes:
       - ./backend:/app
       - ./models:/app/models

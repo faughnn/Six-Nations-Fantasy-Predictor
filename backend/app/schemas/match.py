@@ -49,6 +49,8 @@ class RoundScrapeStatusResponse(BaseModel):
     missing_markets: List[str]
     has_prices: bool = False
     price_count: int = 0
+    availability_known: int = 0
+    availability_unknown: int = 0
 
 
 class TryScorerDetail(BaseModel):

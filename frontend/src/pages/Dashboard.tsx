@@ -1,11 +1,7 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { usePlayers } from '../hooks/usePlayers';
 import { useMatches, useCurrentRound, useRoundScrapeStatus } from '../hooks/useMatches';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
-import { CountryFlag } from '../components/common/CountryFlag';
 import { MatchCard } from '../components/matches/MatchCard';
-import { Tooltip } from '../components/common/Tooltip';
 
 export default function Dashboard() {
   const { data: currentRound, isLoading: roundLoading } = useCurrentRound();
@@ -13,11 +9,10 @@ export default function Dashboard() {
   const season = currentRound?.season ?? 0;
   const round = roundOverride ?? currentRound?.round ?? 0;
 
-  const { data: players, isLoading: playersLoading } = usePlayers({ is_available: true, season, round });
   const { data: matches, isLoading: matchesLoading } = useMatches(season, round);
   const { data: scrapeStatus } = useRoundScrapeStatus(season, round);
 
-  const isLoading = roundLoading || playersLoading || matchesLoading;
+  const isLoading = roundLoading || matchesLoading;
 
   if (isLoading) {
     return (
@@ -27,19 +22,8 @@ export default function Dashboard() {
     );
   }
 
-  const availablePlayers = players || [];
   const matchList = matches || [];
   const missing = scrapeStatus?.missing_markets || [];
-
-  const valuePicks = [...availablePlayers]
-    .filter((p) => p.value_score != null && p.value_score > 0)
-    .sort((a, b) => (b.value_score || 0) - (a.value_score || 0))
-    .slice(0, 8);
-
-  const tryThreats = [...availablePlayers]
-    .filter((p) => p.anytime_try_odds != null && p.anytime_try_odds > 0)
-    .sort((a, b) => (a.anytime_try_odds || 999) - (b.anytime_try_odds || 999))
-    .slice(0, 8);
 
   return (
     <div className="space-y-6">
@@ -72,45 +56,85 @@ export default function Dashboard() {
       </div>
 
       {/* Data Status */}
-      <div className="card">
-        <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-sm text-slate-600">Data Status</h3>
-          {scrapeStatus && (
-            <div className="flex items-center gap-2 text-xs">
-              <span className={`inline-block w-2 h-2 rounded-full ${missing.length === 0 ? 'bg-emerald-500' : 'bg-yellow-500'}`} />
-              <span className="text-slate-400">
-                {missing.length === 0
-                  ? 'All markets scraped'
-                  : `Missing: ${missing.join(', ')}`}
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* Per-match status indicators */}
-        {scrapeStatus && scrapeStatus.matches.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-3 text-xs">
-            {scrapeStatus.matches.map((m) => (
-              <div key={`${m.home_team}-${m.away_team}`} className="flex items-center gap-1.5 text-slate-400">
-                <span className="font-medium text-slate-500">{m.home_team} v {m.away_team}:</span>
-                <span className={m.has_handicap ? 'text-emerald-600' : 'text-slate-300'}>H</span>
-                <span className={m.has_totals ? 'text-emerald-600' : 'text-slate-300'}>T</span>
-                <span className={m.has_try_scorer ? 'text-emerald-600' : 'text-slate-300'}>
-                  TS{m.has_try_scorer ? `(${m.try_scorer_count})` : ''}
-                </span>
-              </div>
-            ))}
-            <div className="flex items-center gap-1.5 text-slate-400">
-              <span className="font-medium text-slate-500">Prices:</span>
-              {scrapeStatus.has_prices ? (
-                <span className="text-emerald-600">({scrapeStatus.price_count})</span>
-              ) : (
-                <span className="text-red-400">(not imported)</span>
+      {(() => {
+        const isComplete = scrapeStatus && missing.length === 0 && scrapeStatus.availability_unknown === 0;
+        return (
+          <div className="card">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-sm text-slate-600">Data Status</h3>
+              {scrapeStatus && (
+                <div className="flex items-center gap-2 text-xs">
+                  <span className={`inline-block w-2 h-2 rounded-full ${isComplete ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                  <span className="text-slate-400">
+                    {isComplete
+                      ? 'All data complete'
+                      : `Round ${round} data is incomplete — projections will be updated`}
+                  </span>
+                </div>
               )}
             </div>
+
+            {/* Per-match status indicators + warnings */}
+            {scrapeStatus && scrapeStatus.matches.length > 0 && (
+              <div className="mt-3 flex gap-6">
+                {/* Left: per-match pills */}
+                <div className="space-y-2 text-xs">
+                  {scrapeStatus.matches.map((m) => (
+                    <div key={`${m.home_team}-${m.away_team}`} className="flex flex-wrap items-center gap-1.5">
+                      <span className="font-medium text-slate-600 w-40">{m.home_team} v {m.away_team}</span>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-medium ${m.has_handicap ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${m.has_handicap ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+                        Handicaps
+                      </span>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-medium ${m.has_totals ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${m.has_totals ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+                        Totals
+                      </span>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-medium ${m.has_try_scorer ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${m.has_try_scorer ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+                        Try Scorers{m.has_try_scorer ? ` (${m.try_scorer_count})` : ''}
+                      </span>
+                    </div>
+                  ))}
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-medium text-slate-600 w-40">Fantasy Prices</span>
+                    {scrapeStatus.has_prices ? (
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-medium ${
+                        scrapeStatus.availability_unknown > 0 ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${
+                          scrapeStatus.availability_unknown > 0 ? 'bg-amber-500' : 'bg-emerald-500'
+                        }`} />
+                        Imported ({scrapeStatus.price_count} players)
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-medium bg-red-50 text-red-600">
+                        <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                        Not imported
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Right: warnings */}
+                {(scrapeStatus.availability_unknown > 0 || missing.length > 0) && (
+                  <div className="ml-auto text-xs text-amber-700 space-y-1.5 text-right max-w-sm">
+                    {scrapeStatus.availability_unknown > 0 && (
+                      <p>{scrapeStatus.availability_unknown} players missing lineup availability — will be re-scraped once teams are announced</p>
+                    )}
+                    {scrapeStatus.matches.some(m => !m.has_handicap && (m.home_team === 'Wales' || m.away_team === 'Wales')) && (
+                      <p>Wales spread not yet available — will be updated closer to kick-off</p>
+                    )}
+                    {missing.filter(m => m !== 'prices').length > 0 && (
+                      <p>Missing market data: {missing.filter(m => m !== 'prices').join(', ')}</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        );
+      })()}
 
       {/* Upcoming Matches */}
       <div>
@@ -131,115 +155,6 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Two-column section: Value Picks + Try Threats */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Top Value Picks */}
-        <div className="card">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold text-slate-800">Top Value Picks</h2>
-            <Link to="/players" className="text-primary-600 text-sm hover:underline font-medium">
-              View All
-            </Link>
-          </div>
-          {valuePicks.length > 0 ? (
-            <table className="w-full">
-              <thead>
-                <tr className="text-left text-slate-400 text-xs uppercase">
-                  <th className="pb-2">Player</th>
-                  <th className="pb-2"><Tooltip text="Fantasy position category">Pos</Tooltip></th>
-                  <th className="pb-2 text-right"><Tooltip text="Fantasy cost in stars">Price</Tooltip></th>
-                  <th className="pb-2 text-right"><Tooltip text="ML-predicted fantasy points">Pred</Tooltip></th>
-                  <th className="pb-2 text-right"><Tooltip text="Predicted points per star — higher is better">Value</Tooltip></th>
-                </tr>
-              </thead>
-              <tbody>
-                {valuePicks.map((player) => (
-                  <tr key={player.id} className="border-t border-slate-100">
-                    <td className="py-1.5">
-                      <div className="flex items-center gap-1.5">
-                        <CountryFlag country={player.country} size="sm" />
-                        <Link to={`/players/${player.id}`} className="font-medium text-slate-700 hover:text-primary-600">
-                          {player.name}
-                        </Link>
-                      </div>
-                    </td>
-                    <td className="py-1.5 text-slate-400 text-sm">{player.fantasy_position}</td>
-                    <td className="py-1.5 text-right text-sm tabular-nums">{player.price ?? '-'}</td>
-                    <td className="py-1.5 text-right text-sm font-medium text-primary-600 tabular-nums">
-                      {player.predicted_points?.toFixed(1) ?? '-'}
-                    </td>
-                    <td className="py-1.5 text-right text-sm font-semibold text-emerald-600 tabular-nums">
-                      {player.value_score?.toFixed(2) ?? '-'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <p className="text-slate-400">No value data available yet</p>
-          )}
-        </div>
-
-        {/* Top Try Threats */}
-        <div className="card">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold text-slate-800">Top Try Threats</h2>
-            <Link to="/tryscorers" className="text-primary-600 text-sm hover:underline font-medium">
-              View All
-            </Link>
-          </div>
-          {tryThreats.length > 0 ? (
-            <table className="w-full">
-              <thead>
-                <tr className="text-left text-slate-400 text-xs uppercase">
-                  <th className="pb-2">Player</th>
-                  <th className="pb-2 text-right"><Tooltip text="Bookmaker anytime try scorer odds">Try Odds</Tooltip></th>
-                  <th className="pb-2 text-right"><Tooltip text="Implied probability of scoring a try (100 / odds)">Implied %</Tooltip></th>
-                </tr>
-              </thead>
-              <tbody>
-                {tryThreats.map((player) => (
-                  <tr key={player.id} className="border-t border-slate-100">
-                    <td className="py-1.5">
-                      <div className="flex items-center gap-1.5">
-                        <CountryFlag country={player.country} size="sm" />
-                        <Link to={`/players/${player.id}`} className="font-medium text-slate-700 hover:text-primary-600">
-                          {player.name}
-                        </Link>
-                      </div>
-                    </td>
-                    <td className="py-1.5 text-right text-sm tabular-nums">
-                      {player.anytime_try_odds?.toFixed(2) ?? '-'}
-                    </td>
-                    <td className="py-1.5 text-right text-sm font-semibold text-emerald-600 tabular-nums">
-                      {player.anytime_try_odds
-                        ? `${(100 / player.anytime_try_odds).toFixed(0)}%`
-                        : '-'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <p className="text-slate-400">No try odds available yet</p>
-          )}
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div>
-        <Link
-          to="/players"
-          className="card hover:shadow-card-hover transition-shadow group inline-block"
-        >
-          <h3 className="font-semibold text-slate-700 group-hover:text-primary-600 transition-colors">
-            Browse Players
-          </h3>
-          <p className="text-sm text-slate-400 mt-1">
-            View all available players and their stats
-          </p>
-        </Link>
-      </div>
     </div>
   );
 }

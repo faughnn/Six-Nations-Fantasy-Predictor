@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import type { HistoricalSixNationsStat, HistoricalClubStat } from '../../types';
 import { cn } from '../../utils';
 import { CountryFlag } from '../common/CountryFlag';
@@ -147,6 +148,8 @@ interface HistoricalStatsTableProps {
   type: 'six-nations' | 'club';
 }
 
+const ROW_HEIGHT = 33;
+
 export function HistoricalStatsTable({ data, type }: HistoricalStatsTableProps) {
   const columnGroups = type === 'six-nations'
     ? SIX_NATIONS_COLUMN_GROUPS as ColumnGroup<StatRecord>[]
@@ -157,6 +160,8 @@ export function HistoricalStatsTable({ data, type }: HistoricalStatsTableProps) 
   );
   const [sortKey, setSortKey] = useState<string | null>('match_date');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const toggleGroup = (groupId: string) => {
     setExpandedGroups((prev) => {
@@ -191,6 +196,13 @@ export function HistoricalStatsTable({ data, type }: HistoricalStatsTableProps) 
         : bStr.localeCompare(aStr);
     });
   }, [data, sortKey, sortDirection]);
+
+  const rowVirtualizer = useVirtualizer({
+    count: sortedData.length,
+    getScrollElement: () => scrollRef.current,
+    estimateSize: () => ROW_HEIGHT,
+    overscan: 20,
+  });
 
   const handleSort = (key: string) => {
     if (sortKey === key) {
@@ -236,123 +248,151 @@ export function HistoricalStatsTable({ data, type }: HistoricalStatsTableProps) 
   return (
     <div>
       <div className="text-xs text-slate-400 mb-1.5 md:hidden">Swipe to see more columns</div>
-      <div className="overflow-x-auto rounded-xl border border-slate-200 mx-auto w-fit">
-        <table className="divide-y divide-slate-100 text-sm">
-        <thead>
-          <tr className="bg-slate-50">
-            <th className="px-3 py-2.5 text-left text-xs font-semibold text-slate-600 sticky left-0 bg-slate-50 z-10" rowSpan={2}>
-              Name
-            </th>
-            <th className="px-2 py-2.5 text-left text-xs font-semibold text-slate-600" rowSpan={2}>
-              Country
-            </th>
-            <th className="px-2 py-2.5 text-left text-xs font-semibold text-slate-600" rowSpan={2}>
-              Pos
-            </th>
+      <div
+        ref={scrollRef}
+        className="overflow-auto rounded-xl border border-slate-200"
+        style={{ maxHeight: 'calc(100vh - 280px)' }}
+      >
+        <table className="divide-y divide-slate-100 text-sm w-max">
+          <thead className="sticky top-0 z-20">
+            <tr className="bg-slate-50">
+              <th className="px-3 py-2.5 text-left text-xs font-semibold text-slate-600 sticky left-0 bg-slate-50 z-30" rowSpan={2}>
+                Name
+              </th>
+              <th className="px-2 py-2.5 text-left text-xs font-semibold text-slate-600 bg-slate-50" rowSpan={2}>
+                Country
+              </th>
+              <th className="px-2 py-2.5 text-left text-xs font-semibold text-slate-600 bg-slate-50" rowSpan={2}>
+                Pos
+              </th>
 
-            {columnGroups.map((group) => {
-              const isExpanded = expandedGroups.has(group.id);
-              return (
-                <th
-                  key={group.id}
-                  colSpan={isExpanded ? group.columns.length : 1}
-                  className={cn(
-                    'px-2 py-2.5 text-center text-xs font-semibold cursor-pointer border-l border-slate-200 transition-colors',
-                    isExpanded
-                      ? 'bg-primary-50 text-primary-700 hover:bg-primary-100'
-                      : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-                  )}
-                  onClick={() => toggleGroup(group.id)}
-                >
-                  <div className="flex items-center justify-center gap-1">
-                    <span className="text-[10px]">{isExpanded ? '\u25BC' : '\u25B6'}</span>
-                    <span>{group.label}</span>
-                  </div>
-                </th>
-              );
-            })}
-          </tr>
-
-          <tr className="bg-white">
-            {columnGroups.map((group) => {
-              const isExpanded = expandedGroups.has(group.id);
-              if (!isExpanded) {
+              {columnGroups.map((group) => {
+                const isExpanded = expandedGroups.has(group.id);
                 return (
                   <th
-                    key={`${group.id}-collapsed`}
-                    className="px-2 py-1.5 text-center text-xs text-slate-300 border-l border-slate-200"
+                    key={group.id}
+                    colSpan={isExpanded ? group.columns.length : 1}
+                    className={cn(
+                      'px-2 py-2.5 text-center text-xs font-semibold cursor-pointer border-l border-slate-200 transition-colors',
+                      isExpanded
+                        ? 'bg-primary-50 text-primary-700 hover:bg-primary-100'
+                        : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                    )}
+                    onClick={() => toggleGroup(group.id)}
                   >
-                    ...
+                    <div className="flex items-center justify-center gap-1">
+                      <span className="text-[10px]">{isExpanded ? '\u25BC' : '\u25B6'}</span>
+                      <span>{group.label}</span>
+                    </div>
                   </th>
                 );
-              }
-              return group.columns.map((col, idx) => (
-                <th
-                  key={String(col.key)}
-                  className={cn(
-                    'px-2 py-1.5 text-center text-xs font-medium text-slate-500 cursor-pointer hover:text-slate-700',
-                    idx === 0 && 'border-l border-slate-200'
-                  )}
-                  onClick={() => handleSort(String(col.key))}
-                >
-                  <div className="flex items-center justify-center gap-0.5">
-                    {col.tooltip ? (
-                      <Tooltip text={col.tooltip}>{col.header}</Tooltip>
-                    ) : (
-                      col.header
-                    )}
-                    {sortKey === col.key && (
-                      <span className="text-primary-500">{sortDirection === 'asc' ? '\u2191' : '\u2193'}</span>
-                    )}
-                  </div>
-                </th>
-              ));
-            })}
-          </tr>
-        </thead>
+              })}
+            </tr>
 
-        <tbody className="divide-y divide-slate-100">
-          {sortedData.map((stat, idx) => (
-            <tr key={`${stat.player_id}-${stat.match_date}-${idx}`} className="hover:bg-primary-50/30 transition-colors">
-              <td className="px-3 py-1.5 whitespace-nowrap font-medium text-slate-800 sticky left-0 bg-white z-10">
-                {stat.player_name}
-              </td>
-              <td className="px-2 py-1.5 whitespace-nowrap">
-                <span className="flex items-center gap-1">
-                  <CountryFlag country={stat.country} size="sm" />
-                  <span className="text-slate-500 text-xs">{stat.country.slice(0, 3).toUpperCase()}</span>
-                </span>
-              </td>
-              <td className="px-2 py-1.5 whitespace-nowrap text-slate-500">
-                {getPositionAbbr(stat.fantasy_position)}
-              </td>
-
+            <tr className="bg-white">
               {columnGroups.map((group) => {
                 const isExpanded = expandedGroups.has(group.id);
                 if (!isExpanded) {
                   return (
-                    <td
+                    <th
                       key={`${group.id}-collapsed`}
-                      className="px-2 py-2 text-center text-slate-300 border-l border-slate-100"
+                      className="px-2 py-1.5 text-center text-xs text-slate-300 border-l border-slate-200 bg-white"
                     >
                       ...
-                    </td>
+                    </th>
                   );
                 }
-                return group.columns.map((col, colIdx) => (
-                  <td
+                return group.columns.map((col, idx) => (
+                  <th
                     key={String(col.key)}
                     className={cn(
-                      'px-2 py-1.5 text-center whitespace-nowrap tabular-nums',
-                      colIdx === 0 && 'border-l border-slate-100'
+                      'px-2 py-1.5 text-center text-xs font-medium text-slate-500 cursor-pointer hover:text-slate-700 bg-white',
+                      idx === 0 && 'border-l border-slate-200'
                     )}
+                    onClick={() => handleSort(String(col.key))}
                   >
-                    {formatValue((stat as Record<string, unknown>)[String(col.key)], col.format as ((v: unknown, r: StatRecord) => string) | undefined, stat)}
-                  </td>
+                    <div className="flex items-center justify-center gap-0.5">
+                      {col.tooltip ? (
+                        <Tooltip text={col.tooltip}>{col.header}</Tooltip>
+                      ) : (
+                        col.header
+                      )}
+                      {sortKey === col.key && (
+                        <span className="text-primary-500">{sortDirection === 'asc' ? '\u2191' : '\u2193'}</span>
+                      )}
+                    </div>
+                  </th>
                 ));
               })}
             </tr>
-          ))}
+          </thead>
+
+          <tbody>
+            {/* Spacer for virtual rows above visible area */}
+            {rowVirtualizer.getVirtualItems().length > 0 && (
+              <tr style={{ height: rowVirtualizer.getVirtualItems()[0].start }}>
+                <td colSpan={999} />
+              </tr>
+            )}
+
+            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+              const stat = sortedData[virtualRow.index];
+              return (
+                <tr
+                  key={virtualRow.index}
+                  className="hover:bg-primary-50/30 transition-colors border-t border-slate-100"
+                  style={{ height: ROW_HEIGHT }}
+                >
+                  <td className="px-3 py-1.5 whitespace-nowrap font-medium text-slate-800 sticky left-0 bg-white z-10">
+                    {stat.player_name}
+                  </td>
+                  <td className="px-2 py-1.5 whitespace-nowrap">
+                    <span className="flex items-center gap-1">
+                      <CountryFlag country={stat.country} size="sm" />
+                      <span className="text-slate-500 text-xs">{stat.country.slice(0, 3).toUpperCase()}</span>
+                    </span>
+                  </td>
+                  <td className="px-2 py-1.5 whitespace-nowrap text-slate-500">
+                    {getPositionAbbr(stat.fantasy_position)}
+                  </td>
+
+                  {columnGroups.map((group) => {
+                    const isExpanded = expandedGroups.has(group.id);
+                    if (!isExpanded) {
+                      return (
+                        <td
+                          key={`${group.id}-collapsed`}
+                          className="px-2 py-2 text-center text-slate-300 border-l border-slate-100"
+                        >
+                          ...
+                        </td>
+                      );
+                    }
+                    return group.columns.map((col, colIdx) => (
+                      <td
+                        key={String(col.key)}
+                        className={cn(
+                          'px-2 py-1.5 text-center whitespace-nowrap tabular-nums',
+                          colIdx === 0 && 'border-l border-slate-100'
+                        )}
+                      >
+                        {formatValue((stat as Record<string, unknown>)[String(col.key)], col.format as ((v: unknown, r: StatRecord) => string) | undefined, stat)}
+                      </td>
+                    ));
+                  })}
+                </tr>
+              );
+            })}
+
+            {/* Spacer for virtual rows below visible area */}
+            {rowVirtualizer.getVirtualItems().length > 0 && (
+              <tr style={{
+                height: rowVirtualizer.getTotalSize() -
+                  (rowVirtualizer.getVirtualItems().at(-1)!.start + rowVirtualizer.getVirtualItems().at(-1)!.size)
+              }}>
+                <td colSpan={999} />
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

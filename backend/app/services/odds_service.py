@@ -291,8 +291,22 @@ class OddsService:
             season, round_num, match_date, home_team, away_team
         )
 
-        # Use the first/primary line (usually the main betting line)
+        # Use the first/primary line, but reject if too few bookmakers
+        MIN_BOOKMAKERS = 3
         primary_line = totals_data[0]
+        num_bookmakers = primary_line.get("num_bookmakers", 0)
+        if num_bookmakers < MIN_BOOKMAKERS:
+            logger.warning(
+                f"Totals for {home_team} vs {away_team} has only {num_bookmakers} "
+                f"bookmaker(s) (min {MIN_BOOKMAKERS}) — skipping unreliable line {primary_line.get('line')}"
+            )
+            return {
+                "saved": False,
+                "skipped": True,
+                "reason": f"Only {num_bookmakers} bookmaker(s) — need at least {MIN_BOOKMAKERS}",
+                "line": primary_line.get("line"),
+            }
+
         line_value = Decimal(str(primary_line["line"]))
         over_odds = Decimal(str(primary_line.get("over_odds", 0))) if primary_line.get("over_odds") else None
         under_odds = Decimal(str(primary_line.get("under_odds", 0))) if primary_line.get("under_odds") else None
@@ -387,8 +401,22 @@ class OddsService:
             season, round_num, match_date, home_team, away_team
         )
 
-        # Use the first/primary line
+        # Use the first/primary line, but reject if too few bookmakers
+        MIN_BOOKMAKERS = 3
         primary_line = handicap_data[0]
+        num_bookmakers = primary_line.get("num_bookmakers", 0)
+        if num_bookmakers < MIN_BOOKMAKERS:
+            logger.warning(
+                f"Handicap for {home_team} vs {away_team} has only {num_bookmakers} "
+                f"bookmaker(s) (min {MIN_BOOKMAKERS}) — skipping unreliable line {primary_line.get('line')}"
+            )
+            return {
+                "saved": False,
+                "skipped": True,
+                "reason": f"Only {num_bookmakers} bookmaker(s) — need at least {MIN_BOOKMAKERS}",
+                "line": primary_line.get("line"),
+            }
+
         line_value = Decimal(str(primary_line["line"]))
         home_odds = Decimal(str(primary_line.get("home_odds", 0))) if primary_line.get("home_odds") else None
         away_odds = Decimal(str(primary_line.get("away_odds", 0))) if primary_line.get("away_odds") else None

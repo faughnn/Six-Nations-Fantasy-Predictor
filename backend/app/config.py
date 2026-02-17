@@ -16,6 +16,11 @@ class Settings(BaseSettings):
                 "DATABASE_URL environment variable is required. "
                 "Run via docker-compose to set it automatically."
             )
+        # Railway provides postgresql:// but asyncpg needs postgresql+asyncpg://
+        if self.database_url.startswith("postgresql://"):
+            self.database_url = self.database_url.replace(
+                "postgresql://", "postgresql+asyncpg://", 1
+            )
         if not self.jwt_secret or self.jwt_secret == "change-me-in-production":
             raise ValueError(
                 "JWT_SECRET environment variable must be set to a strong, unique value. "

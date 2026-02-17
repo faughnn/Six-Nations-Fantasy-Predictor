@@ -3,21 +3,21 @@ import { useState, useEffect } from 'react';
 import { useAuth } from './hooks/useAuth';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
-import Players from './pages/Players';
 import PlayersAllStats from './pages/PlayersAllStats';
 import HistoricalStats from './pages/HistoricalStats';
 import PlayerProjections from './pages/PlayerProjections';
 import Tryscorers from './pages/Tryscorers';
 import AdminScrape from './pages/AdminScrape';
+import FantasyStats from './pages/FantasyStats';
 import IssueModal from './components/IssueModal';
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', end: true },
-  { to: '/players', label: 'Players' },
   { to: '/tryscorers', label: 'Try Scorers' },
+  { to: '/fantasy-stats', label: '2026 Stats' },
   { to: '/players-all-stats', label: '2025 F6N Stats' },
-  { to: '/projections', label: 'Projections' },
-  { to: '/historical-stats', label: 'Historical Stats' },
+  { to: '/projections', label: 'Projections', wip: true },
+  { to: '/historical-stats', label: 'Historical Stats', wip: true },
 ];
 
 function UserMenu({ onAction }: { onAction?: () => void }) {
@@ -95,6 +95,7 @@ function MobileMenu({ open, onClose, isAdmin }: { open: boolean; onClose: () => 
               }
             >
               {item.label}
+              {item.wip && <span className="ml-1.5 text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full font-semibold align-middle">WIP</span>}
             </NavLink>
           ))}
           {isAdmin && (
@@ -155,7 +156,7 @@ function App() {
                     to={item.to}
                     end={item.end}
                     className={({ isActive }) =>
-                      `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                      `relative px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                         isActive
                           ? 'bg-primary-50 text-primary-700'
                           : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
@@ -163,6 +164,7 @@ function App() {
                     }
                   >
                     {item.label}
+                    {item.wip && <span className="absolute -top-2 -right-1 text-[9px] px-1 py-px bg-amber-400 text-white rounded-full font-bold leading-tight">WIP</span>}
                   </NavLink>
                 ))}
                 {user.is_admin && (
@@ -210,6 +212,11 @@ function App() {
 
         <main>
           <Routes>
+            <Route path="/fantasy-stats" element={
+              <div className="px-4 py-6">
+                <FantasyStats />
+              </div>
+            } />
             <Route path="/players-all-stats" element={
               <div className="px-4 py-6">
                 <PlayersAllStats />
@@ -228,7 +235,6 @@ function App() {
             <Route path="/tryscorers" element={<div className="max-w-7xl mx-auto px-4 py-6"><Tryscorers /></div>} />
             <Route path="/admin/scrape" element={<div className="max-w-7xl mx-auto px-4 py-6"><AdminScrape /></div>} />
             <Route path="/" element={<div className="max-w-7xl mx-auto px-4 py-6"><Dashboard /></div>} />
-            <Route path="/players" element={<div className="max-w-7xl mx-auto px-4 py-6"><Players /></div>} />
           </Routes>
         </main>
 

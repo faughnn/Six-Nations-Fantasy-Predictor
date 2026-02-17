@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { statsApi, historicalStatsApi, projectionsApi, type GetStatsParams, type GetHistoricalSixNationsParams, type GetHistoricalClubParams, type GetProjectionsParams } from '../api/client';
+import { statsApi, historicalStatsApi, projectionsApi, fantasyStatsApi, type GetStatsParams, type GetHistoricalSixNationsParams, type GetHistoricalClubParams, type GetProjectionsParams, type GetFantasyStatsParams } from '../api/client';
 
 export function useAllStats(params: GetStatsParams = {}) {
   return useQuery({
@@ -61,5 +61,41 @@ export function usePlayerProjections(params: GetProjectionsParams = {}) {
   return useQuery({
     queryKey: ['players', 'projections', params],
     queryFn: () => projectionsApi.getProjections(params),
+  });
+}
+
+export function useFantasyStats(params: GetFantasyStatsParams = {}) {
+  return useQuery({
+    queryKey: ['stats', 'fantasy', params],
+    queryFn: () => fantasyStatsApi.getAll(params),
+    enabled: params.game_round != null && params.game_round > 0,
+  });
+}
+
+export function useFantasyStatsMetadata() {
+  return useQuery({
+    queryKey: ['stats', 'fantasy', 'metadata'],
+    queryFn: () => fantasyStatsApi.getMetadata(),
+  });
+}
+
+export function useFantasyStatsCountries() {
+  return useQuery({
+    queryKey: ['stats', 'fantasy', 'countries'],
+    queryFn: () => fantasyStatsApi.getCountries(),
+  });
+}
+
+export function useFantasyStatsPositions() {
+  return useQuery({
+    queryKey: ['stats', 'fantasy', 'positions'],
+    queryFn: () => fantasyStatsApi.getPositions(),
+  });
+}
+
+export function useFantasyStatsRounds() {
+  return useQuery({
+    queryKey: ['stats', 'fantasy', 'rounds'],
+    queryFn: () => fantasyStatsApi.getRounds(),
   });
 }

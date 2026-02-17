@@ -44,6 +44,7 @@ function useScrapeJob() {
   const [status, setStatus] = useState<ScrapeState>('idle');
   const [message, setMessage] = useState('');
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const initRef = useRef(false);
 
   const stopPolling = useCallback(() => {
     if (pollRef.current) {
@@ -62,6 +63,70 @@ function useScrapeJob() {
     queryClient.invalidateQueries({ queryKey: ['players'] });
   }, [queryClient]);
 
+  const dismiss = useCallback(() => {
+    setStatus('idle');
+    setMessage('');
+  }, []);
+
+  // Poll an existing job by ID
+  const pollJob = useCallback((jobId: string) => {
+    const startTime = Date.now();
+    const MAX_POLL_MS = 10 * 60 * 1000;
+
+    pollRef.current = setInterval(async () => {
+      if (Date.now() - startTime > MAX_POLL_MS) {
+        stopPolling();
+        setStatus('error');
+        setMessage('Scrape timed out');
+        return;
+      }
+
+      try {
+        const jobStatus = await scrapeApi.getJobStatus(jobId);
+        setMessage(jobStatus.message || 'Scraping...');
+
+        if (jobStatus.status === 'completed') {
+          stopPolling();
+          setStatus('done');
+          invalidateAll();
+        } else if (jobStatus.status === 'failed') {
+          stopPolling();
+          setStatus('error');
+          setMessage(jobStatus.message || 'Scrape failed');
+        }
+      } catch {
+        stopPolling();
+        setStatus('error');
+        setMessage('Failed to check scrape status');
+      }
+    }, 3000);
+  }, [stopPolling, invalidateAll]);
+
+  // On mount, check for any active or recently finished jobs
+  useEffect(() => {
+    if (initRef.current) return;
+    initRef.current = true;
+
+    scrapeApi.getActiveJobs().then(({ active, latest_finished }) => {
+      if (active.length > 0) {
+        const job = active[0];
+        setStatus('scraping');
+        setMessage(job.message || 'Scraping...');
+        pollJob(job.job_id);
+      } else if (latest_finished) {
+        if (latest_finished.status === 'failed') {
+          setStatus('error');
+          setMessage(latest_finished.message || 'Last scrape failed');
+        } else if (latest_finished.status === 'completed') {
+          setStatus('done');
+          setMessage(latest_finished.message || 'Last scrape completed');
+        }
+      }
+    }).catch(() => {
+      // Ignore — endpoint may not exist on older backends
+    });
+  }, [pollJob]);
+
   const startJob = useCallback(async (apiCall: () => Promise<ScrapeResponse>) => {
     setStatus('scraping');
     setMessage('Starting...');
@@ -73,59 +138,23 @@ function useScrapeJob() {
         setStatus('done');
         setMessage(response.message || 'Done');
         invalidateAll();
-        setTimeout(() => setStatus('idle'), 5000);
         return;
       }
 
       if (!response.job_id) {
         setStatus('error');
         setMessage(response.message || 'No job started');
-        setTimeout(() => setStatus('idle'), 8000);
         return;
       }
 
-      const startTime = Date.now();
-      const MAX_POLL_MS = 10 * 60 * 1000;
-
-      pollRef.current = setInterval(async () => {
-        if (Date.now() - startTime > MAX_POLL_MS) {
-          stopPolling();
-          setStatus('error');
-          setMessage('Scrape timed out');
-          setTimeout(() => setStatus('idle'), 8000);
-          return;
-        }
-
-        try {
-          const jobStatus = await scrapeApi.getJobStatus(response.job_id);
-          setMessage(jobStatus.message || 'Scraping...');
-
-          if (jobStatus.status === 'completed') {
-            stopPolling();
-            setStatus('done');
-            invalidateAll();
-            setTimeout(() => setStatus('idle'), 5000);
-          } else if (jobStatus.status === 'failed') {
-            stopPolling();
-            setStatus('error');
-            setMessage(jobStatus.message || 'Scrape failed');
-            setTimeout(() => setStatus('idle'), 8000);
-          }
-        } catch {
-          stopPolling();
-          setStatus('error');
-          setMessage('Failed to check scrape status');
-          setTimeout(() => setStatus('idle'), 8000);
-        }
-      }, 3000);
+      pollJob(response.job_id);
     } catch {
       setStatus('error');
       setMessage('Failed to start scrape');
-      setTimeout(() => setStatus('idle'), 8000);
     }
-  }, [stopPolling, invalidateAll]);
+  }, [pollJob, invalidateAll]);
 
-  return { status, message, startJob, isBusy: status === 'scraping' };
+  return { status, message, startJob, dismiss, isBusy: status === 'scraping' };
 }
 
 function ScrapeButton({
@@ -276,19 +305,31 @@ export default function AdminScrape() {
         </div>
 
         {scrapeJob.status !== 'idle' && (
-          <div className={`mt-2 text-sm flex items-center gap-2 ${
-            scrapeJob.status === 'scraping' ? 'text-slate-400'
-              : scrapeJob.status === 'done' ? 'text-emerald-600'
-              : 'text-red-500'
+          <div className={`mt-3 px-3 py-2 rounded-lg text-sm flex items-center gap-2 ${
+            scrapeJob.status === 'scraping' ? 'bg-blue-50 text-blue-700 border border-blue-200'
+              : scrapeJob.status === 'done' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+              : 'bg-red-50 text-red-700 border border-red-200'
           }`}>
             {scrapeJob.status === 'scraping' && (
-              <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24">
+              <svg className="animate-spin h-3.5 w-3.5 flex-shrink-0" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
             )}
-            {scrapeJob.message}
+            <span className="flex-1">{scrapeJob.message}</span>
+            {scrapeJob.status !== 'scraping' && (
+              <button
+                onClick={scrapeJob.dismiss}
+                className="text-xs opacity-60 hover:opacity-100 transition-opacity"
+              >
+                dismiss
+              </button>
+            )}
           </div>
+        )}
+
+        {scrapeJob.status === 'idle' && (
+          <p className="mt-3 text-xs text-slate-400">No active scrapes</p>
         )}
 
         {/* Per-match status indicators */}
@@ -312,6 +353,21 @@ export default function AdminScrape() {
                 <span className="text-red-400">(run CLI scraper)</span>
               )}
             </div>
+            {scrapeStatus.has_prices && scrapeStatus.availability_unknown > 0 && (
+              <div className="flex items-center gap-1.5 text-slate-400">
+                <span className="font-medium text-slate-500">Availability:</span>
+                <span className="text-amber-500">
+                  {scrapeStatus.availability_unknown} unknown
+                </span>
+                <span className="text-slate-300">— re-scrape when teams announced</span>
+              </div>
+            )}
+            {scrapeStatus.has_prices && scrapeStatus.availability_unknown === 0 && (
+              <div className="flex items-center gap-1.5 text-slate-400">
+                <span className="font-medium text-slate-500">Availability:</span>
+                <span className="text-emerald-600">all set</span>
+              </div>
+            )}
           </div>
         )}
       </div>

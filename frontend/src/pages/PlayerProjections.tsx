@@ -35,9 +35,12 @@ export default function PlayerProjections() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-800">Player Projections</h1>
+      <div className="flex items-center gap-2">
+        <h1 className="text-2xl font-bold text-slate-800">Player Projections</h1>
+        <span className="text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full font-bold">WORK IN PROGRESS</span>
+      </div>
       <p className="text-sm text-slate-400 mt-1 mb-6">
-        ML-predicted stats and value ratings for the upcoming round. Rows are highlighted by value tier — green means higher predicted points per star.
+        ML-predicted stats and value ratings for the upcoming round. Rows are highlighted by value tier — green means higher predicted points per star. This page is under active development — projections may be incomplete or inaccurate.
       </p>
 
       {/* Filters */}

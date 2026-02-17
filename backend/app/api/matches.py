@@ -122,6 +122,18 @@ async def get_round_scrape_status(
     )
     price_count = price_result.scalar() or 0
 
+    # Count players with/without availability info
+    avail_known_result = await db.execute(
+        select(func.count()).select_from(FantasyPrice)
+        .where(
+            FantasyPrice.season == season,
+            FantasyPrice.round == game_round,
+            FantasyPrice.availability.isnot(None),
+        )
+    )
+    availability_known = avail_known_result.scalar() or 0
+    availability_unknown = price_count - availability_known
+
     # Determine which markets are globally missing
     missing_markets = []
     if match_statuses:
@@ -145,6 +157,8 @@ async def get_round_scrape_status(
         missing_markets=missing_markets,
         has_prices=price_count > 0,
         price_count=price_count,
+        availability_known=availability_known,
+        availability_unknown=availability_unknown,
     )
 
 
@@ -247,7 +261,7 @@ async def get_matches(
                 Odds.anytime_try_scorer.isnot(None),
             )
             .order_by(Odds.anytime_try_scorer.asc())
-            .limit(6)
+            .limit(10)
         )
         top_scorers = []
         for odds, player in odds_result.all():

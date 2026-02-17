@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { PlayerSummary, PlayerDetail, PredictionDetail, PlayerStat, HistoricalSixNationsStat, HistoricalClubStat, MatchData, PlayerProjection, TryScorerDetail } from '../types';
+import type { PlayerSummary, PlayerDetail, PredictionDetail, PlayerStat, HistoricalSixNationsStat, HistoricalClubStat, MatchData, PlayerProjection, TryScorerDetail, FantasyStatPlayer, FantasyStatsMetadata } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -150,6 +150,8 @@ export interface RoundScrapeStatus {
   missing_markets: string[];
   has_prices: boolean;
   price_count: number;
+  availability_known: number;
+  availability_unknown: number;
 }
 
 export const matchesApi = {
@@ -213,6 +215,44 @@ export const scrapeApi = {
 
   getJobStatus: async (jobId: string): Promise<ScrapeJobStatus> => {
     const response = await api.get(`/api/scrape/status/${jobId}`);
+    return response.data;
+  },
+
+  getActiveJobs: async (): Promise<{ active: (ScrapeJobStatus & { job_id: string })[]; latest_finished: (ScrapeJobStatus & { job_id: string }) | null }> => {
+    const response = await api.get('/api/scrape/active');
+    return response.data;
+  },
+};
+
+export interface GetFantasyStatsParams {
+  game_round?: number;
+  country?: string;
+  position?: string;
+}
+
+export const fantasyStatsApi = {
+  getAll: async (params: GetFantasyStatsParams = {}): Promise<FantasyStatPlayer[]> => {
+    const response = await api.get('/api/stats/fantasy', { params });
+    return response.data;
+  },
+
+  getMetadata: async (): Promise<FantasyStatsMetadata> => {
+    const response = await api.get('/api/stats/fantasy/metadata');
+    return response.data;
+  },
+
+  getCountries: async (): Promise<string[]> => {
+    const response = await api.get('/api/stats/fantasy/countries');
+    return response.data;
+  },
+
+  getPositions: async (): Promise<string[]> => {
+    const response = await api.get('/api/stats/fantasy/positions');
+    return response.data;
+  },
+
+  getRounds: async (): Promise<number[]> => {
+    const response = await api.get('/api/stats/fantasy/rounds');
     return response.data;
   },
 };

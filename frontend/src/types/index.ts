@@ -189,6 +189,43 @@ export interface PlayerProjection {
   total_games: number;
 }
 
+// Fantasy stats scraped from fantasy.sixnationsrugby.com (per-round)
+export interface FantasyStatPlayer {
+  name: string;
+  country: string;
+  position: Position | '';
+  round: number;
+  minutes_played: number;
+  player_of_match: number;
+  tries: number;
+  try_assists: number;
+  conversions: number;
+  penalties_kicked: number;
+  drop_goals: number;
+  tackles_made: number;
+  metres_carried: number;
+  defenders_beaten: number;
+  offloads: number;
+  fifty_22_kicks: number;
+  lineout_steals: number;
+  breakdown_steals: number;
+  kick_returns: number;
+  scrums_won: number;
+  penalties_conceded: number;
+  yellow_cards: number;
+  red_cards: number;
+  fantasy_points: number;
+}
+
+export interface FantasyStatsMetadata {
+  scraped_at: string;
+  season: number;
+  rounds_scraped: number[];
+  total_records: number;
+  stat_columns: string[];
+  stat_display: Record<string, string>;
+}
+
 export interface HistoricalClubStat {
   player_id: number;
   player_name: string;

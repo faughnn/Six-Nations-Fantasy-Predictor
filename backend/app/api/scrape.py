@@ -430,6 +430,21 @@ async def import_prices(
     )
 
 
+@router.get("/active")
+async def get_active_jobs():
+    """Return any in-progress jobs and the most recent completed/failed job."""
+    active = []
+    latest_finished = None
+    for jid, job in _jobs.items():
+        entry = {"job_id": jid, **job}
+        if job["status"] == "in_progress":
+            active.append(entry)
+        elif latest_finished is None or jid > (latest_finished.get("job_id") or ""):
+            latest_finished = entry
+
+    return {"active": active, "latest_finished": latest_finished}
+
+
 @router.get("/status/{job_id}")
 async def get_scrape_status(job_id: str):
     """Get the status of a scrape job."""

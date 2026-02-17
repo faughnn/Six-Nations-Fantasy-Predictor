@@ -12,6 +12,7 @@ from app.database import get_db
 from app.models import Player
 from app.models.stats import SixNationsStats, ClubStats
 from app.services.excel_stats import ExcelStatsService
+from app.services.fantasy_stats import FantasyStatsService
 
 router = APIRouter()
 
@@ -212,3 +213,60 @@ async def get_historical_seasons(db: AsyncSession = Depends(get_db)):
     result = await db.execute(query)
     seasons = [row[0] for row in result.fetchall()]
     return seasons
+
+
+# ── Fantasy Stats (scraped from fantasy.sixnationsrugby.com) ────────────
+
+
+@router.get("/fantasy")
+async def get_fantasy_stats(
+    game_round: Optional[int] = Query(None, description="Filter by round"),
+    country: Optional[str] = Query(None, description="Filter by country"),
+    position: Optional[str] = Query(None, description="Filter by position"),
+):
+    """Get per-round scraped fantasy stats from the 2026 season."""
+    try:
+        service = FantasyStatsService()
+        return service.get_players(game_round=game_round, country=country, position=position)
+    except FileNotFoundError:
+        return []
+
+
+@router.get("/fantasy/metadata")
+async def get_fantasy_stats_metadata():
+    """Get metadata about the scraped fantasy stats (columns, rounds, etc)."""
+    try:
+        service = FantasyStatsService()
+        return service.get_metadata()
+    except FileNotFoundError:
+        return {"error": "Stats file not found. Run scrape_fantasy_stats.py first."}
+
+
+@router.get("/fantasy/positions")
+async def get_fantasy_stats_positions():
+    """Get list of positions available in scraped fantasy stats."""
+    try:
+        service = FantasyStatsService()
+        return service.get_positions()
+    except FileNotFoundError:
+        return []
+
+
+@router.get("/fantasy/countries")
+async def get_fantasy_stats_countries():
+    """Get list of countries available in scraped fantasy stats."""
+    try:
+        service = FantasyStatsService()
+        return service.get_countries()
+    except FileNotFoundError:
+        return []
+
+
+@router.get("/fantasy/rounds")
+async def get_fantasy_stats_rounds():
+    """Get list of rounds that have been scraped."""
+    try:
+        service = FantasyStatsService()
+        return service.get_rounds()
+    except FileNotFoundError:
+        return []
