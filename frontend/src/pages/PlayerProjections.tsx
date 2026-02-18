@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { usePlayerProjections } from '../hooks/useStats';
+import { useQuery } from '@tanstack/react-query';
+import { projectionsApi } from '../api/client';
+import { useCurrentRound } from '../hooks/useMatches';
 import { ProjectionsTable } from '../components/stats/ProjectionsTable';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 
@@ -15,15 +17,30 @@ const POSITIONS = [
   { value: 'back_3', label: 'Back 3' },
 ];
 
+const ROUNDS = [1, 2, 3, 4, 5];
+
 interface Filters {
   country?: string;
   position?: string;
 }
 
 export default function PlayerProjections() {
+  const { data: currentRound, isLoading: roundLoading } = useCurrentRound();
+  const [roundOverride, setRoundOverride] = useState<number | null>(null);
   const [filters, setFilters] = useState<Filters>({});
 
-  const { data: projections, isLoading, error } = usePlayerProjections(filters);
+  const season = currentRound?.season ?? 2026;
+  const round = roundOverride ?? currentRound?.round ?? 1;
+
+  const { data: projections, isLoading, error } = useQuery({
+    queryKey: ['players', 'projections', season, round, filters],
+    queryFn: () => projectionsApi.getProjections({
+      ...filters,
+      season,
+      game_round: round,
+    }),
+    enabled: season > 0 && round > 0,
+  });
 
   if (error) {
     return (
@@ -35,17 +52,30 @@ export default function PlayerProjections() {
 
   return (
     <div>
-      <div className="flex items-center gap-2">
-        <h1 className="text-2xl font-bold text-slate-800">Player Projections</h1>
-        <span className="text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full font-bold">WORK IN PROGRESS</span>
-      </div>
+      <h1 className="text-2xl font-bold text-slate-800">Player Projections</h1>
       <p className="text-sm text-slate-400 mt-1 mb-6">
-        ML-predicted stats and value ratings for the upcoming round. Rows are highlighted by value tier — green means higher predicted points per star. This page is under active development — projections may be incomplete or inaccurate.
+        Predicted stats and value ratings based on 2026 per-round performance data. Rows highlighted by value tier (Pts/Star).
       </p>
 
       {/* Filters */}
       <div className="card mb-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
+          <div>
+            <label className="label">Round</label>
+            <select
+              className="input w-full"
+              value={round}
+              onChange={(e) => setRoundOverride(Number(e.target.value))}
+              disabled={roundLoading}
+            >
+              {ROUNDS.map((r) => (
+                <option key={r} value={r}>
+                  Round {r}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div>
             <label className="label">Country</label>
             <select
@@ -91,7 +121,10 @@ export default function PlayerProjections() {
           <div className="flex items-end">
             <button
               className="btn-secondary w-full"
-              onClick={() => setFilters({})}
+              onClick={() => {
+                setFilters({});
+                setRoundOverride(null);
+              }}
             >
               Clear Filters
             </button>
@@ -107,10 +140,10 @@ export default function PlayerProjections() {
 
       {/* Help text */}
       <div className="mb-4 text-sm text-slate-400">
-        Click column group headers to expand/collapse. Click column headers to sort. Rows highlighted by value tier (Pts/Star).
+        Click column group headers to expand/collapse. Click column headers to sort.
       </div>
 
-      {isLoading ? (
+      {isLoading || roundLoading ? (
         <div className="flex justify-center py-12">
           <LoadingSpinner size="lg" />
         </div>

@@ -122,7 +122,7 @@ export function MatchCard({ match }: MatchCardProps) {
 
       {/* Betting lines */}
       <div className="grid grid-cols-2 gap-3 mt-4">
-        {match.handicap_line != null && (
+        {match.handicap_line != null && Math.abs(match.handicap_line) <= 40 && (
           <div className="bg-slate-50 rounded-lg p-2.5 text-center">
             <div className="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1">Handicap</div>
             <div className="font-semibold text-sm text-slate-700 tabular-nums">
