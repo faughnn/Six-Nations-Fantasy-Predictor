@@ -182,11 +182,29 @@ function App() {
                   </NavLink>
                 )}
                 <div className="w-px h-6 bg-slate-200 mx-1" />
+                <button
+                  onClick={() => setIssueModalOpen(true)}
+                  className="p-1.5 rounded-md text-slate-400 hover:text-primary-600 hover:bg-slate-50 transition-colors"
+                  title="Report a Bug or Request a Feature"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                  </svg>
+                </button>
                 <UserMenu />
               </div>
 
               {/* Mobile hamburger + user avatar */}
               <div className="flex items-center gap-2 md:hidden">
+                <button
+                  onClick={() => setIssueModalOpen(true)}
+                  className="p-2 rounded-lg text-slate-400 hover:text-primary-600 hover:bg-slate-50 transition-colors"
+                  aria-label="Report a Bug or Request a Feature"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                  </svg>
+                </button>
                 <UserMenu />
                 <button
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

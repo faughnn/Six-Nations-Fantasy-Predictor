@@ -2,40 +2,37 @@ import { useState, useEffect } from 'react';
 import type { MatchData } from '../../types';
 import { CountryFlag } from '../common/CountryFlag';
 
-// 2026 Six Nations kickoff times (UTC) — key: "HomeTeam vs AwayTeam|YYYY-MM-DD"
+// 2026 Six Nations kickoff times (UTC) — keyed by team pairing (sorted alphabetically)
 // Times sourced from sixnationsrugby.com. All GMT (= UTC during winter).
 const KICKOFF_TIMES: Record<string, string> = {
   // Round 1 — 5/7 Feb
-  'France vs Ireland|2026-02-05':    '2026-02-05T21:10:00Z',
-  'Italy vs Scotland|2026-02-07':    '2026-02-07T15:10:00Z',
-  'England vs Wales|2026-02-07':     '2026-02-07T16:40:00Z',
+  'France vs Ireland':    '2026-02-05T21:10:00Z',
+  'Italy vs Scotland':    '2026-02-07T15:10:00Z',
+  'England vs Wales':     '2026-02-07T16:40:00Z',
   // Round 2 — 14/15 Feb
-  'Ireland vs Italy|2026-02-14':     '2026-02-14T14:10:00Z',
-  'Scotland vs England|2026-02-14':  '2026-02-14T16:40:00Z',
-  'Wales vs France|2026-02-15':      '2026-02-15T15:10:00Z',
-  // DB may store all round-2 matches as 2026-02-13 — duplicate keys for safety
-  'Ireland vs Italy|2026-02-13':     '2026-02-14T14:10:00Z',
-  'Scotland vs England|2026-02-13':  '2026-02-14T16:40:00Z',
-  'Wales vs France|2026-02-13':      '2026-02-15T15:10:00Z',
+  'Ireland vs Italy':     '2026-02-14T14:10:00Z',
+  'England vs Scotland':  '2026-02-14T16:40:00Z',
+  'France vs Wales':      '2026-02-15T15:10:00Z',
   // Round 3 — 21/22 Feb
-  'England vs Ireland|2026-02-21':   '2026-02-21T14:10:00Z',
-  'Wales vs Scotland|2026-02-21':    '2026-02-21T16:40:00Z',
-  'France vs Italy|2026-02-22':      '2026-02-22T15:10:00Z',
+  'England vs Ireland':   '2026-02-21T14:10:00Z',
+  'Scotland vs Wales':    '2026-02-21T16:40:00Z',
+  'France vs Italy':      '2026-02-22T15:10:00Z',
   // Round 4 — 6/7 Mar
-  'Ireland vs Wales|2026-03-06':     '2026-03-06T20:10:00Z',
-  'Scotland vs France|2026-03-07':   '2026-03-07T14:10:00Z',
-  'Italy vs England|2026-03-07':     '2026-03-07T16:40:00Z',
+  'Ireland vs Wales':     '2026-03-06T20:10:00Z',
+  'France vs Scotland':   '2026-03-07T14:10:00Z',
+  'England vs Italy':     '2026-03-07T16:40:00Z',
   // Round 5 — 14 Mar
-  'Ireland vs Scotland|2026-03-14':  '2026-03-14T14:10:00Z',
-  'Wales vs Italy|2026-03-14':       '2026-03-14T16:40:00Z',
-  'France vs England|2026-03-14':    '2026-03-14T20:10:00Z',
+  'Ireland vs Scotland':  '2026-03-14T14:10:00Z',
+  'Italy vs Wales':       '2026-03-14T16:40:00Z',
+  'England vs France':    '2026-03-14T20:10:00Z',
 };
 
-function getKickoffTime(home: string, away: string, matchDate: string): Date | null {
-  // Try both "Home vs Away" orderings with the match_date from the DB
-  const key1 = `${home} vs ${away}|${matchDate}`;
-  const key2 = `${away} vs ${home}|${matchDate}`;
-  const iso = KICKOFF_TIMES[key1] || KICKOFF_TIMES[key2];
+function teamKey(a: string, b: string): string {
+  return [a, b].sort().join(' vs ');
+}
+
+function getKickoffTime(home: string, away: string): Date | null {
+  const iso = KICKOFF_TIMES[teamKey(home, away)];
   return iso ? new Date(iso) : null;
 }
 
@@ -76,7 +73,7 @@ interface MatchCardProps {
 }
 
 export function MatchCard({ match }: MatchCardProps) {
-  const kickoff = getKickoffTime(match.home_team, match.away_team, match.match_date);
+  const kickoff = getKickoffTime(match.home_team, match.away_team);
   const countdown = useCountdown(kickoff);
 
   const formattedDate = kickoff

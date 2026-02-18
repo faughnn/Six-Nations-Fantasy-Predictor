@@ -1,4 +1,4 @@
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 from typing import Optional
 from decimal import Decimal
 from sqlalchemy import String, Boolean, DateTime, Date, Integer, ForeignKey, Numeric, UniqueConstraint
@@ -148,7 +148,7 @@ class FantasyRoundStats(Base):
     # Calculated
     fantasy_points: Mapped[Optional[Decimal]] = mapped_column(Numeric(6, 2), nullable=True)
 
-    scraped_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    scraped_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     player: Mapped["Player"] = relationship("Player", back_populates="fantasy_round_stats")
 
