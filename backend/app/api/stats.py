@@ -223,50 +223,36 @@ async def get_fantasy_stats(
     game_round: Optional[int] = Query(None, description="Filter by round"),
     country: Optional[str] = Query(None, description="Filter by country"),
     position: Optional[str] = Query(None, description="Filter by position"),
+    db: AsyncSession = Depends(get_db),
 ):
     """Get per-round scraped fantasy stats from the 2026 season."""
-    try:
-        service = FantasyStatsService()
-        return service.get_players(game_round=game_round, country=country, position=position)
-    except FileNotFoundError:
-        return []
+    service = FantasyStatsService(db)
+    return await service.get_players(game_round=game_round, country=country, position=position)
 
 
 @router.get("/fantasy/metadata")
-async def get_fantasy_stats_metadata():
+async def get_fantasy_stats_metadata(db: AsyncSession = Depends(get_db)):
     """Get metadata about the scraped fantasy stats (columns, rounds, etc)."""
-    try:
-        service = FantasyStatsService()
-        return service.get_metadata()
-    except FileNotFoundError:
-        return {"error": "Stats file not found. Run scrape_fantasy_stats.py first."}
+    service = FantasyStatsService(db)
+    return await service.get_metadata()
 
 
 @router.get("/fantasy/positions")
-async def get_fantasy_stats_positions():
+async def get_fantasy_stats_positions(db: AsyncSession = Depends(get_db)):
     """Get list of positions available in scraped fantasy stats."""
-    try:
-        service = FantasyStatsService()
-        return service.get_positions()
-    except FileNotFoundError:
-        return []
+    service = FantasyStatsService(db)
+    return await service.get_positions()
 
 
 @router.get("/fantasy/countries")
-async def get_fantasy_stats_countries():
+async def get_fantasy_stats_countries(db: AsyncSession = Depends(get_db)):
     """Get list of countries available in scraped fantasy stats."""
-    try:
-        service = FantasyStatsService()
-        return service.get_countries()
-    except FileNotFoundError:
-        return []
+    service = FantasyStatsService(db)
+    return await service.get_countries()
 
 
 @router.get("/fantasy/rounds")
-async def get_fantasy_stats_rounds():
+async def get_fantasy_stats_rounds(db: AsyncSession = Depends(get_db)):
     """Get list of rounds that have been scraped."""
-    try:
-        service = FantasyStatsService()
-        return service.get_rounds()
-    except FileNotFoundError:
-        return []
+    service = FantasyStatsService(db)
+    return await service.get_rounds()

@@ -438,6 +438,90 @@ async def build_position_map(page: Page) -> dict[str, str]:
     return name_to_pos
 
 
+async def save_to_db(records: list[dict], season: int):
+    """Save scraped fantasy stats records to the database."""
+    import os
+    from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+    from sqlalchemy import select
+    from app.models.stats import FantasyRoundStats
+    from app.models.player import Player
+    from app.services.import_service import _build_player_cache, _fuzzy_find
+
+    database_url = os.environ.get("DATABASE_URL")
+    if not database_url:
+        print("ERROR: DATABASE_URL not set. Cannot save to database.")
+        return
+
+    engine = create_async_engine(database_url, echo=False)
+    session_factory = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+
+    async with session_factory() as db:
+        cache = await _build_player_cache(db)
+
+        saved = 0
+        skipped = 0
+
+        for rec in records:
+            player = _fuzzy_find(rec["name"], cache)
+            if not player:
+                print(f"  SKIP (no match): {rec['name']}")
+                skipped += 1
+                continue
+
+            # Check if record already exists (upsert)
+            existing_q = select(FantasyRoundStats).where(
+                FantasyRoundStats.player_id == player.id,
+                FantasyRoundStats.season == season,
+                FantasyRoundStats.round == rec["round"],
+            )
+            result = await db.execute(existing_q)
+            existing = result.scalar_one_or_none()
+
+            stat_fields = {
+                "tries": rec.get("tries", 0),
+                "try_assists": rec.get("try_assists", 0),
+                "conversions": rec.get("conversions", 0),
+                "penalties_kicked": rec.get("penalties_kicked", 0),
+                "drop_goals": rec.get("drop_goals", 0),
+                "defenders_beaten": rec.get("defenders_beaten", 0),
+                "metres_carried": rec.get("metres_carried", 0),
+                "clean_breaks": rec.get("clean_breaks", 0),
+                "offloads": rec.get("offloads", 0),
+                "fifty_22_kicks": rec.get("fifty_22_kicks", 0),
+                "tackles_made": rec.get("tackles_made", 0),
+                "lineout_steals": rec.get("lineout_steals", 0),
+                "breakdown_steals": rec.get("breakdown_steals", 0),
+                "kick_returns": rec.get("kick_returns", 0),
+                "scrums_won": rec.get("scrums_won", 0),
+                "penalties_conceded": rec.get("penalties_conceded", 0),
+                "yellow_cards": rec.get("yellow_cards", 0),
+                "red_cards": rec.get("red_cards", 0),
+                "minutes_played": rec.get("minutes_played", 0),
+                "player_of_match": bool(rec.get("player_of_match", 0)),
+                "fantasy_points": rec.get("fantasy_points"),
+                "scraped_at": datetime.now(timezone.utc),
+            }
+
+            if existing:
+                for k, v in stat_fields.items():
+                    setattr(existing, k, v)
+            else:
+                new_stat = FantasyRoundStats(
+                    player_id=player.id,
+                    season=season,
+                    round=rec["round"],
+                    **stat_fields,
+                )
+                db.add(new_stat)
+
+            saved += 1
+
+        await db.commit()
+        print(f"\nDatabase: {saved} records saved, {skipped} skipped (no player match)")
+
+    await engine.dispose()
+
+
 async def main():
     parser = argparse.ArgumentParser(description="Scrape Fantasy Six Nations per-round stats")
     parser.add_argument(
@@ -455,7 +539,36 @@ async def main():
         action="store_true",
         help="Skip the position-mapping pass (faster, no position data)",
     )
+    parser.add_argument(
+        "--save-db",
+        action="store_true",
+        help="Also save scraped stats to the Postgres database",
+    )
+    parser.add_argument(
+        "--from-json",
+        default=None,
+        help="Skip scraping; load this JSON file and save to DB directly",
+    )
+    parser.add_argument(
+        "--season",
+        type=int,
+        default=2026,
+        help="Season year (default: 2026)",
+    )
     args = parser.parse_args()
+
+    # --from-json mode: load existing JSON and save to DB, no browser needed
+    if args.from_json:
+        json_path = Path(args.from_json)
+        if not json_path.exists():
+            print(f"ERROR: JSON file not found: {json_path}")
+            return
+        with open(json_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        all_records = data.get("players", [])
+        print(f"Loaded {len(all_records)} records from {json_path}")
+        await save_to_db(all_records, args.season)
+        return
 
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -531,6 +644,10 @@ async def main():
         with open(args.output, "w", encoding="utf-8") as f:
             json.dump(output, f, indent=2, ensure_ascii=False)
         print(f"\nSaved {len(all_records)} per-round records to {args.output}")
+
+        if args.save_db:
+            print("\n--- Saving to database ---")
+            await save_to_db(all_records, args.season)
 
         # Summary
         print(f"\n{'=' * 60}")

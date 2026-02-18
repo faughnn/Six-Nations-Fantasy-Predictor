@@ -28,6 +28,7 @@ class Player(Base):
     odds: Mapped[List["Odds"]] = relationship("Odds", back_populates="player")
     predictions: Mapped[List["Prediction"]] = relationship("Prediction", back_populates="player")
     team_selections: Mapped[List["TeamSelection"]] = relationship("TeamSelection", back_populates="player")
+    fantasy_round_stats: Mapped[List["FantasyRoundStats"]] = relationship("FantasyRoundStats", back_populates="player")
 
 
 class PlayerClub(Base):
@@ -45,6 +46,6 @@ class PlayerClub(Base):
 
 
 # Forward references for type hints
-from app.models.stats import SixNationsStats, ClubStats
+from app.models.stats import SixNationsStats, ClubStats, FantasyRoundStats
 from app.models.prediction import FantasyPrice, Prediction, TeamSelection
 from app.models.odds import Odds

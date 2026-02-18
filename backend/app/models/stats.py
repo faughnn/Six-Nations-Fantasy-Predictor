@@ -1,7 +1,7 @@
 from datetime import datetime, date
 from typing import Optional
 from decimal import Decimal
-from sqlalchemy import String, Boolean, DateTime, Date, Integer, ForeignKey, Numeric
+from sqlalchemy import String, Boolean, DateTime, Date, Integer, ForeignKey, Numeric, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -102,6 +102,55 @@ class ClubStats(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     player: Mapped["Player"] = relationship("Player", back_populates="club_stats")
+
+
+class FantasyRoundStats(Base):
+    __tablename__ = "fantasy_round_stats"
+    __table_args__ = (
+        UniqueConstraint("player_id", "season", "round", name="uq_fantasy_round_stats_player_season_round"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    player_id: Mapped[int] = mapped_column(ForeignKey("players.id"), nullable=False)
+    season: Mapped[int] = mapped_column(Integer, nullable=False)
+    round: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    # Attacking
+    tries: Mapped[int] = mapped_column(Integer, default=0)
+    try_assists: Mapped[int] = mapped_column(Integer, default=0)
+    conversions: Mapped[int] = mapped_column(Integer, default=0)
+    penalties_kicked: Mapped[int] = mapped_column(Integer, default=0)
+    drop_goals: Mapped[int] = mapped_column(Integer, default=0)
+    defenders_beaten: Mapped[int] = mapped_column(Integer, default=0)
+    metres_carried: Mapped[int] = mapped_column(Integer, default=0)
+    clean_breaks: Mapped[int] = mapped_column(Integer, default=0)
+    offloads: Mapped[int] = mapped_column(Integer, default=0)
+    fifty_22_kicks: Mapped[int] = mapped_column(Integer, default=0)
+
+    # Defensive
+    tackles_made: Mapped[int] = mapped_column(Integer, default=0)
+    lineout_steals: Mapped[int] = mapped_column(Integer, default=0)
+    breakdown_steals: Mapped[int] = mapped_column(Integer, default=0)
+    kick_returns: Mapped[int] = mapped_column(Integer, default=0)
+
+    # Scrums
+    scrums_won: Mapped[int] = mapped_column(Integer, default=0)
+
+    # Discipline
+    penalties_conceded: Mapped[int] = mapped_column(Integer, default=0)
+    yellow_cards: Mapped[int] = mapped_column(Integer, default=0)
+    red_cards: Mapped[int] = mapped_column(Integer, default=0)
+
+    # Match
+    minutes_played: Mapped[int] = mapped_column(Integer, default=0)
+    player_of_match: Mapped[bool] = mapped_column(Boolean, default=False)
+
+    # Calculated
+    fantasy_points: Mapped[Optional[Decimal]] = mapped_column(Numeric(6, 2), nullable=True)
+
+    scraped_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    player: Mapped["Player"] = relationship("Player", back_populates="fantasy_round_stats")
 
 
 from app.models.player import Player
