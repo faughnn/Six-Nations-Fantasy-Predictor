@@ -20,7 +20,7 @@ const NAV_ITEMS = [
   { to: '/historical-stats', label: 'Historical Stats', wip: true },
 ];
 
-function UserMenu({ onAction }: { onAction?: () => void }) {
+function UserMenu({ onAction, onReportBug }: { onAction?: () => void; onReportBug?: () => void }) {
   const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
 
@@ -51,6 +51,16 @@ function UserMenu({ onAction }: { onAction?: () => void }) {
             </div>
             <button
               onClick={() => {
+                setOpen(false);
+                onAction?.();
+                onReportBug?.();
+              }}
+              className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+            >
+              Report a Bug
+            </button>
+            <button
+              onClick={() => {
                 logout();
                 setOpen(false);
                 onAction?.();
@@ -66,7 +76,7 @@ function UserMenu({ onAction }: { onAction?: () => void }) {
   );
 }
 
-function MobileMenu({ open, onClose, isAdmin }: { open: boolean; onClose: () => void; isAdmin: boolean }) {
+function MobileMenu({ open, onClose, isAdmin, onReportBug }: { open: boolean; onClose: () => void; isAdmin: boolean; onReportBug: () => void }) {
   const location = useLocation();
 
   // Close on route change
@@ -113,7 +123,7 @@ function MobileMenu({ open, onClose, isAdmin }: { open: boolean; onClose: () => 
             </NavLink>
           )}
           <div className="border-t border-slate-100 pt-2 mt-2">
-            <UserMenu onAction={onClose} />
+            <UserMenu onAction={onClose} onReportBug={onReportBug} />
           </div>
         </div>
       </div>
@@ -182,30 +192,12 @@ function App() {
                   </NavLink>
                 )}
                 <div className="w-px h-6 bg-slate-200 mx-1" />
-                <button
-                  onClick={() => setIssueModalOpen(true)}
-                  className="p-1.5 rounded-md text-slate-400 hover:text-primary-600 hover:bg-slate-50 transition-colors"
-                  title="Report a Bug or Request a Feature"
-                >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-                  </svg>
-                </button>
-                <UserMenu />
+                <UserMenu onReportBug={() => setIssueModalOpen(true)} />
               </div>
 
               {/* Mobile hamburger + user avatar */}
               <div className="flex items-center gap-2 md:hidden">
-                <button
-                  onClick={() => setIssueModalOpen(true)}
-                  className="p-2 rounded-lg text-slate-400 hover:text-primary-600 hover:bg-slate-50 transition-colors"
-                  aria-label="Report a Bug or Request a Feature"
-                >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-                  </svg>
-                </button>
-                <UserMenu />
+                <UserMenu onReportBug={() => setIssueModalOpen(true)} />
                 <button
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                   className="p-2 rounded-lg hover:bg-slate-50 text-slate-600"
@@ -226,7 +218,7 @@ function App() {
           </div>
         </nav>
 
-        <MobileMenu open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} isAdmin={user.is_admin} />
+        <MobileMenu open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} isAdmin={user.is_admin} onReportBug={() => setIssueModalOpen(true)} />
 
         <main>
           <Routes>
