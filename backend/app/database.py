@@ -23,8 +23,12 @@ async def get_db():
 
 
 async def init_db():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+    except Exception:
+        # Ignore race condition when multiple workers create tables simultaneously
+        pass
 
     # Lightweight column migrations (no Alembic)
     async with engine.begin() as conn:
