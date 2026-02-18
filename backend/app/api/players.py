@@ -309,16 +309,13 @@ async def get_projections(
     db: AsyncSession = Depends(get_db),
 ):
     """
-    Player projections for roster players only (those with a fantasy price
-    for this round).  Uses 2026 fantasy_round_stats as the primary data
-    source; falls back to historical club + international averages.
+    Player projections for roster players (those with a fantasy price
+    for this round).  Uses historical Six Nations + club stats to
+    predict performance.
     """
-    from app.models.stats import FantasyRoundStats
-
     query = select(Player).options(
         selectinload(Player.prices),
         selectinload(Player.odds),
-        selectinload(Player.fantasy_round_stats),
         selectinload(Player.six_nations_stats),
         selectinload(Player.club_stats),
     )
@@ -343,45 +340,15 @@ async def get_projections(
 
         price = float(price_record.price)
 
-        # Primary: use 2026 fantasy_round_stats if available
-        frs = [s for s in (player.fantasy_round_stats or []) if s.season == season]
-
-        if frs:
-            n = len(frs)
-            avg_fp = sum(float(s.fantasy_points) for s in frs if s.fantasy_points) / n if n else None
-            avg_tries = round(sum(s.tries for s in frs) / n, 3)
-            avg_tackles = round(sum(s.tackles_made for s in frs) / n, 2)
-            avg_metres = round(sum(s.metres_carried for s in frs) / n, 2)
-            avg_turnovers = round(sum(getattr(s, 'breakdown_steals', 0) for s in frs) / n, 3)
-            avg_db = round(sum(s.defenders_beaten for s in frs) / n, 2)
-            avg_offloads = round(sum(s.offloads for s in frs) / n, 3)
-            avg_minutes = sum(s.minutes_played for s in frs) / n if n else None
-            predicted_points = round(avg_fp, 2) if avg_fp else None
-            ppm = round(avg_fp / avg_minutes, 3) if avg_fp and avg_minutes and avg_minutes > 0 else None
-            started_count = sum(1 for s in frs if s.minutes_played and s.minutes_played >= 50)
-            start_rate = round((started_count / n) * 100, 1) if n else None
-            total_games = n
-        else:
-            # Fallback: historical stats
-            sn_stats = player.six_nations_stats or []
-            cl_stats = player.club_stats or []
-            derived = compute_derived_stats(sn_stats, cl_stats, player.fantasy_position)
-            if derived.total_games == 0:
-                continue
-            predicted_points = derived.predicted_points
-            avg_tries = derived.avg_tries
-            avg_tackles = derived.avg_tackles
-            avg_metres = derived.avg_metres
-            avg_turnovers = derived.avg_turnovers
-            avg_db = derived.avg_defenders_beaten
-            avg_offloads = derived.avg_offloads
-            avg_minutes = derived.expected_minutes
-            start_rate = derived.start_rate
-            ppm = derived.points_per_minute
-            total_games = derived.total_games
+        # Derive stats from historical data (Six Nations + club)
+        sn_stats = player.six_nations_stats or []
+        cl_stats = player.club_stats or []
+        derived = compute_derived_stats(sn_stats, cl_stats, player.fantasy_position)
 
         # Points per star
-        pps = round(predicted_points / price, 2) if predicted_points and price > 0 else None
+        pps = None
+        if derived.predicted_points and price > 0:
+            pps = round(derived.predicted_points / price, 2)
 
         # Odds for this round
         odds_record = next(
@@ -400,21 +367,21 @@ async def get_projections(
             country=player.country,
             fantasy_position=player.fantasy_position,
             price=price,
-            predicted_points=predicted_points,
+            predicted_points=derived.predicted_points,
             points_per_star=pps,
-            avg_tries=avg_tries,
-            avg_tackles=avg_tackles,
-            avg_metres=avg_metres,
-            avg_turnovers=avg_turnovers,
-            avg_defenders_beaten=avg_db,
-            avg_offloads=avg_offloads,
-            expected_minutes=round(avg_minutes, 1) if avg_minutes else None,
-            start_rate=start_rate,
-            points_per_minute=ppm,
+            avg_tries=derived.avg_tries,
+            avg_tackles=derived.avg_tackles,
+            avg_metres=derived.avg_metres,
+            avg_turnovers=derived.avg_turnovers,
+            avg_defenders_beaten=derived.avg_defenders_beaten,
+            avg_offloads=derived.avg_offloads,
+            expected_minutes=derived.expected_minutes,
+            start_rate=derived.start_rate,
+            points_per_minute=derived.points_per_minute,
             anytime_try_odds=anytime_try_odds,
             opponent=None,
             home_away=None,
-            total_games=total_games,
+            total_games=derived.total_games,
         ))
 
     # Sort

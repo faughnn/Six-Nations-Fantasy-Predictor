@@ -16,7 +16,7 @@ const NAV_ITEMS = [
   { to: '/tryscorers', label: 'Try Scorers' },
   { to: '/fantasy-stats', label: '2026 Stats' },
   { to: '/players-all-stats', label: '2025 F6N Stats' },
-  { to: '/projections', label: 'Projections' },
+  { to: '/projections', label: 'Projections', wip: true },
   { to: '/historical-stats', label: 'Historical Stats', wip: true },
 ];
 
