@@ -19,7 +19,9 @@ interface DataTableProps<T> {
   emptyMessage?: string;
 }
 
-export function DataTable<T extends Record<string, unknown>>({
+export { type Column };
+
+export function DataTable<T extends object>({
   data,
   columns,
   keyExtractor,
@@ -33,8 +35,8 @@ export function DataTable<T extends Record<string, unknown>>({
     if (!sortKey) return data;
 
     return [...data].sort((a, b) => {
-      const aVal = a[sortKey];
-      const bVal = b[sortKey];
+      const aVal = (a as Record<string, unknown>)[sortKey];
+      const bVal = (b as Record<string, unknown>)[sortKey];
 
       if (aVal === null || aVal === undefined) return 1;
       if (bVal === null || bVal === undefined) return -1;
@@ -114,7 +116,7 @@ export function DataTable<T extends Record<string, unknown>>({
                 >
                   {column.render
                     ? column.render(item)
-                    : String(item[column.key] ?? '-')}
+                    : String((item as Record<string, unknown>)[column.key] ?? '-')}
                 </td>
               ))}
             </tr>

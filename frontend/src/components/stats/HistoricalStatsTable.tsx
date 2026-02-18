@@ -179,8 +179,8 @@ export function HistoricalStatsTable({ data, type }: HistoricalStatsTableProps) 
     if (!sortKey) return data;
 
     return [...data].sort((a, b) => {
-      const aVal = (a as Record<string, unknown>)[sortKey];
-      const bVal = (b as Record<string, unknown>)[sortKey];
+      const aVal = (a as unknown as Record<string, unknown>)[sortKey];
+      const bVal = (b as unknown as Record<string, unknown>)[sortKey];
 
       if (aVal === null || aVal === undefined) return 1;
       if (bVal === null || bVal === undefined) return -1;
@@ -376,7 +376,7 @@ export function HistoricalStatsTable({ data, type }: HistoricalStatsTableProps) 
                           colIdx === 0 && 'border-l border-slate-100'
                         )}
                       >
-                        {formatValue((stat as Record<string, unknown>)[String(col.key)], col.format as ((v: unknown, r: StatRecord) => string) | undefined, stat)}
+                        {formatValue((stat as unknown as Record<string, unknown>)[String(col.key)], col.format as ((v: unknown, r: StatRecord) => string) | undefined, stat)}
                       </td>
                     ));
                   })}

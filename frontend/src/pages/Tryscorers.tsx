@@ -6,7 +6,7 @@ import { useCurrentRound } from '../hooks/useMatches';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { CountryFlag } from '../components/common/CountryFlag';
 import { Tooltip } from '../components/common/Tooltip';
-import type { TryScorerDetail, Country, Position } from '../types';
+import type { Country, Position } from '../types';
 
 type SortKey = 'name' | 'country' | 'fantasy_position' | 'match' | 'anytime_try_odds' | 'implied_prob' | 'expected_try_points' | 'price' | 'exp_pts_per_star';
 type SortDir = 'asc' | 'desc';
@@ -116,8 +116,8 @@ export default function Tryscorers() {
   const filtered = useMemo(() => {
     if (!tryscorers) return [];
     let list = [...tryscorers];
-    if (excludedCountries.size > 0) list = list.filter(p => !excludedCountries.has(p.country));
-    if (excludedPositions.size > 0) list = list.filter(p => !excludedPositions.has(p.fantasy_position));
+    if (excludedCountries.size > 0) list = list.filter(p => !excludedCountries.has(p.country as Country));
+    if (excludedPositions.size > 0) list = list.filter(p => !excludedPositions.has(p.fantasy_position as Position));
     if (availFilter !== 'all') list = list.filter(p => (p.availability ?? 'not_playing') === availFilter);
 
     list.sort((a, b) => {
