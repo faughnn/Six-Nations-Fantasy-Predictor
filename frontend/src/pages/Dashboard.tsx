@@ -27,31 +27,30 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-slate-800">Dashboard</h1>
-        <p className="text-sm text-slate-400 mt-1 mb-2">
-          Your command centre for the current round. View upcoming fixtures and spot the best value picks and try threats at a glance.
-        </p>
-        <div className="flex items-center gap-3 mt-1">
-          <p className="text-slate-400">Round {round} Overview — {season} Six Nations</p>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setRoundOverride(Math.max(1, round - 1))}
-              disabled={round <= 1}
-              className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed text-sm font-bold transition-colors"
-            >
-              −
-            </button>
-            <span className="text-sm text-slate-500 w-6 text-center tabular-nums font-medium">{round}</span>
-            <button
-              onClick={() => setRoundOverride(Math.min(5, round + 1))}
-              disabled={round >= 5}
-              className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed text-sm font-bold transition-colors"
-            >
-              +
-            </button>
-          </div>
+      {/* Masthead */}
+      <div className="masthead">
+        <h1 className="masthead-title">Command <span className="italic" style={{ color: '#b91c1c' }}>Centre</span></h1>
+        <p className="masthead-subtitle">Analytics & Intelligence</p>
+      </div>
+      <div className="edition-bar">
+        <span>Six Nations Championship {season}</span>
+        <span className="font-bold" style={{ color: '#b91c1c' }}>Round {round}</span>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setRoundOverride(Math.max(1, round - 1))}
+            disabled={round <= 1}
+            className="w-6 h-6 flex items-center justify-center border border-stone-300 text-stone-400 hover:bg-stone-100 disabled:opacity-30 disabled:cursor-not-allowed text-xs font-bold transition-colors"
+          >
+            −
+          </button>
+          <span className="font-mono text-sm text-stone-800 tabular-nums">{round}</span>
+          <button
+            onClick={() => setRoundOverride(Math.min(5, round + 1))}
+            disabled={round >= 5}
+            className="w-6 h-6 flex items-center justify-center border border-stone-300 text-stone-400 hover:bg-stone-100 disabled:opacity-30 disabled:cursor-not-allowed text-xs font-bold transition-colors"
+          >
+            +
+          </button>
         </div>
       </div>
 
@@ -59,13 +58,13 @@ export default function Dashboard() {
       {(() => {
         const isComplete = scrapeStatus && missing.length === 0 && scrapeStatus.availability_unknown === 0;
         return (
-          <div className="card">
+          <div className="border-t-2 border-stone-900 border-b border-stone-300 py-3 px-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-sm text-slate-600">Data Status</h3>
+              <h3 className="font-semibold text-sm text-stone-600">Data Status</h3>
               {scrapeStatus && (
                 <div className="flex items-center gap-2 text-xs">
-                  <span className={`inline-block w-2 h-2 rounded-full ${isComplete ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-                  <span className="text-slate-400">
+                  <span className={`inline-block w-2 h-2 ${isComplete ? 'bg-green-700' : 'bg-amber-600'}`} />
+                  <span className="text-stone-400">
                     {isComplete
                       ? 'All data complete'
                       : `Round ${round} data is incomplete — projections will be updated`}
@@ -81,35 +80,35 @@ export default function Dashboard() {
                 <div className="space-y-2 text-xs">
                   {scrapeStatus.matches.map((m) => (
                     <div key={`${m.home_team}-${m.away_team}`} className="flex flex-wrap items-center gap-1.5">
-                      <span className="font-medium text-slate-600 w-40">{m.home_team} v {m.away_team}</span>
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-medium ${m.has_handicap ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${m.has_handicap ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+                      <span className="font-medium text-stone-600 w-40">{m.home_team} v {m.away_team}</span>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 font-medium ${m.has_handicap ? 'bg-green-50 text-green-800' : 'bg-stone-100 text-stone-400'}`}>
+                        <span className={`w-1.5 h-1.5 ${m.has_handicap ? 'bg-green-700' : 'bg-stone-300'}`} />
                         Handicaps
                       </span>
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-medium ${m.has_totals ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${m.has_totals ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 font-medium ${m.has_totals ? 'bg-green-50 text-green-800' : 'bg-stone-100 text-stone-400'}`}>
+                        <span className={`w-1.5 h-1.5 ${m.has_totals ? 'bg-green-700' : 'bg-stone-300'}`} />
                         Totals
                       </span>
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-medium ${m.has_try_scorer ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${m.has_try_scorer ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 font-medium ${m.has_try_scorer ? 'bg-green-50 text-green-800' : 'bg-stone-100 text-stone-400'}`}>
+                        <span className={`w-1.5 h-1.5 ${m.has_try_scorer ? 'bg-green-700' : 'bg-stone-300'}`} />
                         Try Scorers{m.has_try_scorer ? ` (${m.try_scorer_count})` : ''}
                       </span>
                     </div>
                   ))}
                   <div className="flex items-center gap-1.5">
-                    <span className="font-medium text-slate-600 w-40">Fantasy Prices</span>
+                    <span className="font-medium text-stone-600 w-40">Fantasy Prices</span>
                     {scrapeStatus.has_prices ? (
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-medium ${
-                        scrapeStatus.availability_unknown > 0 ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 font-medium ${
+                        scrapeStatus.availability_unknown > 0 ? 'bg-amber-50 text-amber-800' : 'bg-green-50 text-green-800'
                       }`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${
-                          scrapeStatus.availability_unknown > 0 ? 'bg-amber-500' : 'bg-emerald-500'
+                        <span className={`w-1.5 h-1.5 ${
+                          scrapeStatus.availability_unknown > 0 ? 'bg-amber-600' : 'bg-green-700'
                         }`} />
                         Imported ({scrapeStatus.price_count} players)
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-medium bg-red-50 text-red-600">
-                        <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 font-medium bg-red-50 text-red-800">
+                        <span className="w-1.5 h-1.5 bg-red-600" />
                         Not imported
                       </span>
                     )}
@@ -118,7 +117,7 @@ export default function Dashboard() {
 
                 {/* Right: warnings */}
                 {(scrapeStatus.availability_unknown > 0 || missing.length > 0) && (
-                  <div className="ml-auto text-xs text-amber-700 space-y-1.5 text-right max-w-sm">
+                  <div className="ml-auto text-xs text-amber-800 space-y-1.5 text-right max-w-sm">
                     {scrapeStatus.availability_unknown > 0 && (
                       <p>{scrapeStatus.availability_unknown} players missing lineup availability — will be re-scraped once teams are announced</p>
                     )}
@@ -138,9 +137,9 @@ export default function Dashboard() {
 
       {/* Upcoming Matches */}
       <div>
-        <h2 className="text-xl font-bold text-slate-800 mb-3">Upcoming Matches</h2>
+        <h2 className="text-sm font-bold text-stone-400 uppercase tracking-[2px] mb-4" style={{ fontFamily: 'Fraunces, Georgia, serif' }}>This Week's Fixtures</h2>
         {matchList.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 border-t-2 border-stone-900">
             {matchList.map((match) => (
               <MatchCard
                 key={`${match.home_team}-${match.away_team}`}
@@ -149,7 +148,7 @@ export default function Dashboard() {
             ))}
           </div>
         ) : (
-          <div className="card text-center text-slate-400 py-8">
+          <div className="text-center text-stone-400 py-8 border-t-2 border-stone-900">
             No match odds available for this round yet
           </div>
         )}

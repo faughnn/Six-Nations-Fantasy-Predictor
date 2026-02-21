@@ -30,24 +30,24 @@ function UserMenu({ onAction, onReportBug }: { onAction?: () => void; onReportBu
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-slate-50 transition-colors"
+        className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-white/5 transition-colors"
       >
         {user.avatar_url ? (
           <img src={user.avatar_url} alt="" className="w-7 h-7 rounded-full" />
         ) : (
-          <div className="w-7 h-7 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-xs font-semibold">
+          <div className="w-7 h-7 rounded-full bg-white/10 text-white flex items-center justify-center text-xs font-semibold">
             {user.name.charAt(0).toUpperCase()}
           </div>
         )}
-        <span className="text-sm text-slate-700 hidden sm:inline">{user.name}</span>
+        <span className="text-[11px] text-stone-400 uppercase tracking-wider font-semibold hidden sm:inline">{user.name}</span>
       </button>
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg border border-slate-200 shadow-lg z-50 py-1">
-            <div className="px-3 py-2 border-b border-slate-100">
-              <p className="text-sm font-medium text-slate-900 truncate">{user.name}</p>
-              <p className="text-xs text-slate-500 truncate">{user.email}</p>
+          <div className="absolute right-0 mt-1 w-48 bg-[#faf8f4] border border-stone-300 shadow-lg z-50 py-1">
+            <div className="px-3 py-2 border-b border-stone-200">
+              <p className="text-sm font-medium text-stone-900 truncate">{user.name}</p>
+              <p className="text-xs text-stone-400 truncate">{user.email}</p>
             </div>
             <button
               onClick={() => {
@@ -55,7 +55,7 @@ function UserMenu({ onAction, onReportBug }: { onAction?: () => void; onReportBu
                 onAction?.();
                 onReportBug?.();
               }}
-              className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+              className="w-full text-left px-3 py-2 text-sm text-stone-600 hover:bg-stone-100"
             >
               Report a Bug
             </button>
@@ -65,7 +65,7 @@ function UserMenu({ onAction, onReportBug }: { onAction?: () => void; onReportBu
                 setOpen(false);
                 onAction?.();
               }}
-              className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+              className="w-full text-left px-3 py-2 text-sm text-stone-600 hover:bg-stone-100"
             >
               Sign out
             </button>
@@ -89,7 +89,7 @@ function MobileMenu({ open, onClose, isAdmin, onReportBug }: { open: boolean; on
   return (
     <>
       <div className="fixed inset-0 bg-black/30 z-40 md:hidden" onClick={onClose} />
-      <div className="fixed top-14 left-0 right-0 bg-white border-b border-slate-200 shadow-lg z-50 md:hidden">
+      <div className="fixed top-14 left-0 right-0 bg-[#1c1917] border-b border-stone-700 shadow-lg z-50 md:hidden">
         <div className="px-4 py-3 space-y-1">
           {NAV_ITEMS.map((item) => (
             <NavLink
@@ -97,32 +97,32 @@ function MobileMenu({ open, onClose, isAdmin, onReportBug }: { open: boolean; on
               to={item.to}
               end={item.end}
               className={({ isActive }) =>
-                `block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                `block px-3 py-2.5 text-sm font-medium transition-colors ${
                   isActive
-                    ? 'bg-primary-50 text-primary-700'
-                    : 'text-slate-600 hover:bg-slate-50'
+                    ? 'text-white bg-white/5'
+                    : 'text-stone-400 hover:text-white hover:bg-white/5'
                 }`
               }
             >
               {item.label}
-              {item.wip && <span className="ml-1.5 text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full font-semibold align-middle">WIP</span>}
+              {item.wip && <span className="ml-1 text-[8px] text-amber-400 font-bold">WIP</span>}
             </NavLink>
           ))}
           {isAdmin && (
             <NavLink
               to="/admin/scrape"
               className={({ isActive }) =>
-                `block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                `block px-3 py-2.5 text-sm font-medium transition-colors ${
                   isActive
-                    ? 'bg-amber-50 text-amber-700'
-                    : 'text-amber-500 hover:bg-amber-50'
+                    ? 'text-amber-400 bg-white/5'
+                    : 'text-amber-500/70 hover:text-amber-400 hover:bg-white/5'
                 }`
               }
             >
               Admin
             </NavLink>
           )}
-          <div className="border-t border-slate-100 pt-2 mt-2">
+          <div className="border-t border-stone-700 pt-2 mt-2">
             <UserMenu onAction={onClose} onReportBug={onReportBug} />
           </div>
         </div>
@@ -138,8 +138,8 @@ function App() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-slate-400 text-sm">Loading...</div>
+      <div className="min-h-screen bg-[#faf8f4] flex items-center justify-center">
+        <div className="text-stone-400 font-mono text-sm">Loading...</div>
       </div>
     );
   }
@@ -150,48 +150,47 @@ function App() {
 
   return (
     <Router>
-      <div className="min-h-screen bg-slate-50">
-        <nav className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-card">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="flex items-center justify-between h-14">
-              <Link to="/" className="text-lg font-bold text-slate-900 shrink-0">
-                <span className="text-primary-600">Fantasy</span> Six Nations
+      <div className="min-h-screen bg-[#faf8f4]">
+        <nav className="bg-[#1c1917] sticky top-0 z-30">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="flex items-center justify-between h-11">
+              <Link to="/" className="text-sm font-bold text-white tracking-wide shrink-0" style={{ fontFamily: 'Fraunces, Georgia, serif' }}>
+                Fantasy Six Nations
               </Link>
 
               {/* Desktop nav */}
-              <div className="hidden md:flex items-center space-x-1">
+              <div className="hidden md:flex items-center gap-6">
                 {NAV_ITEMS.map((item) => (
                   <NavLink
                     key={item.to}
                     to={item.to}
                     end={item.end}
                     className={({ isActive }) =>
-                      `relative px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                      `text-[11px] font-semibold uppercase tracking-[1.5px] transition-colors ${
                         isActive
-                          ? 'bg-primary-50 text-primary-700'
-                          : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+                          ? 'text-white'
+                          : 'text-stone-400 hover:text-white'
                       }`
                     }
                   >
                     {item.label}
-                    {item.wip && <span className="absolute -top-2 -right-1 text-[9px] px-1 py-px bg-amber-400 text-white rounded-full font-bold leading-tight">WIP</span>}
+                    {item.wip && <span className="ml-1 text-[8px] text-amber-400 font-bold">WIP</span>}
                   </NavLink>
                 ))}
                 {user.is_admin && (
                   <NavLink
                     to="/admin/scrape"
                     className={({ isActive }) =>
-                      `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                      `text-[11px] font-semibold uppercase tracking-[1.5px] transition-colors ${
                         isActive
-                          ? 'bg-amber-50 text-amber-700'
-                          : 'text-amber-500 hover:text-amber-700 hover:bg-amber-50'
+                          ? 'text-amber-400'
+                          : 'text-amber-500/70 hover:text-amber-400'
                       }`
                     }
                   >
                     Admin
                   </NavLink>
                 )}
-                <div className="w-px h-6 bg-slate-200 mx-1" />
                 <UserMenu onReportBug={() => setIssueModalOpen(true)} />
               </div>
 
@@ -200,7 +199,7 @@ function App() {
                 <UserMenu onReportBug={() => setIssueModalOpen(true)} />
                 <button
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="p-2 rounded-lg hover:bg-slate-50 text-slate-600"
+                  className="p-2 rounded-lg hover:bg-white/5 text-stone-400"
                   aria-label="Toggle menu"
                 >
                   {mobileMenuOpen ? (
@@ -223,36 +222,36 @@ function App() {
         <main>
           <Routes>
             <Route path="/fantasy-stats" element={
-              <div className="px-4 py-6">
+              <div className="px-6 py-6">
                 <FantasyStats />
               </div>
             } />
             <Route path="/players-all-stats" element={
-              <div className="px-4 py-6">
+              <div className="px-6 py-6">
                 <PlayersAllStats />
               </div>
             } />
             <Route path="/projections" element={
-              <div className="px-4 py-6">
+              <div className="px-6 py-6">
                 <PlayerProjections />
               </div>
             } />
             <Route path="/historical-stats" element={
-              <div className="px-4 py-6">
+              <div className="px-6 py-6">
                 <HistoricalStats />
               </div>
             } />
-            <Route path="/tryscorers" element={<div className="max-w-7xl mx-auto px-4 py-6"><Tryscorers /></div>} />
-            <Route path="/admin/scrape" element={<div className="max-w-7xl mx-auto px-4 py-6"><AdminScrape /></div>} />
-            <Route path="/" element={<div className="max-w-7xl mx-auto px-4 py-6"><Dashboard /></div>} />
+            <Route path="/tryscorers" element={<div className="max-w-6xl mx-auto px-6 py-6"><Tryscorers /></div>} />
+            <Route path="/admin/scrape" element={<div className="max-w-6xl mx-auto px-6 py-6"><AdminScrape /></div>} />
+            <Route path="/" element={<div className="max-w-6xl mx-auto px-6 py-6"><Dashboard /></div>} />
           </Routes>
         </main>
 
-        <footer className="border-t border-slate-200 bg-white mt-8">
-          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-center">
+        <footer className="border-t-2 border-stone-900 bg-[#faf8f4] mt-8">
+          <div className="max-w-6xl mx-auto px-6 py-6 flex justify-center">
             <button
               onClick={() => setIssueModalOpen(true)}
-              className="text-sm text-slate-500 hover:text-primary-600 transition-colors"
+              className="text-xs text-stone-400 uppercase tracking-wider font-semibold hover:text-[#b91c1c] transition-colors"
             >
               Report a Bug or Request a Feature
             </button>

@@ -196,10 +196,10 @@ function ScrapeButton({
   disabled: boolean;
   variant?: 'default' | 'primary';
 }) {
-  const base = 'px-3 py-1.5 text-sm rounded-lg border transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium';
+  const base = 'px-3 py-1.5 text-sm border transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium';
   const styles = variant === 'primary'
-    ? `${base} border-primary-200 text-primary-600 hover:bg-primary-50 bg-white`
-    : `${base} border-slate-200 text-slate-600 hover:bg-slate-50 bg-white`;
+    ? `${base} border-stone-900 text-stone-900 hover:bg-stone-100 uppercase tracking-wider bg-white`
+    : `${base} border-stone-300 text-stone-600 hover:bg-stone-100 uppercase tracking-wider bg-white`;
 
   return (
     <button onClick={onClick} disabled={disabled} className={styles}>
@@ -256,25 +256,25 @@ export default function AdminScrape() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-800">Admin</h1>
-        <p className="text-sm text-slate-400 mt-1 mb-2">
+        <h1 className="text-2xl font-bold text-stone-900" style={{ fontFamily: 'Fraunces, Georgia, serif' }}>Administration</h1>
+        <p className="text-sm text-stone-400 mt-1 mb-2">
           Scraper controls and user metrics.
         </p>
         <div className="flex items-center gap-3 mt-1">
-          <p className="text-slate-400">Round {round} — {season} Six Nations</p>
+          <p className="text-stone-400">Round {round} — {season} Six Nations</p>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setRoundOverride(Math.max(1, round - 1))}
               disabled={round <= 1}
-              className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed text-sm font-bold transition-colors"
+              className="w-7 h-7 flex items-center justify-center border border-stone-300 text-stone-400 hover:bg-stone-100 disabled:opacity-30 disabled:cursor-not-allowed text-sm font-bold transition-colors"
             >
               −
             </button>
-            <span className="text-sm text-slate-500 w-6 text-center tabular-nums font-medium">{round}</span>
+            <span className="text-sm text-stone-500 w-6 text-center tabular-nums font-medium font-mono">{round}</span>
             <button
               onClick={() => setRoundOverride(Math.min(5, round + 1))}
               disabled={round >= 5}
-              className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed text-sm font-bold transition-colors"
+              className="w-7 h-7 flex items-center justify-center border border-stone-300 text-stone-400 hover:bg-stone-100 disabled:opacity-30 disabled:cursor-not-allowed text-sm font-bold transition-colors"
             >
               +
             </button>
@@ -283,13 +283,13 @@ export default function AdminScrape() {
       </div>
 
       {/* Scrape Controls */}
-      <div className="card">
+      <div className="border-t-2 border-stone-900 border-b border-stone-300 py-4 px-4">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-sm text-slate-600">Data Controls</h3>
+          <h3 className="font-semibold text-sm text-stone-600">Data Controls</h3>
           {scrapeStatus && (
             <div className="flex items-center gap-2 text-xs">
-              <span className={`inline-block w-2 h-2 rounded-full ${missing.length === 0 ? 'bg-emerald-500' : 'bg-yellow-500'}`} />
-              <span className="text-slate-400">
+              <span className={`inline-block w-2 h-2 rounded-full ${missing.length === 0 ? 'bg-green-700' : 'bg-amber-600'}`} />
+              <span className="text-stone-400">
                 {missing.length === 0
                   ? 'All markets scraped'
                   : `Missing: ${missing.join(', ')}`}
@@ -342,10 +342,10 @@ export default function AdminScrape() {
         </div>
 
         {scrapeJob.status !== 'idle' && (
-          <div className={`mt-3 px-3 py-2 rounded-lg text-sm flex items-center gap-2 ${
-            scrapeJob.status === 'scraping' ? 'bg-blue-50 text-blue-700 border border-blue-200'
-              : scrapeJob.status === 'done' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-              : 'bg-red-50 text-red-700 border border-red-200'
+          <div className={`mt-3 px-3 py-2 text-sm flex items-center gap-2 ${
+            scrapeJob.status === 'scraping' ? 'bg-blue-50 text-blue-800 border border-blue-200'
+              : scrapeJob.status === 'done' ? 'bg-green-50 text-green-800 border border-green-200'
+              : 'bg-red-50 text-red-800 border border-red-200'
           }`}>
             {scrapeJob.status === 'scraping' && (
               <svg className="animate-spin h-3.5 w-3.5 flex-shrink-0" viewBox="0 0 24 24">
@@ -357,7 +357,7 @@ export default function AdminScrape() {
             {scrapeJob.status === 'scraping' && (
               <button
                 onClick={scrapeJob.killJob}
-                className="px-2 py-0.5 text-xs font-medium rounded bg-red-100 text-red-700 hover:bg-red-200 transition-colors"
+                className="px-2 py-0.5 text-xs font-medium bg-red-100 text-red-800 hover:bg-red-200 transition-colors"
               >
                 Kill
               </button>
@@ -374,43 +374,43 @@ export default function AdminScrape() {
         )}
 
         {scrapeJob.status === 'idle' && (
-          <p className="mt-3 text-xs text-slate-400">No active scrapes</p>
+          <p className="mt-3 text-xs text-stone-400">No active scrapes</p>
         )}
 
         {/* Per-match status indicators */}
         {scrapeStatus && scrapeStatus.matches.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-3 text-xs">
             {scrapeStatus.matches.map((m) => (
-              <div key={`${m.home_team}-${m.away_team}`} className="flex items-center gap-1.5 text-slate-400">
-                <span className="font-medium text-slate-500">{m.home_team} v {m.away_team}:</span>
-                <span className={m.has_handicap ? 'text-emerald-600' : 'text-slate-300'}>H</span>
-                <span className={m.has_totals ? 'text-emerald-600' : 'text-slate-300'}>T</span>
-                <span className={m.has_try_scorer ? 'text-emerald-600' : 'text-slate-300'}>
+              <div key={`${m.home_team}-${m.away_team}`} className="flex items-center gap-1.5 text-stone-400">
+                <span className="font-medium text-stone-500">{m.home_team} v {m.away_team}:</span>
+                <span className={m.has_handicap ? 'text-green-800' : 'text-stone-300'}>H</span>
+                <span className={m.has_totals ? 'text-green-800' : 'text-stone-300'}>T</span>
+                <span className={m.has_try_scorer ? 'text-green-800' : 'text-stone-300'}>
                   TS{m.has_try_scorer ? `(${m.try_scorer_count})` : ''}
                 </span>
               </div>
             ))}
-            <div className="flex items-center gap-1.5 text-slate-400">
-              <span className="font-medium text-slate-500">Prices:</span>
+            <div className="flex items-center gap-1.5 text-stone-400">
+              <span className="font-medium text-stone-500">Prices:</span>
               {scrapeStatus.has_prices ? (
-                <span className="text-emerald-600">({scrapeStatus.price_count})</span>
+                <span className="text-green-800">({scrapeStatus.price_count})</span>
               ) : (
-                <span className="text-red-400">(run CLI scraper)</span>
+                <span className="text-red-700">(run CLI scraper)</span>
               )}
             </div>
             {scrapeStatus.has_prices && scrapeStatus.availability_unknown > 0 && (
-              <div className="flex items-center gap-1.5 text-slate-400">
-                <span className="font-medium text-slate-500">Availability:</span>
-                <span className="text-amber-500">
+              <div className="flex items-center gap-1.5 text-stone-400">
+                <span className="font-medium text-stone-500">Availability:</span>
+                <span className="text-amber-700">
                   {scrapeStatus.availability_unknown} unknown
                 </span>
-                <span className="text-slate-300">— re-scrape when teams announced</span>
+                <span className="text-stone-300">— re-scrape when teams announced</span>
               </div>
             )}
             {scrapeStatus.has_prices && scrapeStatus.availability_unknown === 0 && (
-              <div className="flex items-center gap-1.5 text-slate-400">
-                <span className="font-medium text-slate-500">Availability:</span>
-                <span className="text-emerald-600">all set</span>
+              <div className="flex items-center gap-1.5 text-stone-400">
+                <span className="font-medium text-stone-500">Availability:</span>
+                <span className="text-green-800">all set</span>
               </div>
             )}
           </div>
@@ -421,30 +421,30 @@ export default function AdminScrape() {
       {metrics && (
         <>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="card text-center">
-              <p className="text-2xl font-bold text-slate-800 tabular-nums">{metrics.total_users}</p>
-              <p className="text-xs text-slate-400 mt-1">Total Users</p>
+            <div className="border border-stone-300 p-4 text-center">
+              <p className="text-2xl font-black text-stone-900 font-mono tabular-nums">{metrics.total_users}</p>
+              <p className="text-xs text-stone-400 mt-1 uppercase tracking-wider font-semibold">Total Users</p>
             </div>
-            <div className="card text-center">
-              <p className="text-2xl font-bold text-emerald-600 tabular-nums">{metrics.active_7d}</p>
-              <p className="text-xs text-slate-400 mt-1">Active (7d)</p>
+            <div className="border border-stone-300 p-4 text-center">
+              <p className="text-2xl font-black text-green-800 font-mono tabular-nums">{metrics.active_7d}</p>
+              <p className="text-xs text-stone-400 mt-1 uppercase tracking-wider font-semibold">Active (7d)</p>
             </div>
-            <div className="card text-center">
-              <p className="text-2xl font-bold text-primary-600 tabular-nums">{metrics.active_30d}</p>
-              <p className="text-xs text-slate-400 mt-1">Active (30d)</p>
+            <div className="border border-stone-300 p-4 text-center">
+              <p className="text-2xl font-black text-[#b91c1c] font-mono tabular-nums">{metrics.active_30d}</p>
+              <p className="text-xs text-stone-400 mt-1 uppercase tracking-wider font-semibold">Active (30d)</p>
             </div>
-            <div className="card text-center">
-              <p className="text-2xl font-bold text-amber-600 tabular-nums">{metrics.new_signups_7d}</p>
-              <p className="text-xs text-slate-400 mt-1">New (7d)</p>
+            <div className="border border-stone-300 p-4 text-center">
+              <p className="text-2xl font-black text-amber-800 font-mono tabular-nums">{metrics.new_signups_7d}</p>
+              <p className="text-xs text-stone-400 mt-1 uppercase tracking-wider font-semibold">New (7d)</p>
             </div>
           </div>
 
-          <div className="card">
-            <h3 className="font-semibold text-sm text-slate-600 mb-3">Recent Users</h3>
+          <div className="border-t-2 border-stone-900 border-b border-stone-300 py-4 px-4">
+            <h3 className="font-semibold text-sm text-stone-600 mb-3">Recent Users</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-slate-400 text-xs uppercase">
+                  <tr className="text-left text-stone-400 text-[10px] uppercase tracking-wider font-bold">
                     <th className="pb-2">Name</th>
                     <th className="pb-2">Email</th>
                     <th className="pb-2">Method</th>
@@ -455,28 +455,28 @@ export default function AdminScrape() {
                 </thead>
                 <tbody>
                   {metrics.users.map((u) => (
-                    <tr key={u.id} className="border-t border-slate-100">
-                      <td className="py-1.5 font-medium text-slate-700">
+                    <tr key={u.id} className="border-b border-dotted border-stone-300">
+                      <td className="py-1.5 font-medium text-stone-800">
                         {u.name}
                         {u.is_admin && (
-                          <span className="ml-1.5 text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full font-semibold">
+                          <span className="ml-1.5 text-[10px] px-1.5 py-0.5 bg-amber-50 text-amber-800 border border-amber-300 font-semibold">
                             admin
                           </span>
                         )}
                       </td>
-                      <td className="py-1.5 text-slate-400">{u.email}</td>
+                      <td className="py-1.5 text-stone-400">{u.email}</td>
                       <td className="py-1.5">
-                        <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
+                        <span className={`text-xs px-1.5 py-0.5 font-medium ${
                           u.auth_method === 'google'
-                            ? 'bg-blue-50 text-blue-600'
-                            : 'bg-slate-100 text-slate-500'
+                            ? 'bg-blue-50 text-blue-800'
+                            : 'bg-stone-100 text-stone-500'
                         }`}>
                           {u.auth_method}
                         </span>
                       </td>
-                      <td className="py-1.5 text-right tabular-nums text-slate-500">{u.login_count}</td>
-                      <td className="py-1.5 text-right text-slate-400">{timeAgo(u.last_login_at)}</td>
-                      <td className="py-1.5 text-right text-slate-400">{timeAgo(u.created_at)}</td>
+                      <td className="py-1.5 text-right tabular-nums text-stone-500 font-mono">{u.login_count}</td>
+                      <td className="py-1.5 text-right text-stone-400">{timeAgo(u.last_login_at)}</td>
+                      <td className="py-1.5 text-right text-stone-400">{timeAgo(u.created_at)}</td>
                     </tr>
                   ))}
                 </tbody>

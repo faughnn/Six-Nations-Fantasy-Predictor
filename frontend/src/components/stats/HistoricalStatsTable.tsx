@@ -239,7 +239,7 @@ export function HistoricalStatsTable({ data, type }: HistoricalStatsTableProps) 
 
   if (data.length === 0) {
     return (
-      <div className="text-center py-8 text-slate-400">
+      <div className="text-center py-8 text-stone-400">
         No historical stats found
       </div>
     );
@@ -247,22 +247,22 @@ export function HistoricalStatsTable({ data, type }: HistoricalStatsTableProps) 
 
   return (
     <div>
-      <div className="text-xs text-slate-400 mb-1.5 md:hidden">Swipe to see more columns</div>
+      <div className="text-xs text-stone-400 font-mono mb-1.5 md:hidden">Swipe to see more columns</div>
       <div
         ref={scrollRef}
-        className="overflow-auto rounded-xl border border-slate-200"
+        className="overflow-auto border-t-2 border-stone-900"
         style={{ maxHeight: 'calc(100vh - 280px)' }}
       >
-        <table className="divide-y divide-slate-100 text-sm w-max">
+        <table className="divide-y divide-stone-200 text-sm w-max">
           <thead className="sticky top-0 z-20">
-            <tr className="bg-slate-50">
-              <th className="px-3 py-2.5 text-left text-xs font-semibold text-slate-600 sticky left-0 bg-slate-50 z-30" rowSpan={2}>
+            <tr className="bg-[#f5f0e8]">
+              <th className="px-3 py-2.5 text-left text-[10px] font-bold text-stone-600 uppercase tracking-wider sticky left-0 bg-[#f5f0e8] z-30" rowSpan={2}>
                 Name
               </th>
-              <th className="px-2 py-2.5 text-left text-xs font-semibold text-slate-600 bg-slate-50" rowSpan={2}>
+              <th className="px-2 py-2.5 text-left text-[10px] font-bold text-stone-600 uppercase tracking-wider bg-[#f5f0e8]" rowSpan={2}>
                 Country
               </th>
-              <th className="px-2 py-2.5 text-left text-xs font-semibold text-slate-600 bg-slate-50" rowSpan={2}>
+              <th className="px-2 py-2.5 text-left text-[10px] font-bold text-stone-600 uppercase tracking-wider bg-[#f5f0e8]" rowSpan={2}>
                 Pos
               </th>
 
@@ -273,10 +273,10 @@ export function HistoricalStatsTable({ data, type }: HistoricalStatsTableProps) 
                     key={group.id}
                     colSpan={isExpanded ? group.columns.length : 1}
                     className={cn(
-                      'px-2 py-2.5 text-center text-xs font-semibold cursor-pointer border-l border-slate-200 transition-colors',
+                      'px-2 py-2.5 text-center text-xs font-semibold cursor-pointer border-l border-stone-300 transition-colors',
                       isExpanded
-                        ? 'bg-primary-50 text-primary-700 hover:bg-primary-100'
-                        : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                        ? 'bg-[#f5f0e8] text-stone-800 hover:bg-stone-200'
+                        : 'bg-stone-100 text-stone-400 hover:bg-stone-200'
                     )}
                     onClick={() => toggleGroup(group.id)}
                   >
@@ -289,14 +289,14 @@ export function HistoricalStatsTable({ data, type }: HistoricalStatsTableProps) 
               })}
             </tr>
 
-            <tr className="bg-white">
+            <tr className="bg-[#faf8f4]">
               {columnGroups.map((group) => {
                 const isExpanded = expandedGroups.has(group.id);
                 if (!isExpanded) {
                   return (
                     <th
                       key={`${group.id}-collapsed`}
-                      className="px-2 py-1.5 text-center text-xs text-slate-300 border-l border-slate-200 bg-white"
+                      className="px-2 py-1.5 text-center text-xs text-stone-300 border-l border-stone-300 bg-[#faf8f4]"
                     >
                       ...
                     </th>
@@ -306,8 +306,8 @@ export function HistoricalStatsTable({ data, type }: HistoricalStatsTableProps) 
                   <th
                     key={String(col.key)}
                     className={cn(
-                      'px-2 py-1.5 text-center text-xs font-medium text-slate-500 cursor-pointer hover:text-slate-700 bg-white',
-                      idx === 0 && 'border-l border-slate-200'
+                      'px-2 py-1.5 text-center text-[10px] font-bold text-stone-400 uppercase tracking-wider cursor-pointer hover:text-stone-700 bg-[#faf8f4]',
+                      idx === 0 && 'border-l border-stone-300'
                     )}
                     onClick={() => handleSort(String(col.key))}
                   >
@@ -318,7 +318,7 @@ export function HistoricalStatsTable({ data, type }: HistoricalStatsTableProps) 
                         col.header
                       )}
                       {sortKey === col.key && (
-                        <span className="text-primary-500">{sortDirection === 'asc' ? '\u2191' : '\u2193'}</span>
+                        <span className="text-[#b91c1c]">{sortDirection === 'asc' ? '\u2191' : '\u2193'}</span>
                       )}
                     </div>
                   </th>
@@ -340,19 +340,19 @@ export function HistoricalStatsTable({ data, type }: HistoricalStatsTableProps) 
               return (
                 <tr
                   key={virtualRow.index}
-                  className="hover:bg-primary-50/30 transition-colors border-t border-slate-100"
+                  className="hover:bg-[#f5f0e8] transition-colors border-b border-dotted border-stone-300"
                   style={{ height: ROW_HEIGHT }}
                 >
-                  <td className="px-3 py-1.5 whitespace-nowrap font-medium text-slate-800 sticky left-0 bg-white z-10">
+                  <td className="px-3 py-1.5 whitespace-nowrap font-medium text-stone-800 sticky left-0 bg-[#faf8f4] z-10">
                     {stat.player_name}
                   </td>
                   <td className="px-2 py-1.5 whitespace-nowrap">
                     <span className="flex items-center gap-1">
                       <CountryFlag country={stat.country} size="sm" />
-                      <span className="text-slate-500 text-xs">{stat.country.slice(0, 3).toUpperCase()}</span>
+                      <span className="text-stone-500 text-xs">{stat.country.slice(0, 3).toUpperCase()}</span>
                     </span>
                   </td>
-                  <td className="px-2 py-1.5 whitespace-nowrap text-slate-500">
+                  <td className="px-2 py-1.5 whitespace-nowrap text-stone-500">
                     {getPositionAbbr(stat.fantasy_position)}
                   </td>
 
@@ -362,7 +362,7 @@ export function HistoricalStatsTable({ data, type }: HistoricalStatsTableProps) 
                       return (
                         <td
                           key={`${group.id}-collapsed`}
-                          className="px-2 py-2 text-center text-slate-300 border-l border-slate-100"
+                          className="px-2 py-2 text-center text-stone-300 border-l border-stone-200"
                         >
                           ...
                         </td>
@@ -373,7 +373,7 @@ export function HistoricalStatsTable({ data, type }: HistoricalStatsTableProps) 
                         key={String(col.key)}
                         className={cn(
                           'px-2 py-1.5 text-center whitespace-nowrap tabular-nums',
-                          colIdx === 0 && 'border-l border-slate-100'
+                          colIdx === 0 && 'border-l border-stone-200'
                         )}
                       >
                         {formatValue((stat as unknown as Record<string, unknown>)[String(col.key)], col.format as ((v: unknown, r: StatRecord) => string) | undefined, stat)}

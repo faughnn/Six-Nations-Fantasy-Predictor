@@ -73,28 +73,28 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#faf8f4] flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-slate-900">
-            <span className="text-primary-600">Fantasy</span> Six Nations
+          <h1 className="text-4xl font-black text-stone-900" style={{ fontFamily: 'Fraunces, Georgia, serif' }}>
+            Fantasy Six <span className="italic" style={{ color: '#b91c1c' }}>Nations</span>
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-xs text-stone-500 mt-2 uppercase tracking-[3px] font-semibold">
             {isRegister ? 'Create your account' : 'Sign in to continue'}
           </p>
         </div>
 
-        <div className="card">
+        <div className="border border-stone-300 p-6 bg-white">
           {/* Google Sign In */}
           {googleClientId && (
             <>
               <div ref={googleButtonRef} className="flex justify-center" />
               <div className="relative my-5">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-slate-200" />
+                  <div className="w-full border-t border-stone-300" />
                 </div>
                 <div className="relative flex justify-center text-xs">
-                  <span className="bg-white px-3 text-slate-400">or</span>
+                  <span className="bg-white px-3 text-stone-400 text-xs uppercase tracking-wider font-semibold">or</span>
                 </div>
               </div>
             </>
@@ -143,7 +143,7 @@ export default function Login() {
             </div>
 
             {error && (
-              <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>
+              <p className="text-sm text-red-800 bg-red-50 border border-red-200 px-3 py-2">{error}</p>
             )}
 
             <button type="submit" className="btn-primary w-full" disabled={loading}>
@@ -151,7 +151,7 @@ export default function Login() {
             </button>
           </form>
 
-          <p className="text-center text-sm text-slate-500 mt-4">
+          <p className="text-center text-sm text-stone-500 mt-4">
             {isRegister ? 'Already have an account?' : "Don't have an account?"}{' '}
             <button
               type="button"
@@ -159,7 +159,7 @@ export default function Login() {
                 setIsRegister(!isRegister);
                 setError('');
               }}
-              className="text-primary-600 font-medium hover:text-primary-700"
+              className="text-[#b91c1c] font-semibold hover:underline"
             >
               {isRegister ? 'Sign in' : 'Register'}
             </button>

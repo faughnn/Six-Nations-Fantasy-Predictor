@@ -153,12 +153,12 @@ export default function FantasyStats() {
 
   const SortHeader = ({ label, field, tooltip: tip }: { label: string; field: StatKey; tooltip?: string }) => (
     <th
-      className="pb-2 cursor-pointer select-none hover:text-slate-600 transition-colors whitespace-nowrap"
+      className="pb-2 cursor-pointer select-none hover:text-stone-700 transition-colors whitespace-nowrap"
       onClick={() => handleSort(field)}
     >
       {tip ? <Tooltip text={tip}>{label}</Tooltip> : label}
       {sortKey === field && (
-        <span className="ml-0.5 text-primary-500">{sortDir === 'asc' ? '\u2191' : '\u2193'}</span>
+        <span className="ml-0.5 text-[#b91c1c]">{sortDir === 'asc' ? '\u2191' : '\u2193'}</span>
       )}
     </th>
   );
@@ -166,31 +166,31 @@ export default function FantasyStats() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold text-slate-800">2026 Fantasy Stats</h1>
-        <p className="text-sm text-slate-400 mt-1 mb-2">
-          Per-round player performance stats from the official Fantasy Six Nations game.
-        </p>
-        <div className="flex items-center gap-3 mt-1">
-          <p className="text-slate-400">Round {round} — 2026 Six Nations</p>
+        <div className="masthead">
+          <h1 className="masthead-title">Fantasy <span className="italic" style={{ color: '#b91c1c' }}>Statistics</span></h1>
+          <p className="masthead-subtitle">Per-Round Performance</p>
+        </div>
+        <div className="edition-bar">
+          <span>Round {round} — 2026 Six Nations</span>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setRound(Math.max(1, round - 1))}
               disabled={round <= 1}
-              className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed text-sm font-bold transition-colors"
+              className="w-6 h-6 flex items-center justify-center border border-stone-300 text-stone-400 hover:bg-stone-100 disabled:opacity-30 disabled:cursor-not-allowed text-xs font-bold transition-colors"
             >
               −
             </button>
-            <span className="text-sm text-slate-500 w-6 text-center tabular-nums font-medium">{round}</span>
+            <span className="font-mono text-sm text-stone-800 w-6 text-center tabular-nums">{round}</span>
             <button
               onClick={() => setRound(Math.min(maxRound || 5, round + 1))}
               disabled={round >= (maxRound || 5)}
-              className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed text-sm font-bold transition-colors"
+              className="w-6 h-6 flex items-center justify-center border border-stone-300 text-stone-400 hover:bg-stone-100 disabled:opacity-30 disabled:cursor-not-allowed text-xs font-bold transition-colors"
             >
               +
             </button>
           </div>
           {scrapedAt && (
-            <span className="text-xs text-slate-300 ml-auto">Updated {scrapedAt}</span>
+            <span className="text-xs text-stone-400 font-mono ml-auto">Updated {scrapedAt}</span>
           )}
         </div>
       </div>
@@ -198,16 +198,16 @@ export default function FantasyStats() {
       {/* Filter chips */}
       <div className="space-y-2">
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mr-1">Country</span>
+          <span className="text-[10px] text-stone-400 uppercase tracking-[2px] font-bold mr-1">Country</span>
           {COUNTRIES.map(c => (
             <button
               key={c}
               onClick={() => toggleCountry(c)}
               onContextMenu={(e) => { e.preventDefault(); soloCountry(c); }}
-              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+              className={`px-2.5 py-1 text-xs font-medium transition-colors ${
                 excludedCountries.has(c)
-                  ? 'bg-slate-50 text-slate-300 ring-1 ring-inset ring-slate-200 line-through'
-                  : 'bg-primary-50 text-primary-700 ring-1 ring-inset ring-primary-200'
+                  ? 'bg-transparent text-stone-400 border border-stone-300 line-through'
+                  : 'bg-stone-900 text-white border border-stone-900'
               }`}
             >
               {c}
@@ -215,23 +215,23 @@ export default function FantasyStats() {
           ))}
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mr-1">Position</span>
+          <span className="text-[10px] text-stone-400 uppercase tracking-[2px] font-bold mr-1">Position</span>
           {POSITIONS.map(p => (
             <button
               key={p}
               onClick={() => togglePosition(p)}
               onContextMenu={(e) => { e.preventDefault(); soloPosition(p); }}
-              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+              className={`px-2.5 py-1 text-xs font-medium transition-colors ${
                 excludedPositions.has(p)
-                  ? 'bg-slate-50 text-slate-300 ring-1 ring-inset ring-slate-200 line-through'
-                  : 'bg-primary-50 text-primary-700 ring-1 ring-inset ring-primary-200'
+                  ? 'bg-transparent text-stone-400 border border-stone-300 line-through'
+                  : 'bg-stone-900 text-white border border-stone-900'
               }`}
             >
               {p.replace(/_/g, ' ')}
             </button>
           ))}
         </div>
-        <span className="text-sm text-slate-400">
+        <span className="text-sm text-stone-400">
           {filtered.length} player{filtered.length !== 1 ? 's' : ''}
         </span>
       </div>
@@ -242,23 +242,23 @@ export default function FantasyStats() {
           <LoadingSpinner size="lg" />
         </div>
       ) : filtered.length > 0 ? (
-        <div className="rounded-xl border border-slate-200 overflow-x-auto bg-white">
+        <div className="border-t-2 border-stone-900 overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="text-left text-slate-400 text-xs uppercase">
-                <th className="pb-2 pl-3 pr-1 sticky left-0 bg-white z-10">#</th>
+              <tr className="text-left text-stone-400 text-[10px] uppercase tracking-[1.2px] font-bold">
+                <th className="pb-2 pl-3 pr-1 sticky left-0 bg-[#faf8f4] z-10">#</th>
                 <SortHeader label="Player" field="name" />
                 <SortHeader label="Country" field="country" tooltip="National team" />
                 <SortHeader label="Pos" field="position" tooltip="Fantasy position" />
                 {STAT_COLS.map(col => (
                   <th
                     key={col.key}
-                    className="pb-2 text-right cursor-pointer select-none hover:text-slate-600 transition-colors whitespace-nowrap px-1.5"
+                    className="pb-2 text-right cursor-pointer select-none hover:text-stone-700 transition-colors whitespace-nowrap px-1.5"
                     onClick={() => handleSort(col.key)}
                   >
                     <Tooltip text={col.tooltip}>{col.header}</Tooltip>
                     {sortKey === col.key && (
-                      <span className="ml-0.5 text-primary-500">{sortDir === 'asc' ? '\u2191' : '\u2193'}</span>
+                      <span className="ml-0.5 text-[#b91c1c]">{sortDir === 'asc' ? '\u2191' : '\u2193'}</span>
                     )}
                   </th>
                 ))}
@@ -266,16 +266,16 @@ export default function FantasyStats() {
             </thead>
             <tbody>
               {filtered.map((p, idx) => (
-                <tr key={`${p.name}-${p.round}`} className="border-t border-slate-100 hover:bg-primary-50/30 transition-colors">
-                  <td className="py-1.5 pl-3 pr-1 text-xs text-slate-300 tabular-nums sticky left-0 bg-white z-10">{idx + 1}</td>
+                <tr key={`${p.name}-${p.round}`} className="border-b border-dotted border-stone-300 hover:bg-[#f5f0e8] transition-colors">
+                  <td className="py-1.5 pl-3 pr-1 text-xs text-stone-300 tabular-nums font-mono sticky left-0 bg-[#faf8f4] z-10">{idx + 1}</td>
                   <td className="py-1.5 pr-2">
                     <div className="flex items-center gap-1.5">
                       <CountryFlag country={p.country} size="sm" />
-                      <span className="font-medium text-slate-700">{p.name}</span>
+                      <span className="font-medium text-stone-800">{p.name}</span>
                     </div>
                   </td>
-                  <td className="py-1.5 text-sm text-slate-500">{p.country}</td>
-                  <td className="py-1.5 text-sm text-slate-500 whitespace-nowrap">{p.position ? p.position.replace(/_/g, ' ') : ''}</td>
+                  <td className="py-1.5 text-sm text-stone-500">{p.country}</td>
+                  <td className="py-1.5 text-sm text-stone-500 whitespace-nowrap">{p.position ? p.position.replace(/_/g, ' ') : ''}</td>
                   {STAT_COLS.map(col => {
                     const val = p[col.key] as number;
                     const isPts = col.key === 'fantasy_points';
@@ -283,10 +283,10 @@ export default function FantasyStats() {
                     return (
                       <td
                         key={col.key}
-                        className={`py-1.5 text-sm text-right tabular-nums px-1.5 ${
-                          isPts ? 'font-bold text-primary-600' :
-                          isCard && val > 0 ? 'text-red-500 font-medium' :
-                          val > 0 ? 'text-slate-700' : 'text-slate-300'
+                        className={`py-1.5 text-sm text-right tabular-nums font-mono px-1.5 ${
+                          isPts ? 'font-bold text-[#b91c1c] font-mono' :
+                          isCard && val > 0 ? 'text-red-700 font-medium' :
+                          val > 0 ? 'text-stone-700' : 'text-stone-300'
                         }`}
                       >
                         {val === 0 ? '-' : typeof val === 'number' && !Number.isInteger(val) ? val.toFixed(1) : val}
@@ -299,7 +299,7 @@ export default function FantasyStats() {
           </table>
         </div>
       ) : (
-        <div className="card text-center text-slate-400 py-8">
+        <div className="text-center text-stone-400 py-8 border-t-2 border-stone-900">
           No stats available for Round {round}
         </div>
       )}

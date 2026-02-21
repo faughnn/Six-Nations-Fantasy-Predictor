@@ -44,7 +44,7 @@ export default function PlayerProjections() {
 
   if (error) {
     return (
-      <div className="text-center py-12 text-red-500">
+      <div className="text-center py-12 text-red-800">
         Error loading projections. Make sure the backend is running.
       </div>
     );
@@ -52,13 +52,13 @@ export default function PlayerProjections() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-800">Player Projections</h1>
-      <p className="text-sm text-slate-400 mt-1 mb-6">
-        Predicted stats and value ratings based on 2026 per-round performance data. Rows highlighted by value tier (Pts/Star).
-      </p>
+      <div className="masthead">
+        <h1 className="masthead-title"><span className="italic" style={{ color: '#b91c1c' }}>Projections</span></h1>
+        <p className="masthead-subtitle">ML-Predicted Performance</p>
+      </div>
 
       {/* Filters */}
-      <div className="card mb-6">
+      <div className="border-t-2 border-stone-900 border-b border-stone-300 py-3 px-4 mb-6">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
           <div>
             <label className="label">Round</label>
@@ -131,7 +131,7 @@ export default function PlayerProjections() {
           </div>
 
           <div className="flex items-end">
-            <span className="text-sm text-slate-400">
+            <span className="text-sm text-stone-400">
               {projections?.length || 0} players
             </span>
           </div>
@@ -139,7 +139,7 @@ export default function PlayerProjections() {
       </div>
 
       {/* Help text */}
-      <div className="mb-4 text-sm text-slate-400">
+      <div className="mb-4 text-xs text-stone-400 uppercase tracking-wider font-semibold">
         Click column group headers to expand/collapse. Click column headers to sort.
       </div>
 

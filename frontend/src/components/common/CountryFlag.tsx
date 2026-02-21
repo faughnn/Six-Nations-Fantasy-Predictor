@@ -40,7 +40,7 @@ export function CountryFlag({ country, size = 'md', className = '' }: CountryFla
       width={width}
       height={height}
       className={`inline-block object-cover ${className}`}
-      style={{ borderRadius: '2px' }}
+      style={{ borderRadius: '2px', boxShadow: '0 1px 3px rgba(0,0,0,0.12)' }}
     />
   );
 }

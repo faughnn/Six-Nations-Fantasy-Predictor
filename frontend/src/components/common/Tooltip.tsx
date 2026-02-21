@@ -33,7 +33,7 @@ export function Tooltip({ text, children }: TooltipProps) {
       {children}
       {visible && createPortal(
         <span
-          className="fixed z-[9999] px-2.5 py-1.5 text-xs font-normal normal-case tracking-normal text-white bg-slate-800 rounded-lg shadow-lg whitespace-nowrap pointer-events-none -translate-x-1/2"
+          className="fixed z-[9999] px-2.5 py-1.5 text-xs font-normal normal-case tracking-normal text-stone-800 bg-[#f5f0e8] border border-stone-300 rounded-none shadow-lg whitespace-nowrap pointer-events-none -translate-x-1/2"
           style={{
             top: coords.below ? coords.top : undefined,
             bottom: coords.below ? undefined : `${window.innerHeight - coords.top}px`,
@@ -44,8 +44,8 @@ export function Tooltip({ text, children }: TooltipProps) {
           <span
             className={`absolute left-1/2 -translate-x-1/2 w-0 h-0 border-4 border-transparent ${
               coords.below
-                ? 'bottom-full border-b-slate-800'
-                : 'top-full border-t-slate-800'
+                ? 'bottom-full border-b-[#f5f0e8]'
+                : 'top-full border-t-[#f5f0e8]'
             }`}
           />
         </span>,

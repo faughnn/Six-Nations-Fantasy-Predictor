@@ -4,52 +4,70 @@
 
 body {
   margin: 0;
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
-    sans-serif;
+  font-family: 'Source Sans 3', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f8fafc;
+  background-color: #faf8f4;
+  color: #1c1917;
 }
 
 @layer components {
   .btn-primary {
-    @apply px-4 py-2.5 sm:py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700
+    @apply px-4 py-2.5 sm:py-2 bg-stone-900 text-stone-50 rounded-none hover:bg-stone-800
            transition-colors disabled:opacity-50 disabled:cursor-not-allowed
-           font-medium text-sm shadow-sm;
+           font-semibold text-sm uppercase tracking-wide border border-stone-900;
   }
 
   .btn-secondary {
-    @apply px-4 py-2.5 sm:py-2 bg-white text-slate-700 rounded-lg border border-slate-200
-           hover:bg-slate-50 transition-colors font-medium text-sm;
+    @apply px-4 py-2.5 sm:py-2 bg-transparent text-stone-700 rounded-none border border-stone-300
+           hover:bg-stone-100 transition-colors font-medium text-sm uppercase tracking-wide;
   }
 
   .card {
-    @apply bg-white rounded-xl border border-slate-200 shadow-card p-4;
+    @apply bg-stone-50 border-t-2 border-t-stone-900 border-b border-b-stone-300 p-4;
   }
 
   .input {
-    @apply w-full px-3 py-2 border border-slate-200 rounded-lg bg-white
-           focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400
-           text-sm text-slate-700 placeholder-slate-400 transition-colors;
+    @apply w-full px-3 py-2 border border-stone-300 rounded-none bg-white
+           focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900
+           text-sm text-stone-800 placeholder-stone-400 transition-colors;
   }
 
   .label {
-    @apply block text-sm font-medium text-slate-600 mb-1;
+    @apply block text-xs font-semibold text-stone-500 mb-1 uppercase tracking-wider;
   }
 
   .badge-green {
-    @apply px-2 py-0.5 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20;
+    @apply px-2 py-0.5 rounded-none text-xs font-semibold bg-green-50 text-green-800 border border-green-200;
   }
 
   .badge-gray {
-    @apply px-2 py-0.5 rounded-md text-xs font-medium bg-slate-50 text-slate-600 ring-1 ring-inset ring-slate-500/10;
+    @apply px-2 py-0.5 rounded-none text-xs font-semibold bg-stone-100 text-stone-500 border border-stone-300;
   }
 
   .badge-yellow {
-    @apply px-2 py-0.5 rounded-md text-xs font-medium bg-yellow-50 text-yellow-700 ring-1 ring-inset ring-yellow-600/20;
+    @apply px-2 py-0.5 rounded-none text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200;
   }
 
   .badge-purple {
-    @apply px-2 py-0.5 rounded-md text-xs font-medium bg-purple-50 text-purple-700 ring-1 ring-inset ring-purple-600/20;
+    @apply px-2 py-0.5 rounded-none text-xs font-semibold bg-purple-50 text-purple-800 border border-purple-200;
+  }
+
+  /* Editorial masthead */
+  .masthead {
+    @apply text-center py-8 mb-2;
+    border-bottom: 3px double #1c1917;
+  }
+  .masthead-title {
+    font-family: 'Fraunces', Georgia, serif;
+    @apply text-5xl font-black tracking-tight leading-none;
+  }
+  .masthead-subtitle {
+    @apply text-xs text-stone-500 uppercase mt-2 font-semibold;
+    letter-spacing: 3px;
+  }
+  .edition-bar {
+    @apply flex justify-between items-center py-2 border-b border-stone-300 text-xs uppercase text-stone-400 font-semibold mb-6;
+    letter-spacing: 1px;
   }
 }

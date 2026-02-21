@@ -69,7 +69,7 @@ export default function HistoricalStats() {
 
   if (error) {
     return (
-      <div className="text-center py-12 text-red-500">
+      <div className="text-center py-12 text-red-800">
         Error loading historical stats. Make sure the database has been populated.
       </div>
     );
@@ -78,22 +78,22 @@ export default function HistoricalStats() {
   return (
     <div>
       <div className="flex items-center gap-2">
-        <h1 className="text-2xl font-bold text-slate-800">Historical Stats</h1>
-        <span className="text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full font-bold">WORK IN PROGRESS</span>
+        <h1 className="text-2xl font-bold text-stone-900" style={{ fontFamily: 'Fraunces, Georgia, serif' }}>Historical Stats</h1>
+        <span className="text-[9px] px-1.5 py-0.5 bg-amber-50 text-amber-800 border border-amber-300 font-bold uppercase tracking-wider">WIP</span>
       </div>
-      <p className="text-sm text-slate-400 mt-1 mb-6">
+      <p className="text-sm text-stone-400 mt-1 mb-6">
         Match-by-match performance history for every player. Toggle between Six Nations internationals and club games to compare form across competitions. This page is under active development — data coverage may be incomplete.
       </p>
 
       {/* Stats Type Toggle */}
-      <div className="card mb-6">
+      <div className="border-t-2 border-stone-900 border-b border-stone-300 py-3 px-4 mb-6">
         <div className="flex flex-wrap gap-3 sm:gap-4 items-center">
-          <div className="flex gap-0.5 bg-slate-100 rounded-lg p-0.5">
+          <div className="flex gap-0.5 bg-stone-100 p-0.5">
             <button
-              className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+              className={`px-4 py-1.5 text-sm font-medium transition-colors ${
                 statsType === 'six-nations'
-                  ? 'bg-white text-primary-700 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-700'
+                  ? 'bg-white text-stone-900 border-b-2 border-stone-900 font-bold'
+                  : 'text-stone-400 hover:text-stone-700'
               }`}
               onClick={() => {
                 setStatsType('six-nations');
@@ -103,10 +103,10 @@ export default function HistoricalStats() {
               Six Nations
             </button>
             <button
-              className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+              className={`px-4 py-1.5 text-sm font-medium transition-colors ${
                 statsType === 'club'
-                  ? 'bg-white text-primary-700 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-700'
+                  ? 'bg-white text-stone-900 border-b-2 border-stone-900 font-bold'
+                  : 'text-stone-400 hover:text-stone-700'
               }`}
               onClick={() => {
                 setStatsType('club');
@@ -117,7 +117,7 @@ export default function HistoricalStats() {
             </button>
           </div>
 
-          <div className="h-6 w-px bg-slate-200" />
+          <div className="h-6 w-px bg-stone-300" />
 
           {/* Filters */}
           <div className="flex flex-wrap gap-4 items-end">
@@ -216,7 +216,7 @@ export default function HistoricalStats() {
               Clear Filters
             </button>
 
-            <span className="text-sm text-slate-400">
+            <span className="text-sm text-stone-400">
               {stats?.length || 0} records
             </span>
           </div>
@@ -224,7 +224,7 @@ export default function HistoricalStats() {
       </div>
 
       {/* Help text */}
-      <div className="mb-4 text-sm text-slate-400">
+      <div className="mb-4 text-xs text-stone-400 uppercase tracking-wider font-semibold">
         Click column group headers to expand/collapse. Click column headers to sort.
       </div>
 

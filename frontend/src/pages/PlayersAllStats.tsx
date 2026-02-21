@@ -17,7 +17,7 @@ export default function PlayersAllStats() {
 
   if (error) {
     return (
-      <div className="text-center py-12 text-red-500">
+      <div className="text-center py-12 text-red-800">
         Error loading stats. Make sure the Excel file is in place.
       </div>
     );
@@ -25,13 +25,13 @@ export default function PlayersAllStats() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-800">Players (All Stats)</h1>
-      <p className="text-sm text-slate-400 mt-1 mb-6">
-        Full 2025 Fantasy Six Nations stats for every player — game actions, set pieces, scoring, cards, weekly points, and price movements.
-      </p>
+      <div className="masthead">
+        <h1 className="masthead-title">Player <span className="italic" style={{ color: '#b91c1c' }}>Archive</span></h1>
+        <p className="masthead-subtitle">2025 Fantasy Six Nations</p>
+      </div>
 
       {/* Filters */}
-      <div className="card mb-6">
+      <div className="border-t-2 border-stone-900 border-b border-stone-300 py-3 px-4 mb-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           <div>
             <label className="label">Country</label>
@@ -85,7 +85,7 @@ export default function PlayersAllStats() {
           </div>
 
           <div className="flex items-end">
-            <span className="text-sm text-slate-400">
+            <span className="text-sm text-stone-400">
               {stats?.length || 0} players
             </span>
           </div>
@@ -93,7 +93,7 @@ export default function PlayersAllStats() {
       </div>
 
       {/* Help text */}
-      <div className="mb-4 text-sm text-slate-400">
+      <div className="mb-4 text-xs text-stone-400 uppercase tracking-wider font-semibold">
         Click column group headers to expand/collapse. Click column headers to sort.
       </div>
 

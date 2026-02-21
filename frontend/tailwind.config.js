@@ -7,21 +7,51 @@ export default {
   theme: {
     extend: {
       colors: {
+        ink: {
+          DEFAULT: '#1c1917',
+          secondary: '#57534e',
+          muted: '#a8a29e',
+          light: '#d6d3d1',
+        },
+        cream: {
+          DEFAULT: '#faf8f4',
+          warm: '#f5f0e8',
+        },
+        accent: {
+          DEFAULT: '#b91c1c',
+          light: '#fef2f2',
+        },
+        rule: {
+          DEFAULT: '#d4cfc6',
+          heavy: '#1c1917',
+        },
+        team: {
+          england: '#e4002b',
+          france: '#002654',
+          ireland: '#009a44',
+          italy: '#009246',
+          scotland: '#003399',
+          wales: '#d4003c',
+        },
+        tier: {
+          green: '#15803d',
+          'green-bg': '#f0fdf4',
+          blue: '#1d4ed8',
+          'blue-bg': '#eff6ff',
+        },
+        // Keep primary alias for accent (used in some Tailwind classes)
         primary: {
-          50: '#eef2ff',
-          100: '#e0e7ff',
-          200: '#c7d2fe',
-          300: '#a5b4fc',
-          400: '#818cf8',
-          500: '#6366f1',
-          600: '#4f46e5',
-          700: '#4338ca',
-          800: '#3730a3',
-          900: '#312e81',
+          50: '#fef2f2',
+          100: '#fee2e2',
+          500: '#b91c1c',
+          600: '#991b1b',
+          700: '#7f1d1d',
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        display: ['Fraunces', 'Georgia', 'serif'],
+        sans: ['Source Sans 3', 'system-ui', 'sans-serif'],
+        mono: ['IBM Plex Mono', 'Menlo', 'monospace'],
       },
       boxShadow: {
         'card': '0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.04)',

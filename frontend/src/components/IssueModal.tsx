@@ -44,16 +44,16 @@ export default function IssueModal({ open, onClose }: IssueModalProps) {
       <div className="fixed inset-0 bg-black/40 z-50" onClick={handleClose} />
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
         <div
-          className="bg-white rounded-xl shadow-xl border border-slate-200 w-full max-w-md pointer-events-auto"
+          className="bg-[#faf8f4] shadow-xl border border-stone-300 w-full max-w-md pointer-events-auto"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-            <h2 className="text-base font-semibold text-slate-900">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-stone-300">
+            <h2 className="text-base font-bold text-stone-900" style={{ fontFamily: 'Fraunces, Georgia, serif' }}>
               {success ? 'Thanks!' : 'Report a Bug or Request a Feature'}
             </h2>
             <button
               onClick={handleClose}
-              className="p-1 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"
+              className="p-1 rounded-md hover:bg-stone-100 text-stone-400 hover:text-stone-600 transition-colors"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -63,13 +63,13 @@ export default function IssueModal({ open, onClose }: IssueModalProps) {
 
           {success ? (
             <div className="px-5 py-8 text-center">
-              <div className="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-3">
-                <svg className="w-6 h-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-3">
+                <svg className="w-6 h-6 text-green-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <p className="text-sm text-slate-700 font-medium">Your submission has been received.</p>
-              <p className="text-xs text-slate-500 mt-1">We'll take a look and get back to you.</p>
+              <p className="text-sm text-stone-700 font-medium">Your submission has been received.</p>
+              <p className="text-xs text-stone-500 mt-1">We'll take a look and get back to you.</p>
               <button onClick={handleClose} className="btn-primary mt-5">
                 Close
               </button>
@@ -83,10 +83,10 @@ export default function IssueModal({ open, onClose }: IssueModalProps) {
                   <button
                     type="button"
                     onClick={() => setType('feature')}
-                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                    className={`flex-1 px-3 py-2 text-sm font-medium border transition-colors ${
                       type === 'feature'
-                        ? 'bg-primary-50 border-primary-300 text-primary-700'
-                        : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
+                        ? 'bg-stone-100 border-stone-900 text-stone-900'
+                        : 'bg-white border-stone-300 text-stone-500 hover:bg-stone-100'
                     }`}
                   >
                     Request a Feature
@@ -94,10 +94,10 @@ export default function IssueModal({ open, onClose }: IssueModalProps) {
                   <button
                     type="button"
                     onClick={() => setType('bug')}
-                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                    className={`flex-1 px-3 py-2 text-sm font-medium border transition-colors ${
                       type === 'bug'
-                        ? 'bg-red-50 border-red-300 text-red-700'
-                        : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
+                        ? 'bg-red-50 border-red-700 text-red-800'
+                        : 'bg-white border-stone-300 text-stone-500 hover:bg-stone-100'
                     }`}
                   >
                     Report a Bug
@@ -141,7 +141,7 @@ export default function IssueModal({ open, onClose }: IssueModalProps) {
               </div>
 
               {error && (
-                <p className="text-sm text-red-600">{error}</p>
+                <p className="text-sm text-red-800">{error}</p>
               )}
 
               <div className="flex justify-end gap-2 pt-1">
