@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { PlayerSummary, PlayerDetail, PredictionDetail, PlayerStat, HistoricalSixNationsStat, HistoricalClubStat, MatchData, PlayerProjection, TryScorerDetail, FantasyStatPlayer, FantasyStatsMetadata } from '../types';
+import type { PlayerSummary, PlayerDetail, PredictionDetail, PlayerStat, HistoricalSixNationsStat, HistoricalClubStat, MatchData, PlayerProjection, TryScorerDetail, FantasyStatPlayer, FantasyStatsMetadata, EnrichedMatchScrapeStatus, DatasetStatus, ValidationWarning, ScrapeRunSummary } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -152,6 +152,13 @@ export interface RoundScrapeStatus {
   price_count: number;
   availability_known: number;
   availability_unknown: number;
+  // New enriched fields
+  enriched_matches: EnrichedMatchScrapeStatus[];
+  fantasy_prices: DatasetStatus | null;
+  fantasy_stats: DatasetStatus | null;
+  warnings: ValidationWarning[];
+  last_scrape_run: ScrapeRunSummary | null;
+  scrape_history: ScrapeRunSummary[];
 }
 
 export const matchesApi = {
@@ -188,6 +195,9 @@ export interface ScrapeJobStatus {
   matches_found?: number;
   matches_completed?: number;
   current_match?: string;
+  total_steps?: number;
+  current_step?: number;
+  step_label?: string;
 }
 
 export type ScrapeResponse = { status: string; job_id: string; message?: string };
@@ -230,6 +240,21 @@ export const scrapeApi = {
 
   getActiveJobs: async (): Promise<{ active: (ScrapeJobStatus & { job_id: string })[]; latest_finished: (ScrapeJobStatus & { job_id: string }) | null }> => {
     const response = await api.get('/api/scrape/active');
+    return response.data;
+  },
+
+  scrapeAll: async (season: number, round: number): Promise<ScrapeResponse> => {
+    const response = await api.post('/api/scrape/all', { season, round });
+    return response.data;
+  },
+
+  scrapeFantasyStats: async (season: number, round: number): Promise<ScrapeResponse> => {
+    const response = await api.post('/api/scrape/fantasy-stats', { season, round });
+    return response.data;
+  },
+
+  getHistory: async (season: number, round: number): Promise<ScrapeRunSummary[]> => {
+    const response = await api.get('/api/scrape/history', { params: { season, game_round: round } });
     return response.data;
   },
 };

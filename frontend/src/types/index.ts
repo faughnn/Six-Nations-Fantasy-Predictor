@@ -257,3 +257,55 @@ export interface HistoricalClubStat {
   yellow_cards: number;
   red_cards: number;
 }
+
+// Enriched scrape status types
+export interface MarketStatus {
+  status: 'complete' | 'missing' | 'warning';
+  scraped_at: string | null;
+  warning: string | null;
+}
+
+export interface SquadStatus {
+  total: number;
+  expected: number;
+  unknown_availability: number;
+}
+
+export interface EnrichedMatchScrapeStatus {
+  home_team: string;
+  away_team: string;
+  match_date: string | null;
+  handicaps: MarketStatus;
+  totals: MarketStatus;
+  try_scorer: MarketStatus;
+  squad_status: SquadStatus;
+  try_scorer_count: number;
+}
+
+export interface DatasetStatus {
+  status: 'complete' | 'missing' | 'not_applicable';
+  scraped_at: string | null;
+  player_count: number | null;
+  note: string | null;
+}
+
+export interface ValidationWarning {
+  type: string;
+  message: string;
+  match?: string;
+  market?: string;
+  action?: string;
+  action_params?: Record<string, string>;
+}
+
+export interface ScrapeRunSummary {
+  id: number;
+  market_type: string;
+  match_slug: string | null;
+  status: string;
+  started_at: string;
+  completed_at: string | null;
+  duration_seconds: number | null;
+  warnings: any[] | null;
+  result_summary: Record<string, any> | null;
+}
