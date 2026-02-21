@@ -11,7 +11,7 @@ import asyncio
 import json
 import uuid
 import logging
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Dict, Any, List, Optional
 
@@ -23,6 +23,7 @@ from app.auth import require_admin
 from app.database import get_db, async_session
 from app.models.odds import MatchOdds, Odds
 from app.models.player import Player
+from app.models.scrape_run import ScrapeRun
 from app.models.user import User
 from app.schemas.odds import AllMatchOddsScrapeRequest, OddsScrapeResponse
 
@@ -64,6 +65,26 @@ async def _discover_matches(scraper):
     return matches
 
 
+async def _record_scrape_run(
+    season: int, round_num: int, market_type: str, match_slug: str | None,
+    status: str, started_at: datetime, result_summary: dict | None = None,
+    warnings: list | None = None, error_message: str | None = None,
+):
+    """Record a scrape run to the database."""
+    completed_at = datetime.now(timezone.utc)
+    duration = (completed_at - started_at).total_seconds()
+    async with async_session() as db:
+        run = ScrapeRun(
+            season=season, round=round_num, market_type=market_type,
+            match_slug=match_slug, status=status, started_at=started_at,
+            completed_at=completed_at, duration_seconds=duration,
+            result_summary=result_summary, warnings=warnings,
+            error_message=error_message,
+        )
+        db.add(run)
+        await db.commit()
+
+
 async def _scrape_market_for_match(
     scraper, match: Dict, url_suffix: str, market_type: str,
     season: int, round_num: int,
@@ -83,41 +104,54 @@ async def _scrape_market_for_match(
     url = f"{base_url}/{url_suffix}"
     logger.info(f"Scraping {market_type} for {slug}: {url}")
 
-    raw_data = await scraper.scrape(url, market_type=market_type)
-    parsed_data = scraper.parse(raw_data)
-    scraper.save_raw_json(raw_data, f"{slug}_{market_type}")
+    started_at = datetime.now(timezone.utc)
+    try:
+        raw_data = await scraper.scrape(url, market_type=market_type)
+        parsed_data = scraper.parse(raw_data)
+        scraper.save_raw_json(raw_data, f"{slug}_{market_type}")
 
-    async with async_session() as db:
-        service = OddsService(db)
-        if market_type == "handicaps":
-            result = await service.save_handicap_odds(
-                handicap_data=parsed_data,
-                season=season,
-                round_num=round_num,
-                match_date=date.today(),
-                home_team=home,
-                away_team=away,
-            )
-        elif market_type == "match_totals":
-            result = await service.save_match_totals_odds(
-                totals_data=parsed_data,
-                season=season,
-                round_num=round_num,
-                match_date=date.today(),
-                home_team=home,
-                away_team=away,
-            )
-        else:  # try_scorer
-            result = await service.save_anytime_try_scorer_odds(
-                odds_data=parsed_data,
-                season=season,
-                round_num=round_num,
-                match_date=date.today(),
-                home_team=home,
-                away_team=away,
-            )
+        async with async_session() as db:
+            service = OddsService(db)
+            if market_type == "handicaps":
+                result = await service.save_handicap_odds(
+                    handicap_data=parsed_data,
+                    season=season,
+                    round_num=round_num,
+                    match_date=date.today(),
+                    home_team=home,
+                    away_team=away,
+                )
+            elif market_type == "match_totals":
+                result = await service.save_match_totals_odds(
+                    totals_data=parsed_data,
+                    season=season,
+                    round_num=round_num,
+                    match_date=date.today(),
+                    home_team=home,
+                    away_team=away,
+                )
+            else:  # try_scorer
+                result = await service.save_anytime_try_scorer_odds(
+                    odds_data=parsed_data,
+                    season=season,
+                    round_num=round_num,
+                    match_date=date.today(),
+                    home_team=home,
+                    away_team=away,
+                )
 
-    return result
+        await _record_scrape_run(
+            season, round_num, market_type, slug,
+            "completed", started_at, result_summary=result,
+        )
+        return result
+
+    except Exception as e:
+        await _record_scrape_run(
+            season, round_num, market_type, slug,
+            "failed", started_at, error_message=str(e),
+        )
+        raise
 
 
 async def _run_scraper(
@@ -399,6 +433,7 @@ async def _run_fantasy_import(
     from app.services.import_service import import_scraped_json
 
     job = _jobs[job_id]
+    started_at = datetime.now(timezone.utc)
 
     try:
         job["message"] = "Launching browser..."
@@ -413,6 +448,10 @@ async def _run_fantasy_import(
         if not players:
             job["status"] = "failed"
             job["message"] = "No players found — check the fantasy site"
+            await _record_scrape_run(
+                season, round_num, "fantasy_prices", None,
+                "failed", started_at, error_message="No players found",
+            )
             return
 
         # Save to JSON for record-keeping
@@ -443,9 +482,18 @@ async def _run_fantasy_import(
             parts.append(f"— {result['marked_not_playing']} unlisted marked not playing")
         job["message"] = " ".join(parts)
 
+        await _record_scrape_run(
+            season, round_num, "fantasy_prices", None,
+            "completed", started_at, result_summary=result,
+        )
+
     except SessionExpiredError as e:
         job["status"] = "session_expired"
         job["message"] = str(e)
+        await _record_scrape_run(
+            season, round_num, "fantasy_prices", None,
+            "failed", started_at, error_message=str(e),
+        )
     except asyncio.CancelledError:
         job["status"] = "cancelled"
         job["message"] = "Import cancelled by user"
@@ -453,6 +501,10 @@ async def _run_fantasy_import(
         logger.error(f"Fantasy import failed: {e}", exc_info=True)
         job["status"] = "failed"
         job["message"] = f"Import failed: {e}"
+        await _record_scrape_run(
+            season, round_num, "fantasy_prices", None,
+            "failed", started_at, error_message=str(e),
+        )
 
 
 @router.post("/import-prices", response_model=OddsScrapeResponse)
@@ -486,6 +538,275 @@ async def import_prices_with_login(
         status="in_progress",
         job_id=job_id,
         message="Opening browser for login...",
+    )
+
+
+async def _run_scrape_all(job_id: str, season: int, round_num: int):
+    """Background task: scrape all odds markets + fantasy prices in sequence."""
+    from app.scrapers.oddschecker import OddscheckerScraper
+    from app.scrapers.fantasy_sixnations import FantasySixNationsScraper, SessionExpiredError
+    from app.services.import_service import import_scraped_json
+
+    job = _jobs[job_id]
+
+    try:
+        # Discover matches
+        job["message"] = "Discovering matches..."
+        job["step_label"] = "Discovering matches"
+        scraper = OddscheckerScraper(headless=True)
+        matches = await _discover_matches(scraper)
+
+        if not matches:
+            job["status"] = "completed"
+            job["message"] = "No matches found on Oddschecker"
+            return
+
+        match_labels = [f"{m['home']} v {m['away']}" for m in matches]
+        logger.info(f"Scrape-all: found {len(matches)} matches: {match_labels}")
+
+        errors = []
+        total_ok = 0
+
+        # Steps 1-3: Scrape each odds market type for all matches
+        odds_markets = [
+            ("handicaps", "handicaps", "Handicaps"),
+            ("total-points", "match_totals", "Totals"),
+            ("anytime-tryscorer", "try_scorer", "Try scorers"),
+        ]
+
+        for step_idx, (url_suffix, market_type, market_label) in enumerate(odds_markets, 1):
+            job["current_step"] = step_idx
+            for mi, match in enumerate(matches, 1):
+                slug = match["slug"]
+                job["step_label"] = f"Step {step_idx}/4: {market_label} — {slug} ({mi}/{len(matches)})"
+                job["message"] = job["step_label"]
+
+                try:
+                    await _scrape_market_for_match(
+                        scraper, match, url_suffix, market_type,
+                        season, round_num,
+                    )
+                    total_ok += 1
+                except Exception as e:
+                    err_msg = f"{market_label} for {slug}: {e}"
+                    logger.error(f"Scrape-all: {err_msg}", exc_info=True)
+                    errors.append(err_msg)
+
+        # Step 4: Fantasy prices import
+        job["current_step"] = 4
+        job["step_label"] = "Step 4/4: Fantasy prices"
+        job["message"] = "Step 4/4: Fantasy prices — launching browser..."
+
+        started_at = datetime.now(timezone.utc)
+        try:
+            fantasy_scraper = FantasySixNationsScraper(headless=True)
+
+            job["message"] = "Step 4/4: Fantasy prices — scraping..."
+            raw_data = await fantasy_scraper.scrape()
+
+            job["message"] = "Step 4/4: Fantasy prices — parsing..."
+            players = fantasy_scraper.parse(raw_data)
+
+            if not players:
+                errors.append("Fantasy prices: no players found")
+                await _record_scrape_run(
+                    season, round_num, "fantasy_prices", None,
+                    "failed", started_at, error_message="No players found",
+                )
+            else:
+                # Save to JSON for record-keeping
+                data_dir = Path(__file__).resolve().parent.parent.parent / "data"
+                data_dir.mkdir(parents=True, exist_ok=True)
+                output_path = data_dir / f"fantasy_players_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+                output = {
+                    "season": season,
+                    "round": round_num,
+                    "scraped_at": datetime.utcnow().isoformat(),
+                    "player_count": len(players),
+                    "players": players,
+                }
+                with open(output_path, "w", encoding="utf-8") as f:
+                    json.dump(output, f, indent=2, ensure_ascii=False, default=str)
+
+                job["message"] = f"Step 4/4: Fantasy prices — importing {len(players)} players..."
+                async with async_session() as db:
+                    result = await import_scraped_json(db, str(output_path))
+
+                total_ok += 1
+                await _record_scrape_run(
+                    season, round_num, "fantasy_prices", None,
+                    "completed", started_at, result_summary=result,
+                )
+
+        except SessionExpiredError as e:
+            errors.append(f"Fantasy prices: session expired — {e}")
+            await _record_scrape_run(
+                season, round_num, "fantasy_prices", None,
+                "failed", started_at, error_message=str(e),
+            )
+        except Exception as e:
+            errors.append(f"Fantasy prices: {e}")
+            logger.error(f"Scrape-all fantasy import failed: {e}", exc_info=True)
+            await _record_scrape_run(
+                season, round_num, "fantasy_prices", None,
+                "failed", started_at, error_message=str(e),
+            )
+
+        # Final status
+        if total_ok == 0:
+            job["status"] = "failed"
+            job["message"] = f"All steps failed: {'; '.join(errors)}"
+        else:
+            job["status"] = "completed"
+            parts = [f"Done — {total_ok} successful"]
+            if errors:
+                parts.append(f", {len(errors)} error(s): {'; '.join(errors)}")
+            job["message"] = "".join(parts)
+
+    except asyncio.CancelledError:
+        job["status"] = "cancelled"
+        job["message"] = "Scrape-all cancelled by user"
+    except Exception as e:
+        logger.error(f"Scrape-all failed: {e}", exc_info=True)
+        job["status"] = "failed"
+        job["message"] = f"Scrape-all failed: {e}"
+
+
+@router.post("/all", response_model=OddsScrapeResponse)
+async def scrape_all(
+    request: AllMatchOddsScrapeRequest,
+    _admin: User = Depends(require_admin),
+):
+    """Scrape everything: all odds markets + fantasy prices."""
+    job_id = _create_job("all markets + prices")
+    _jobs[job_id]["total_steps"] = 4
+    _jobs[job_id]["current_step"] = 0
+    _jobs[job_id]["step_label"] = "Starting..."
+    _tasks[job_id] = asyncio.create_task(
+        _run_scrape_all(job_id, request.season, request.round)
+    )
+    return OddsScrapeResponse(
+        status="in_progress",
+        job_id=job_id,
+        message="Scraping all markets + importing prices...",
+    )
+
+
+async def _run_fantasy_stats(job_id: str, season: int, round_num: int):
+    """Background task: scrape fantasy stats for a round."""
+    import sys
+    from pathlib import Path as _Path
+    # Ensure the backend dir is on the path for scrape_fantasy_stats imports
+    backend_dir = str(_Path(__file__).resolve().parent.parent.parent)
+    if backend_dir not in sys.path:
+        sys.path.insert(0, backend_dir)
+
+    from scrape_fantasy_stats import (
+        create_browser_context, dismiss_overlays, wait_for_table,
+        select_round, scrape_all_pages, parse_players, save_to_db,
+        STATS_URL,
+    )
+    from playwright.async_api import async_playwright
+
+    job = _jobs[job_id]
+    started_at = datetime.now(timezone.utc)
+
+    try:
+        job["message"] = "Launching browser..."
+        pw = await async_playwright().start()
+        browser = await pw.chromium.launch(
+            headless=True,
+            args=["--disable-blink-features=AutomationControlled", "--no-sandbox"],
+        )
+
+        try:
+            context = await create_browser_context(browser)
+            page = await context.new_page()
+
+            job["message"] = "Navigating to stats page..."
+            await page.goto(STATS_URL, wait_until="domcontentloaded", timeout=60000)
+            await dismiss_overlays(page)
+
+            if not await wait_for_table(page):
+                job["status"] = "failed"
+                job["message"] = "Could not load stats table"
+                await _record_scrape_run(
+                    season, round_num, "fantasy_stats", None,
+                    "failed", started_at, error_message="Could not load stats table",
+                )
+                return
+
+            job["message"] = f"Selecting round {round_num}..."
+            if not await select_round(page, round_num):
+                job["status"] = "failed"
+                job["message"] = f"Could not select round {round_num}"
+                await _record_scrape_run(
+                    season, round_num, "fantasy_stats", None,
+                    "failed", started_at,
+                    error_message=f"Could not select round {round_num}",
+                )
+                return
+
+            await asyncio.sleep(2)
+
+            job["message"] = f"Scraping stats for round {round_num}..."
+            raw_players = await scrape_all_pages(page)
+
+            job["message"] = "Parsing player stats..."
+            records = parse_players(raw_players, round_num)
+
+            if not records:
+                job["status"] = "failed"
+                job["message"] = "No player stats found"
+                await _record_scrape_run(
+                    season, round_num, "fantasy_stats", None,
+                    "failed", started_at, error_message="No player stats found",
+                )
+                return
+
+            job["message"] = f"Saving {len(records)} stat records to DB..."
+            await save_to_db(records, season)
+
+            job["status"] = "completed"
+            job["message"] = f"Imported {len(records)} player stats for round {round_num}"
+
+            await _record_scrape_run(
+                season, round_num, "fantasy_stats", None,
+                "completed", started_at,
+                result_summary={"records_saved": len(records)},
+            )
+
+        finally:
+            await browser.close()
+            await pw.stop()
+
+    except asyncio.CancelledError:
+        job["status"] = "cancelled"
+        job["message"] = "Fantasy stats scrape cancelled"
+    except Exception as e:
+        logger.error(f"Fantasy stats scrape failed: {e}", exc_info=True)
+        job["status"] = "failed"
+        job["message"] = f"Fantasy stats scrape failed: {e}"
+        await _record_scrape_run(
+            season, round_num, "fantasy_stats", None,
+            "failed", started_at, error_message=str(e),
+        )
+
+
+@router.post("/fantasy-stats", response_model=OddsScrapeResponse)
+async def scrape_fantasy_stats_endpoint(
+    request: AllMatchOddsScrapeRequest,
+    _admin: User = Depends(require_admin),
+):
+    """Trigger fantasy stats scraper for the specified round."""
+    job_id = _create_job("fantasy stats")
+    _tasks[job_id] = asyncio.create_task(
+        _run_fantasy_stats(job_id, request.season, request.round)
+    )
+    return OddsScrapeResponse(
+        status="in_progress",
+        job_id=job_id,
+        message=f"Scraping fantasy stats for round {request.round}...",
     )
 
 
@@ -526,3 +847,36 @@ async def get_scrape_status(job_id: str):
     if not job:
         return {"status": "not_found", "message": "Job not found"}
     return job
+
+
+@router.get("/history")
+async def get_scrape_history(
+    season: int = 2026,
+    game_round: int = 1,
+    limit: int = 50,
+    db: AsyncSession = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    """Get scrape run history for a round."""
+    result = await db.execute(
+        select(ScrapeRun)
+        .where(ScrapeRun.season == season, ScrapeRun.round == game_round)
+        .order_by(ScrapeRun.started_at.desc())
+        .limit(limit)
+    )
+    runs = result.scalars().all()
+    return [
+        {
+            "id": r.id,
+            "market_type": r.market_type,
+            "match_slug": r.match_slug,
+            "status": r.status,
+            "started_at": r.started_at.isoformat() if r.started_at else None,
+            "completed_at": r.completed_at.isoformat() if r.completed_at else None,
+            "duration_seconds": r.duration_seconds,
+            "result_summary": r.result_summary,
+            "warnings": r.warnings,
+            "error_message": r.error_message,
+        }
+        for r in runs
+    ]
