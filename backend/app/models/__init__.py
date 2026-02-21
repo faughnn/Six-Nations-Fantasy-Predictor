@@ -3,6 +3,7 @@ from app.models.stats import SixNationsStats, ClubStats, FantasyRoundStats
 from app.models.odds import Odds, MatchOdds
 from app.models.prediction import Prediction, FantasyPrice, TeamSelection
 from app.models.user import User
+from app.models.scrape_run import ScrapeRun
 
 __all__ = [
     "Player",
@@ -16,4 +17,5 @@ __all__ = [
     "FantasyPrice",
     "TeamSelection",
     "User",
+    "ScrapeRun",
 ]
