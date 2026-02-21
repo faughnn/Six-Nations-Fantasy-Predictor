@@ -8,9 +8,11 @@ Supports:
 """
 
 import asyncio
+import json
 import uuid
 import logging
-from datetime import date
+from datetime import date, datetime
+from pathlib import Path
 from typing import Dict, Any, List, Optional
 
 from fastapi import APIRouter, Depends
@@ -29,6 +31,7 @@ logger = logging.getLogger(__name__)
 
 # In-memory job store (sufficient for single-server use)
 _jobs: Dict[str, Dict[str, Any]] = {}
+_tasks: Dict[str, asyncio.Task] = {}
 
 # Market definitions: (url_suffix, market_type)
 ALL_MARKETS = [
@@ -229,6 +232,10 @@ async def _run_scraper(
         job["message"] = f"Done — scraped {total_markets} market(s) across {len(matches)} match(es)"
         logger.info(f"Scrape complete: {len(matches)} matches, markets: {market_names}")
 
+    except asyncio.CancelledError:
+        logger.info(f"Scrape job {job_id} was cancelled")
+        job["status"] = "cancelled"
+        job["message"] = "Scrape cancelled by user"
     except Exception as e:
         logger.error(f"Scrape failed: {e}", exc_info=True)
         job["status"] = "failed"
@@ -256,7 +263,7 @@ async def scrape_all_match_odds(
 ):
     """Scrape all markets (handicaps, totals, try scorer) for all matches."""
     job_id = _create_job("all markets")
-    asyncio.create_task(_run_scraper(job_id, request.season, request.round, ALL_MARKETS))
+    _tasks[job_id] = asyncio.create_task(_run_scraper(job_id, request.season, request.round, ALL_MARKETS))
     return OddsScrapeResponse(
         status="in_progress",
         job_id=job_id,
@@ -288,7 +295,7 @@ async def scrape_single_market(
     markets = [(url_suffix, market_type)]
 
     job_id = _create_job(market)
-    asyncio.create_task(_run_scraper(job_id, request.season, request.round, markets))
+    _tasks[job_id] = asyncio.create_task(_run_scraper(job_id, request.season, request.round, markets))
     return OddsScrapeResponse(
         status="in_progress",
         job_id=job_id,
@@ -324,7 +331,7 @@ async def scrape_missing_markets(
         markets = [(MARKET_URL_MAP[m], MARKET_TYPE_MAP[m]) for m in all_missing_types]
         missing_label = ", ".join(sorted(all_missing_types))
         job_id = _create_job(f"missing ({missing_label})")
-        asyncio.create_task(_run_scraper(job_id, season, round_num, markets))
+        _tasks[job_id] = asyncio.create_task(_run_scraper(job_id, season, round_num, markets))
         return OddsScrapeResponse(
             status="in_progress",
             job_id=job_id,
@@ -374,7 +381,7 @@ async def scrape_missing_markets(
     match_count = len(per_match_missing)
     missing_label = ", ".join(sorted(all_missing_types))
     job_id = _create_job(f"missing ({missing_label}) for {match_count} match(es)")
-    asyncio.create_task(
+    _tasks[job_id] = asyncio.create_task(
         _run_scraper(job_id, season, round_num, all_markets, per_match_missing=per_match_missing)
     )
     return OddsScrapeResponse(
@@ -384,49 +391,101 @@ async def scrape_missing_markets(
     )
 
 
+async def _run_fantasy_import(
+    job_id: str, season: int, round_num: int, headless: bool,
+):
+    """Background task: scrape fantasy prices and import to DB."""
+    from app.scrapers.fantasy_sixnations import FantasySixNationsScraper, SessionExpiredError
+    from app.services.import_service import import_scraped_json
+
+    job = _jobs[job_id]
+
+    try:
+        job["message"] = "Launching browser..."
+        scraper = FantasySixNationsScraper(headless=headless)
+
+        job["message"] = "Opening Fantasy Six Nations..."
+        raw_data = await scraper.scrape()
+
+        job["message"] = "Parsing player data..."
+        players = scraper.parse(raw_data)
+
+        if not players:
+            job["status"] = "failed"
+            job["message"] = "No players found — check the fantasy site"
+            return
+
+        # Save to JSON for record-keeping
+        data_dir = Path(__file__).resolve().parent.parent.parent / "data"
+        data_dir.mkdir(parents=True, exist_ok=True)
+        output_path = data_dir / f"fantasy_players_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        output = {
+            "season": season,
+            "round": round_num,
+            "scraped_at": datetime.utcnow().isoformat(),
+            "player_count": len(players),
+            "players": players,
+        }
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump(output, f, indent=2, ensure_ascii=False, default=str)
+
+        job["message"] = f"Importing {len(players)} players..."
+        async with async_session() as db:
+            result = await import_scraped_json(db, str(output_path))
+
+        job["status"] = "completed"
+        parts = [
+            f"Imported {result['prices_set']} prices",
+            f"({result['matched_existing']} matched, {result['created_new']} new)",
+            f"from {len(players)} players",
+        ]
+        if result.get("marked_not_playing"):
+            parts.append(f"— {result['marked_not_playing']} unlisted marked not playing")
+        job["message"] = " ".join(parts)
+
+    except SessionExpiredError as e:
+        job["status"] = "session_expired"
+        job["message"] = str(e)
+    except asyncio.CancelledError:
+        job["status"] = "cancelled"
+        job["message"] = "Import cancelled by user"
+    except Exception as e:
+        logger.error(f"Fantasy import failed: {e}", exc_info=True)
+        job["status"] = "failed"
+        job["message"] = f"Import failed: {e}"
+
+
 @router.post("/import-prices", response_model=OddsScrapeResponse)
 async def import_prices(
     request: AllMatchOddsScrapeRequest,
-    db: AsyncSession = Depends(get_db),
     _admin: User = Depends(require_admin),
 ):
-    """Import fantasy prices from the latest JSON file for the given season/round."""
-    import json
-    from pathlib import Path
-    from app.services.import_service import import_scraped_json
-
-    data_dir = Path(__file__).resolve().parent.parent.parent / "data"
-
-    # Find JSON files matching the round
-    candidates = []
-    for f in sorted(data_dir.glob("fantasy_players_*.json"), reverse=True):
-        try:
-            with open(f, "r", encoding="utf-8") as fh:
-                header = json.load(fh)
-            if header.get("season") == request.season and header.get("round") == request.round:
-                candidates.append(f)
-        except Exception:
-            continue
-
-    if not candidates:
-        return OddsScrapeResponse(
-            status="completed",
-            job_id="",
-            message=f"No price JSON found for season {request.season} round {request.round} in data/",
-        )
-
-    # Use the most recent file (sorted descending by filename = timestamp)
-    chosen = candidates[0]
-    result = await import_scraped_json(db, str(chosen))
-
+    """Scrape fantasy prices headlessly (using saved session) and import to DB."""
+    job_id = _create_job("fantasy prices (headless)")
+    _tasks[job_id] = asyncio.create_task(
+        _run_fantasy_import(job_id, request.season, request.round, headless=True)
+    )
     return OddsScrapeResponse(
-        status="completed",
-        job_id="",
-        message=(
-            f"Imported {result['prices_set']} prices "
-            f"({result['matched_existing']} matched, {result['created_new']} new players) "
-            f"from {chosen.name}"
-        ),
+        status="in_progress",
+        job_id=job_id,
+        message="Scraping fantasy prices...",
+    )
+
+
+@router.post("/import-prices-login", response_model=OddsScrapeResponse)
+async def import_prices_with_login(
+    request: AllMatchOddsScrapeRequest,
+    _admin: User = Depends(require_admin),
+):
+    """Scrape fantasy prices with visible browser for login, then import to DB."""
+    job_id = _create_job("fantasy prices (login)")
+    _tasks[job_id] = asyncio.create_task(
+        _run_fantasy_import(job_id, request.season, request.round, headless=False)
+    )
+    return OddsScrapeResponse(
+        status="in_progress",
+        job_id=job_id,
+        message="Opening browser for login...",
     )
 
 
@@ -443,6 +502,21 @@ async def get_active_jobs():
             latest_finished = entry
 
     return {"active": active, "latest_finished": latest_finished}
+
+
+@router.post("/kill/{job_id}")
+async def kill_scrape_job(
+    job_id: str,
+    _admin: User = Depends(require_admin),
+):
+    """Cancel a running scrape job."""
+    task = _tasks.get(job_id)
+    if not task:
+        return {"status": "not_found", "message": "Job not found"}
+    if task.done():
+        return {"status": "already_finished", "message": "Job already finished"}
+    task.cancel()
+    return {"status": "cancelling", "message": "Job cancel requested"}
 
 
 @router.get("/status/{job_id}")

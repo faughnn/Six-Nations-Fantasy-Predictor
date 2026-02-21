@@ -90,6 +90,11 @@ COUNTRY_FROM_IMAGE = {
 BASE_URL = "https://fantasy.sixnationsrugby.com"
 GAME_URL = f"{BASE_URL}/m6n/#/game/play/me"
 
+
+class SessionExpiredError(Exception):
+    """Raised when headless scrape fails because no valid session exists."""
+    pass
+
 # Default path for persisted browser session (cookies + localStorage)
 DEFAULT_SESSION_PATH = Path(__file__).parent.parent.parent / "data" / "session_state.json"
 
@@ -123,16 +128,17 @@ class FantasySixNationsScraper(BaseScraper):
     LOGIN_WAIT_TIMEOUT = 300  # 5 minutes max to wait for login
     SESSION_CHECK_TIMEOUT = 30  # seconds to wait before declaring session stale
 
-    def __init__(self, session_path: Optional[Path] = None):
+    def __init__(self, headless: bool = False, session_path: Optional[Path] = None):
         self._browser: Optional[Browser] = None
         self._playwright = None
+        self._headless = headless
         self._session_path = session_path or DEFAULT_SESSION_PATH
 
     async def _init_browser(self) -> Browser:
-        """Initialize Playwright browser in headed mode for manual login."""
+        """Initialize Playwright browser."""
         self._playwright = await async_playwright().start()
         browser = await self._playwright.chromium.launch(
-            headless=False,
+            headless=self._headless,
             args=[
                 "--disable-blink-features=AutomationControlled",
                 "--no-sandbox",
@@ -190,6 +196,12 @@ class FantasySixNationsScraper(BaseScraper):
         stale the browser context is recreated without the old state so the
         user can log in manually.
         """
+        # Fail fast in headless mode if there's no saved session to restore
+        if self._headless and not self._has_saved_session():
+            raise SessionExpiredError(
+                "No saved session — run scrape_fantasy_prices.py to log in first"
+            )
+
         self._browser = await self._init_browser()
 
         try:
@@ -225,6 +237,10 @@ class FantasySixNationsScraper(BaseScraper):
 
             # --- fresh context (manual login) ---
             if not logged_in:
+                if self._headless:
+                    raise SessionExpiredError(
+                        "Saved session expired — run scrape_fantasy_prices.py to log in again"
+                    )
                 context = await self._create_context(self._browser)
                 page = await context.new_page()
 

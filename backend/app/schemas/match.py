@@ -63,5 +63,6 @@ class TryScorerDetail(BaseModel):
     implied_prob: Optional[float] = None
     expected_try_points: Optional[float] = None
     price: Optional[float] = None
+    ownership_pct: Optional[float] = None
     exp_pts_per_star: Optional[float] = None
     availability: Optional[str] = None

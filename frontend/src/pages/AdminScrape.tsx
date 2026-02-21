@@ -43,6 +43,8 @@ function useScrapeJob() {
   const queryClient = useQueryClient();
   const [status, setStatus] = useState<ScrapeState>('idle');
   const [message, setMessage] = useState('');
+  const [activeJobId, setActiveJobId] = useState<string | null>(null);
+  const [needsLogin, setNeedsLogin] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const initRef = useRef(false);
 
@@ -66,6 +68,7 @@ function useScrapeJob() {
   const dismiss = useCallback(() => {
     setStatus('idle');
     setMessage('');
+    setNeedsLogin(false);
   }, []);
 
   // Poll an existing job by ID
@@ -87,10 +90,18 @@ function useScrapeJob() {
 
         if (jobStatus.status === 'completed') {
           stopPolling();
+          setActiveJobId(null);
           setStatus('done');
           invalidateAll();
-        } else if (jobStatus.status === 'failed') {
+        } else if (jobStatus.status === 'session_expired') {
           stopPolling();
+          setActiveJobId(null);
+          setStatus('error');
+          setNeedsLogin(true);
+          setMessage(jobStatus.message || 'Session expired — login required');
+        } else if (jobStatus.status === 'failed' || jobStatus.status === 'cancelled') {
+          stopPolling();
+          setActiveJobId(null);
           setStatus('error');
           setMessage(jobStatus.message || 'Scrape failed');
         }
@@ -112,9 +123,14 @@ function useScrapeJob() {
         const job = active[0];
         setStatus('scraping');
         setMessage(job.message || 'Scraping...');
+        setActiveJobId(job.job_id);
         pollJob(job.job_id);
       } else if (latest_finished) {
-        if (latest_finished.status === 'failed') {
+        if (latest_finished.status === 'session_expired') {
+          setStatus('error');
+          setNeedsLogin(true);
+          setMessage(latest_finished.message || 'Session expired — login required');
+        } else if (latest_finished.status === 'failed') {
           setStatus('error');
           setMessage(latest_finished.message || 'Last scrape failed');
         } else if (latest_finished.status === 'completed') {
@@ -130,6 +146,7 @@ function useScrapeJob() {
   const startJob = useCallback(async (apiCall: () => Promise<ScrapeResponse>) => {
     setStatus('scraping');
     setMessage('Starting...');
+    setNeedsLogin(false);
 
     try {
       const response = await apiCall();
@@ -147,6 +164,7 @@ function useScrapeJob() {
         return;
       }
 
+      setActiveJobId(response.job_id);
       pollJob(response.job_id);
     } catch {
       setStatus('error');
@@ -154,7 +172,17 @@ function useScrapeJob() {
     }
   }, [pollJob, invalidateAll]);
 
-  return { status, message, startJob, dismiss, isBusy: status === 'scraping' };
+  const killJob = useCallback(async () => {
+    if (!activeJobId) return;
+    try {
+      await scrapeApi.killJob(activeJobId);
+      setMessage('Cancelling...');
+    } catch {
+      // Ignore — poll will pick up final status
+    }
+  }, [activeJobId]);
+
+  return { status, message, startJob, dismiss, killJob, activeJobId, needsLogin, isBusy: status === 'scraping' };
 }
 
 function ScrapeButton({
@@ -297,11 +325,20 @@ export default function AdminScrape() {
             onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeAllMatchOdds(season, round))}
             disabled={scrapeJob.isBusy}
           />
-          <ScrapeButton
-            label="Import Prices"
-            onClick={() => scrapeJob.startJob(() => scrapeApi.importPrices(season, round))}
-            disabled={scrapeJob.isBusy}
-          />
+          {scrapeJob.needsLogin ? (
+            <ScrapeButton
+              label="Scrape with Login"
+              onClick={() => scrapeJob.startJob(() => scrapeApi.importPricesLogin(season, round))}
+              disabled={scrapeJob.isBusy}
+              variant="primary"
+            />
+          ) : (
+            <ScrapeButton
+              label="Import Prices & Squads"
+              onClick={() => scrapeJob.startJob(() => scrapeApi.importPrices(season, round))}
+              disabled={scrapeJob.isBusy}
+            />
+          )}
         </div>
 
         {scrapeJob.status !== 'idle' && (
@@ -317,6 +354,14 @@ export default function AdminScrape() {
               </svg>
             )}
             <span className="flex-1">{scrapeJob.message}</span>
+            {scrapeJob.status === 'scraping' && (
+              <button
+                onClick={scrapeJob.killJob}
+                className="px-2 py-0.5 text-xs font-medium rounded bg-red-100 text-red-700 hover:bg-red-200 transition-colors"
+              >
+                Kill
+              </button>
+            )}
             {scrapeJob.status !== 'scraping' && (
               <button
                 onClick={scrapeJob.dismiss}

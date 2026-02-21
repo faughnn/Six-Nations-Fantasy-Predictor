@@ -213,6 +213,16 @@ export const scrapeApi = {
     return response.data;
   },
 
+  importPricesLogin: async (season: number, round: number): Promise<ScrapeResponse> => {
+    const response = await api.post('/api/scrape/import-prices-login', { season, round });
+    return response.data;
+  },
+
+  killJob: async (jobId: string): Promise<{ status: string; message: string }> => {
+    const response = await api.post(`/api/scrape/kill/${jobId}`);
+    return response.data;
+  },
+
   getJobStatus: async (jobId: string): Promise<ScrapeJobStatus> => {
     const response = await api.get(`/api/scrape/status/${jobId}`);
     return response.data;

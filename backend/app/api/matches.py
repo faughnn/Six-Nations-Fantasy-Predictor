@@ -225,6 +225,7 @@ async def get_tryscorers(
                 implied_prob=implied_prob,
                 expected_try_points=expected_try_points,
                 price=price_val,
+                ownership_pct=float(fp.ownership_pct) if fp.ownership_pct is not None else None,
                 exp_pts_per_star=exp_pts_per_star,
                 availability=fp.availability,
             )

@@ -8,7 +8,7 @@ import { CountryFlag } from '../components/common/CountryFlag';
 import { Tooltip } from '../components/common/Tooltip';
 import type { Country, Position } from '../types';
 
-type SortKey = 'name' | 'country' | 'fantasy_position' | 'match' | 'anytime_try_odds' | 'implied_prob' | 'expected_try_points' | 'price' | 'exp_pts_per_star';
+type SortKey = 'name' | 'country' | 'fantasy_position' | 'match' | 'anytime_try_odds' | 'implied_prob' | 'expected_try_points' | 'price' | 'ownership_pct' | 'exp_pts_per_star';
 type SortDir = 'asc' | 'desc';
 
 type Availability = 'starting' | 'substitute' | 'not_playing';
@@ -102,7 +102,7 @@ export default function Tryscorers() {
     }
   };
 
-  const DESC_BY_DEFAULT: SortKey[] = ['expected_try_points', 'implied_prob', 'exp_pts_per_star'];
+  const DESC_BY_DEFAULT: SortKey[] = ['expected_try_points', 'implied_prob', 'exp_pts_per_star', 'ownership_pct'];
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -269,6 +269,9 @@ export default function Tryscorers() {
                 <th className="pb-2 text-right cursor-pointer select-none hover:text-slate-600" onClick={() => handleSort('price')}>
                   <Tooltip text="Fantasy cost in stars">Price</Tooltip>{sortKey === 'price' && <span className="ml-1 text-primary-500">{sortDir === 'asc' ? '↑' : '↓'}</span>}
                 </th>
+                <th className="pb-2 text-right cursor-pointer select-none hover:text-slate-600" onClick={() => handleSort('ownership_pct')}>
+                  <Tooltip text="% of fantasy players who own this player">Own%</Tooltip>{sortKey === 'ownership_pct' && <span className="ml-1 text-primary-500">{sortDir === 'asc' ? '↑' : '↓'}</span>}
+                </th>
                 <th className="pb-2 text-right cursor-pointer select-none hover:text-slate-600" onClick={() => handleSort('exp_pts_per_star')}>
                   <Tooltip text="Expected try points divided by price — higher is better value">Exp/Star</Tooltip>{sortKey === 'exp_pts_per_star' && <span className="ml-1 text-primary-500">{sortDir === 'asc' ? '↑' : '↓'}</span>}
                 </th>
@@ -303,6 +306,9 @@ export default function Tryscorers() {
                   </td>
                   <td className="py-1.5 text-sm text-right text-slate-500 tabular-nums">
                     {p.price?.toFixed(1) ?? '-'}
+                  </td>
+                  <td className="py-1.5 text-sm text-right text-slate-500 tabular-nums">
+                    {p.ownership_pct != null ? `${p.ownership_pct.toFixed(0)}%` : '-'}
                   </td>
                   <td className="py-1.5 text-sm text-right font-bold text-emerald-600 tabular-nums">
                     {p.exp_pts_per_star?.toFixed(2) ?? '-'}

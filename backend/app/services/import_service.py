@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Dict, Any, List, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, update
 from rapidfuzz import fuzz, process
 
 from app.models import Player, FantasyPrice
@@ -216,7 +216,25 @@ async def import_scraped_json(
 
         prices_set += 1
 
+    # Mark any remaining players for this round with unknown availability
+    # as "not_playing" — they weren't on the fantasy squad page
+    not_playing_result = await db.execute(
+        update(FantasyPrice)
+        .where(
+            FantasyPrice.season == season,
+            FantasyPrice.round == round_num,
+            FantasyPrice.availability.is_(None),
+        )
+        .values(availability="not_playing")
+    )
+    marked_not_playing = not_playing_result.rowcount
+
     await db.commit()
+
+    if marked_not_playing:
+        logger.info(
+            f"Marked {marked_not_playing} unlisted players as not_playing"
+        )
 
     logger.info(
         f"Import complete: {matched} matched, {created} created, "
@@ -231,5 +249,6 @@ async def import_scraped_json(
         "matched_existing": matched,
         "created_new": created,
         "prices_set": prices_set,
+        "marked_not_playing": marked_not_playing,
         "errors": errors,
     }

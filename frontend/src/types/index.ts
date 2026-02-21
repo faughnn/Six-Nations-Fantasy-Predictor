@@ -146,6 +146,7 @@ export interface TryScorerDetail {
   implied_prob: number | null;
   expected_try_points: number | null;
   price: number | null;
+  ownership_pct?: number | null;
   exp_pts_per_star: number | null;
   availability?: 'starting' | 'substitute' | 'not_playing';
 }
