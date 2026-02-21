@@ -1,5 +1,5 @@
 from typing import List, Optional
-from datetime import date
+from datetime import date, datetime
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import select, func, case, exists
@@ -9,7 +9,10 @@ from app.database import get_db
 from app.models.odds import MatchOdds, Odds
 from app.models.player import Player
 from app.models.prediction import FantasyPrice
+from app.models.scrape_run import ScrapeRun
+from app.models.stats import FantasyRoundStats
 from app.services.scoring import is_forward
+from app.services.validation_service import validate_round_data
 from app.schemas.match import (
     MatchResponse,
     MatchTryScorer,
@@ -17,6 +20,12 @@ from app.schemas.match import (
     MatchScrapeStatus,
     RoundScrapeStatusResponse,
     TryScorerDetail,
+    MarketStatus,
+    SquadStatus,
+    EnrichedMatchScrapeStatus,
+    DatasetStatus,
+    ValidationWarning,
+    ScrapeRunSummary,
 )
 
 router = APIRouter()
@@ -85,6 +94,7 @@ async def get_round_scrape_status(
     matches = result.scalars().all()
 
     match_statuses = []
+    enriched_match_data = []  # Collect per-match data for validation
     for match in matches:
         has_handicap = match.handicap_line is not None
         has_totals = match.over_under_line is not None
@@ -103,6 +113,66 @@ async def get_round_scrape_status(
         )
         try_scorer_count = try_scorer_result.scalar() or 0
 
+        # --- Enriched data queries ---
+
+        # Try scorer scraped_at: MAX(o.scraped_at) for players on these teams
+        ts_scraped_result = await db.execute(
+            select(func.max(Odds.scraped_at))
+            .join(Player, Odds.player_id == Player.id)
+            .where(
+                Odds.season == season,
+                Odds.round == game_round,
+                Player.country.in_([match.home_team, match.away_team]),
+                Odds.anytime_try_scorer.isnot(None),
+            )
+        )
+        try_scorer_scraped_at = ts_scraped_result.scalar()
+
+        # Squad count per match: starting + substitute
+        squad_result = await db.execute(
+            select(func.count())
+            .select_from(FantasyPrice)
+            .join(Player, FantasyPrice.player_id == Player.id)
+            .where(
+                FantasyPrice.season == season,
+                FantasyPrice.round == game_round,
+                Player.country.in_([match.home_team, match.away_team]),
+                FantasyPrice.availability.in_(["starting", "substitute"]),
+            )
+        )
+        squad_count = squad_result.scalar() or 0
+
+        # Unknown availability per match
+        unknown_result = await db.execute(
+            select(func.count())
+            .select_from(FantasyPrice)
+            .join(Player, FantasyPrice.player_id == Player.id)
+            .where(
+                FantasyPrice.season == season,
+                FantasyPrice.round == game_round,
+                Player.country.in_([match.home_team, match.away_team]),
+                FantasyPrice.availability.is_(None),
+            )
+        )
+        unknown_availability = unknown_result.scalar() or 0
+
+        # Players with odds per match (distinct player_id)
+        pwo_result = await db.execute(
+            select(func.count(func.distinct(Odds.player_id)))
+            .select_from(Odds)
+            .join(Player, Odds.player_id == Player.id)
+            .where(
+                Odds.season == season,
+                Odds.round == game_round,
+                Player.country.in_([match.home_team, match.away_team]),
+                Odds.anytime_try_scorer.isnot(None),
+            )
+        )
+        players_with_odds = pwo_result.scalar() or 0
+
+        # MatchOdds.scraped_at applies to both handicaps and totals
+        match_odds_scraped_at = match.scraped_at if match.scraped_at else None
+
         match_statuses.append(
             MatchScrapeStatus(
                 home_team=match.home_team,
@@ -114,6 +184,23 @@ async def get_round_scrape_status(
                 try_scorer_count=try_scorer_count,
             )
         )
+
+        # Collect data for validation and enriched response
+        enriched_match_data.append({
+            "home_team": match.home_team,
+            "away_team": match.away_team,
+            "match_date": match.match_date,
+            "has_handicap": has_handicap,
+            "has_totals": has_totals,
+            "has_try_scorer": try_scorer_count > 0,
+            "try_scorer_count": try_scorer_count,
+            "handicap_scraped_at": match_odds_scraped_at,
+            "totals_scraped_at": match_odds_scraped_at,
+            "try_scorer_scraped_at": try_scorer_scraped_at,
+            "squad_count": squad_count,
+            "unknown_availability": unknown_availability,
+            "players_with_odds": players_with_odds,
+        })
 
     # Query fantasy prices for this round
     price_result = await db.execute(
@@ -150,15 +237,156 @@ async def get_round_scrape_status(
     if price_count == 0:
         missing_markets.append("prices")
 
+    # --- Enriched data: dataset timestamps ---
+
+    # Fantasy prices: MAX(created_at) for this round
+    price_ts_result = await db.execute(
+        select(func.max(FantasyPrice.created_at))
+        .where(FantasyPrice.season == season, FantasyPrice.round == game_round)
+    )
+    price_scraped_at = price_ts_result.scalar()
+
+    # Fantasy stats: MAX(scraped_at) for this round
+    stats_ts_result = await db.execute(
+        select(func.max(FantasyRoundStats.scraped_at))
+        .where(FantasyRoundStats.season == season, FantasyRoundStats.round == game_round)
+    )
+    stats_scraped_at = stats_ts_result.scalar()
+
+    stats_count_result = await db.execute(
+        select(func.count()).select_from(FantasyRoundStats)
+        .where(FantasyRoundStats.season == season, FantasyRoundStats.round == game_round)
+    )
+    stats_count = stats_count_result.scalar() or 0
+
+    # --- Scrape history ---
+    scrape_runs_result = await db.execute(
+        select(ScrapeRun)
+        .where(ScrapeRun.season == season, ScrapeRun.round == game_round)
+        .order_by(ScrapeRun.started_at.desc())
+        .limit(20)
+    )
+    scrape_runs = scrape_runs_result.scalars().all()
+
+    # --- Validation warnings ---
+    has_prices = price_count > 0
+    has_stats = stats_count > 0
+    raw_warnings = validate_round_data(
+        match_data=enriched_match_data,
+        has_prices=has_prices,
+        price_count=price_count,
+        price_scraped_at=price_scraped_at,
+        has_stats=has_stats,
+        stats_scraped_at=stats_scraped_at,
+    )
+
+    # --- Build enriched match statuses ---
+    enriched_matches = []
+    for md in enriched_match_data:
+        # Handicaps market status
+        if md["has_handicap"] and md["handicap_scraped_at"]:
+            handicaps_status = MarketStatus(status="complete", scraped_at=md["handicap_scraped_at"])
+        elif md["has_handicap"]:
+            handicaps_status = MarketStatus(status="complete")
+        else:
+            handicaps_status = MarketStatus(status="missing")
+
+        # Totals market status
+        if md["has_totals"] and md["totals_scraped_at"]:
+            totals_status = MarketStatus(status="complete", scraped_at=md["totals_scraped_at"])
+        elif md["has_totals"]:
+            totals_status = MarketStatus(status="complete")
+        else:
+            totals_status = MarketStatus(status="missing")
+
+        # Try scorer market status
+        if md["has_try_scorer"] and md["try_scorer_scraped_at"]:
+            if md["unknown_availability"] >= 10:
+                ts_status = MarketStatus(
+                    status="warning",
+                    scraped_at=md["try_scorer_scraped_at"],
+                    warning="Scraped before squad announcement",
+                )
+            else:
+                ts_status = MarketStatus(status="complete", scraped_at=md["try_scorer_scraped_at"])
+        elif md["has_try_scorer"]:
+            ts_status = MarketStatus(status="complete")
+        else:
+            ts_status = MarketStatus(status="missing")
+
+        enriched_matches.append(
+            EnrichedMatchScrapeStatus(
+                home_team=md["home_team"],
+                away_team=md["away_team"],
+                match_date=md["match_date"],
+                handicaps=handicaps_status,
+                totals=totals_status,
+                try_scorer=ts_status,
+                squad_status=SquadStatus(
+                    total=md["squad_count"],
+                    unknown_availability=md["unknown_availability"],
+                ),
+                try_scorer_count=md["try_scorer_count"],
+            )
+        )
+
+    # --- Build dataset statuses ---
+    fantasy_prices_status = DatasetStatus(
+        status="complete" if has_prices else "missing",
+        scraped_at=price_scraped_at,
+        player_count=price_count if has_prices else None,
+    )
+
+    fantasy_stats_status = DatasetStatus(
+        status="complete" if has_stats else "missing",
+        scraped_at=stats_scraped_at,
+        player_count=stats_count if has_stats else None,
+    )
+
+    # --- Build validation warnings ---
+    validation_warnings = [
+        ValidationWarning(
+            type=w.get("type", "unknown"),
+            message=w.get("message", ""),
+            match=w.get("match"),
+            market=w.get("market"),
+            action=w.get("action"),
+            action_params=w.get("action_params"),
+        )
+        for w in raw_warnings
+    ]
+
+    # --- Build scrape history ---
+    scrape_history = [
+        ScrapeRunSummary(
+            id=sr.id,
+            market_type=sr.market_type,
+            match_slug=sr.match_slug,
+            status=sr.status,
+            started_at=sr.started_at,
+            completed_at=sr.completed_at,
+            duration_seconds=sr.duration_seconds,
+            warnings=sr.warnings,
+            result_summary=sr.result_summary,
+        )
+        for sr in scrape_runs
+    ]
+
     return RoundScrapeStatusResponse(
         season=season,
         round=game_round,
         matches=match_statuses,
         missing_markets=missing_markets,
-        has_prices=price_count > 0,
+        has_prices=has_prices,
         price_count=price_count,
         availability_known=availability_known,
         availability_unknown=availability_unknown,
+        enriched_matches=enriched_matches,
+        fantasy_prices=fantasy_prices_status,
+        fantasy_stats=fantasy_stats_status,
+        warnings=validation_warnings,
+        last_scrape_run=scrape_history[0] if scrape_history else None,
+        scrape_history=scrape_history,
     )
 
 
