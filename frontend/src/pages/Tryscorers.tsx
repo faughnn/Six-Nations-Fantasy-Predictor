@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { matchesApi } from '../api/client';
-import { useCurrentRound } from '../hooks/useMatches';
+import { useCurrentRound, useRoundScrapeStatus } from '../hooks/useMatches';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { CountryFlag } from '../components/common/CountryFlag';
 import { Tooltip } from '../components/common/Tooltip';
@@ -32,6 +32,27 @@ const POSITIONS: Position[] = ['prop', 'hooker', 'second_row', 'back_row', 'scru
 const STORAGE_KEY_COUNTRIES = 'tryscorers:excludedCountries';
 const STORAGE_KEY_POSITIONS = 'tryscorers:excludedPositions';
 
+function timeAgo(iso: string | null): string {
+  if (!iso) return '';
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60_000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
+}
+
+function formatDate(iso: string): string {
+  const d = new Date(iso);
+  const month = d.toLocaleString('en-GB', { month: 'short' });
+  const day = d.getDate();
+  const hours = d.getHours().toString().padStart(2, '0');
+  const minutes = d.getMinutes().toString().padStart(2, '0');
+  return `${month} ${day}, ${hours}:${minutes}`;
+}
+
 function readStoredSet<T extends string>(key: string): Set<T> {
   try {
     const raw = sessionStorage.getItem(key);
@@ -51,6 +72,8 @@ export default function Tryscorers() {
     queryFn: () => matchesApi.getTryScorers(season, round),
     enabled: season > 0 && round > 0,
   });
+
+  const { data: scrapeStatus } = useRoundScrapeStatus(season, round);
 
   const [excludedCountries, setExcludedCountries] = useState<Set<Country>>(
     () => readStoredSet<Country>(STORAGE_KEY_COUNTRIES)
@@ -186,6 +209,32 @@ export default function Tryscorers() {
           </div>
         </div>
       </div>
+
+      {/* Freshness & warnings */}
+      {scrapeStatus && (() => {
+        const enriched = scrapeStatus.enriched_matches ?? [];
+        const tsScrapedAts = enriched
+          .map(m => m.try_scorer.scraped_at)
+          .filter((v): v is string => v != null);
+        const earliest = tsScrapedAts.length > 0
+          ? tsScrapedAts.reduce((a, b) => (a < b ? a : b))
+          : null;
+        const hasPreSquadWarning = enriched.some(m => m.try_scorer.status === 'warning');
+        return (
+          <div className="space-y-1.5">
+            {earliest && (
+              <p className="text-xs text-stone-400">
+                Odds retrieved: {formatDate(earliest)} ({timeAgo(earliest)})
+              </p>
+            )}
+            {hasPreSquadWarning && (
+              <div className="bg-amber-50 border border-amber-200 text-amber-800 text-xs px-3 py-2">
+                Some odds were scraped before squad announcements. Players may have changed.
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Filters */}
       <div className="space-y-2">

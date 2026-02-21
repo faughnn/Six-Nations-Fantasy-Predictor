@@ -3,6 +3,18 @@ import { useMatches, useCurrentRound, useRoundScrapeStatus } from '../hooks/useM
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { MatchCard } from '../components/matches/MatchCard';
 
+function timeAgo(iso: string | null): string {
+  if (!iso) return '';
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60_000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
+}
+
 export default function Dashboard() {
   const { data: currentRound, isLoading: roundLoading } = useCurrentRound();
   const [roundOverride, setRoundOverride] = useState<number | null>(null);
@@ -57,28 +69,69 @@ export default function Dashboard() {
       {/* Data Status */}
       {(() => {
         const isComplete = scrapeStatus && missing.length === 0 && scrapeStatus.availability_unknown === 0;
+        const enriched = scrapeStatus?.enriched_matches ?? [];
+        const useEnriched = enriched.length > 0;
+        const hasPreSquadWarning = scrapeStatus?.warnings?.some(w => w.type === 'pre_squad_odds') ?? false;
         return (
           <div className="border-t-2 border-stone-900 border-b border-stone-300 py-3 px-4">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-sm text-stone-600">Data Status</h3>
-              {scrapeStatus && (
-                <div className="flex items-center gap-2 text-xs">
-                  <span className={`inline-block w-2 h-2 ${isComplete ? 'bg-green-700' : 'bg-amber-600'}`} />
-                  <span className="text-stone-400">
-                    {isComplete
-                      ? 'All data complete'
-                      : `Round ${round} data is incomplete — projections will be updated`}
+              <div className="flex items-center gap-4">
+                {scrapeStatus?.last_scrape_run?.completed_at && (
+                  <span className="text-xs text-stone-400">
+                    Last updated: {timeAgo(scrapeStatus.last_scrape_run.completed_at)}
                   </span>
-                </div>
-              )}
+                )}
+                {scrapeStatus && (
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className={`inline-block w-2 h-2 ${isComplete ? 'bg-green-700' : 'bg-amber-600'}`} />
+                    <span className="text-stone-400">
+                      {isComplete
+                        ? 'All data complete'
+                        : `Round ${round} data is incomplete — projections will be updated`}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
 
+            {/* Pre-squad odds warning */}
+            {hasPreSquadWarning && (
+              <div className="mt-2 bg-amber-50 border border-amber-200 text-amber-800 text-xs px-3 py-2">
+                Some odds were retrieved before team announcements and may have changed
+              </div>
+            )}
+
             {/* Per-match status indicators + warnings */}
-            {scrapeStatus && scrapeStatus.matches.length > 0 && (
+            {scrapeStatus && (useEnriched ? enriched.length > 0 : scrapeStatus.matches.length > 0) && (
               <div className="mt-3 flex gap-6">
                 {/* Left: per-match pills */}
                 <div className="space-y-2 text-xs">
-                  {scrapeStatus.matches.map((m) => (
+                  {useEnriched ? enriched.map((m) => {
+                    const hOk = m.handicaps.status === 'complete';
+                    const tOk = m.totals.status === 'complete';
+                    const tsOk = m.try_scorer.status === 'complete' || m.try_scorer.status === 'warning';
+                    return (
+                      <div key={`${m.home_team}-${m.away_team}`} className="flex flex-wrap items-center gap-1.5">
+                        <span className="font-medium text-stone-600 w-40">{m.home_team} v {m.away_team}</span>
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 font-medium ${hOk ? 'bg-green-50 text-green-800' : 'bg-stone-100 text-stone-400'}`}>
+                          <span className={`w-1.5 h-1.5 ${hOk ? 'bg-green-700' : 'bg-stone-300'}`} />
+                          H{hOk && m.handicaps.scraped_at ? `: ${timeAgo(m.handicaps.scraped_at)}` : ''}
+                        </span>
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 font-medium ${tOk ? 'bg-green-50 text-green-800' : 'bg-stone-100 text-stone-400'}`}>
+                          <span className={`w-1.5 h-1.5 ${tOk ? 'bg-green-700' : 'bg-stone-300'}`} />
+                          T{tOk && m.totals.scraped_at ? `: ${timeAgo(m.totals.scraped_at)}` : ''}
+                        </span>
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 font-medium ${tsOk ? 'bg-green-50 text-green-800' : 'bg-stone-100 text-stone-400'}`}>
+                          <span className={`w-1.5 h-1.5 ${tsOk ? 'bg-green-700' : 'bg-stone-300'}`} />
+                          TS{tsOk ? ` (${m.try_scorer_count})` : ''}{tsOk && m.try_scorer.scraped_at ? `: ${timeAgo(m.try_scorer.scraped_at)}` : ''}
+                        </span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 font-medium bg-stone-50 text-stone-500">
+                          Squad: {m.squad_status.total}/{m.squad_status.expected}
+                        </span>
+                      </div>
+                    );
+                  }) : scrapeStatus.matches.map((m) => (
                     <div key={`${m.home_team}-${m.away_team}`} className="flex flex-wrap items-center gap-1.5">
                       <span className="font-medium text-stone-600 w-40">{m.home_team} v {m.away_team}</span>
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 font-medium ${m.has_handicap ? 'bg-green-50 text-green-800' : 'bg-stone-100 text-stone-400'}`}>
