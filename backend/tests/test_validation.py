@@ -86,8 +86,8 @@ def test_missing_player_odds_warning():
         "home_team": "France", "away_team": "Ireland",
         "has_handicap": True, "has_totals": True, "has_try_scorer": True,
         "handicap_scraped_at": _utcnow(), "totals_scraped_at": _utcnow(), "try_scorer_scraped_at": _utcnow(),
-        "try_scorer_count": 30, "squad_count": 23, "unknown_availability": 0,
-        "players_with_odds": 18,
+        "try_scorer_count": 30, "squad_count": 46, "unknown_availability": 0,
+        "players_with_odds": 40,
     }]
     warnings = validate_round_data(match_data, has_prices=True, price_count=142, price_scraped_at=_utcnow())
     types = [w["type"] for w in warnings]
@@ -100,8 +100,8 @@ def test_no_warnings_when_all_good():
         "home_team": "France", "away_team": "Ireland",
         "has_handicap": True, "has_totals": True, "has_try_scorer": True,
         "handicap_scraped_at": _utcnow(), "totals_scraped_at": _utcnow(), "try_scorer_scraped_at": _utcnow(),
-        "try_scorer_count": 30, "squad_count": 23, "unknown_availability": 0,
-        "players_with_odds": 23,
+        "try_scorer_count": 30, "squad_count": 46, "unknown_availability": 0,
+        "players_with_odds": 46,
     }]
     warnings = validate_round_data(match_data, has_prices=True, price_count=142, price_scraped_at=_utcnow())
     assert len(warnings) == 0
