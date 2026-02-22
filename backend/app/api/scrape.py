@@ -20,6 +20,7 @@ from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth import require_admin
+from app.fixtures import is_match_played
 from app.database import get_db, async_session
 from app.models.odds import MatchOdds, Odds
 from app.models.player import Player
@@ -205,9 +206,28 @@ async def _run_scraper(
                 if f"{m['home']}|{m['away']}" in per_match_missing
             ]
 
+        # Filter out already-played matches (only for bulk operations)
+        skipped_played = 0
+        if match_filter is None:
+            before_count = len(matches)
+            matches = [
+                m for m in matches
+                if not is_match_played(season, round_num, m["home"], m["away"])
+            ]
+            skipped_played = before_count - len(matches)
+            if skipped_played > 0:
+                logger.info(f"Skipped {skipped_played} already-played match(es)")
+                job["skipped_played"] = skipped_played
+
         if not matches:
             job["status"] = "completed"
-            job["message"] = "All markets already scraped"
+            job["message"] = (
+                f"All {skipped_played} match(es) already played — nothing to scrape"
+                if skipped_played > 0
+                else "No matches found on Oddschecker"
+                if match_filter is None
+                else "All markets already scraped"
+            )
             job["matches_found"] = 0
             return
 
@@ -610,6 +630,20 @@ async def _run_scrape_all(job_id: str, season: int, round_num: int):
             job["status"] = "completed"
             job["message"] = "No matches found on Oddschecker"
             return
+
+        # Filter out already-played matches
+        before_count = len(matches)
+        matches = [
+            m for m in matches
+            if not is_match_played(season, round_num, m["home"], m["away"])
+        ]
+        skipped_played = before_count - len(matches)
+        if skipped_played > 0:
+            logger.info(f"Scrape-all: skipped {skipped_played} already-played match(es)")
+
+        if not matches:
+            # All matches played — still run fantasy prices/stats (step 4)
+            logger.info("All matches played, skipping odds scraping")
 
         match_labels = [f"{m['home']} v {m['away']}" for m in matches]
         logger.info(f"Scrape-all: found {len(matches)} matches: {match_labels}")
