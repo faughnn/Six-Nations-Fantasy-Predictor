@@ -58,6 +58,7 @@ class EnrichedMatchScrapeStatus(BaseModel):
     home_team: str
     away_team: str
     match_date: Optional[date] = None
+    is_played: bool = False
     handicaps: MarketStatus
     totals: MarketStatus
     try_scorer: MarketStatus

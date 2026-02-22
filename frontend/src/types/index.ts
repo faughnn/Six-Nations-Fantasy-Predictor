@@ -275,6 +275,7 @@ export interface EnrichedMatchScrapeStatus {
   home_team: string;
   away_team: string;
   match_date: string | null;
+  is_played: boolean;
   handicaps: MarketStatus;
   totals: MarketStatus;
   try_scorer: MarketStatus;

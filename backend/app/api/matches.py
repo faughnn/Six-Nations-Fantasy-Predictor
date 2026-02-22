@@ -11,6 +11,7 @@ from app.models.player import Player
 from app.models.prediction import FantasyPrice
 from app.models.scrape_run import ScrapeRun
 from app.models.stats import FantasyRoundStats
+from app.fixtures import is_match_played
 from app.services.scoring import is_forward
 from app.services.validation_service import validate_round_data
 from app.schemas.match import (
@@ -268,6 +269,12 @@ async def get_round_scrape_status(
     )
     scrape_runs = scrape_runs_result.scalars().all()
 
+    # --- Determine played matches ---
+    played_matches = set()
+    for md in enriched_match_data:
+        if is_match_played(season, game_round, md["home_team"], md["away_team"]):
+            played_matches.add(f"{md['home_team']} v {md['away_team']}")
+
     # --- Validation warnings ---
     has_prices = price_count > 0
     has_stats = stats_count > 0
@@ -278,6 +285,7 @@ async def get_round_scrape_status(
         price_scraped_at=price_scraped_at,
         has_stats=has_stats,
         stats_scraped_at=stats_scraped_at,
+        played_matches=played_matches,
     )
 
     # --- Build enriched match statuses ---
@@ -314,11 +322,13 @@ async def get_round_scrape_status(
         else:
             ts_status = MarketStatus(status="missing")
 
+        match_label = f"{md['home_team']} v {md['away_team']}"
         enriched_matches.append(
             EnrichedMatchScrapeStatus(
                 home_team=md["home_team"],
                 away_team=md["away_team"],
                 match_date=md["match_date"],
+                is_played=match_label in played_matches,
                 handicaps=handicaps_status,
                 totals=totals_status,
                 try_scorer=ts_status,
