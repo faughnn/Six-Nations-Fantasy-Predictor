@@ -23,6 +23,7 @@ def validate_round_data(
     price_scraped_at: datetime | None = None,
     has_stats: bool = False,
     stats_scraped_at: datetime | None = None,
+    played_matches: set[str] | None = None,
 ) -> list[dict[str, Any]]:
     """Run all validation rules against round data. Returns list of warning dicts."""
     warnings = []
@@ -32,6 +33,10 @@ def validate_round_data(
         home = match["home_team"]
         away = match["away_team"]
         match_label = f"{home} v {away}"
+
+        # Skip all warnings for played matches
+        if played_matches and match_label in played_matches:
+            continue
 
         # Rule 4: Missing markets
         missing = []

@@ -105,3 +105,49 @@ def test_no_warnings_when_all_good():
     }]
     warnings = validate_round_data(match_data, has_prices=True, price_count=142, price_scraped_at=_utcnow())
     assert len(warnings) == 0
+
+
+def test_no_warnings_for_played_matches():
+    """Played matches should produce zero warnings regardless of data state."""
+    old = _utcnow() - timedelta(hours=48)
+    match_data = [{
+        "home_team": "France", "away_team": "Ireland",
+        "has_handicap": True, "has_totals": True, "has_try_scorer": True,
+        "handicap_scraped_at": old, "totals_scraped_at": old, "try_scorer_scraped_at": old,
+        "try_scorer_count": 30, "squad_count": 23, "unknown_availability": 0,
+        "players_with_odds": 23,
+    }]
+    played = {"France v Ireland"}
+    warnings = validate_round_data(match_data, has_prices=True, price_count=142,
+                                   price_scraped_at=_utcnow(), played_matches=played)
+    # Should be no match-level warnings at all
+    match_warnings = [w for w in warnings if w.get("match")]
+    assert len(match_warnings) == 0
+
+
+def test_warnings_still_fire_for_upcoming_matches():
+    """Upcoming matches should still get warnings even when played_matches is provided."""
+    old = _utcnow() - timedelta(hours=48)
+    match_data = [
+        {
+            "home_team": "France", "away_team": "Ireland",
+            "has_handicap": True, "has_totals": True, "has_try_scorer": True,
+            "handicap_scraped_at": old, "totals_scraped_at": old, "try_scorer_scraped_at": old,
+            "try_scorer_count": 30, "squad_count": 23, "unknown_availability": 0,
+            "players_with_odds": 23,
+        },
+        {
+            "home_team": "England", "away_team": "Wales",
+            "has_handicap": True, "has_totals": True, "has_try_scorer": True,
+            "handicap_scraped_at": old, "totals_scraped_at": old, "try_scorer_scraped_at": old,
+            "try_scorer_count": 30, "squad_count": 23, "unknown_availability": 0,
+            "players_with_odds": 23,
+        },
+    ]
+    played = {"France v Ireland"}
+    warnings = validate_round_data(match_data, has_prices=True, price_count=142,
+                                   price_scraped_at=_utcnow(), played_matches=played)
+    stale = [w for w in warnings if w["type"] == "stale_odds"]
+    # Only England v Wales should have stale warnings, not France v Ireland
+    assert all("England v Wales" in w["message"] for w in stale)
+    assert len(stale) == 3  # handicaps, totals, try scorers
