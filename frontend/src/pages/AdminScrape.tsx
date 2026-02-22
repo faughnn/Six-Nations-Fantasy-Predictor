@@ -552,35 +552,41 @@ export default function AdminScrape() {
               </thead>
               <tbody>
                 {enrichedMatches.map((m) => {
+                  const isPlayed = m.is_played;
                   const squadTotal = m.squad_status.total;
                   const squadExpected = m.squad_status.expected;
                   const squadOk = squadTotal >= squadExpected && squadExpected > 0;
                   const squadPartial = squadTotal > 0 && squadTotal < squadExpected;
 
                   return (
-                    <tr key={`${m.home_team}-${m.away_team}`} className="border-b border-dotted border-stone-200">
+                    <tr key={`${m.home_team}-${m.away_team}`} className={`border-b border-dotted border-stone-200 ${isPlayed ? 'opacity-40' : ''}`}>
                       <td className="py-1.5 pr-4 font-medium text-stone-700 whitespace-nowrap">
                         {m.home_team} v {m.away_team}
+                        {isPlayed && (
+                          <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-stone-100 text-stone-400 border border-stone-200 font-semibold uppercase tracking-wider">
+                            Played
+                          </span>
+                        )}
                       </td>
                       <td className="py-1.5 pr-2">
                         <MarketCell
                           market={m.handicaps}
                           onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeMatchMarket(season, round, 'handicaps', m.home_team, m.away_team))}
-                          disabled={scrapeJob.isBusy}
+                          disabled={scrapeJob.isBusy || isPlayed}
                         />
                       </td>
                       <td className="py-1.5 pr-2">
                         <MarketCell
                           market={m.totals}
                           onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeMatchMarket(season, round, 'totals', m.home_team, m.away_team))}
-                          disabled={scrapeJob.isBusy}
+                          disabled={scrapeJob.isBusy || isPlayed}
                         />
                       </td>
                       <td className="py-1.5 pr-2">
                         <MarketCell
                           market={m.try_scorer}
                           onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeMatchMarket(season, round, 'try_scorer', m.home_team, m.away_team))}
-                          disabled={scrapeJob.isBusy}
+                          disabled={scrapeJob.isBusy || isPlayed}
                         />
                       </td>
                       <td className="py-1.5">
