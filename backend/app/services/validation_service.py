@@ -7,6 +7,15 @@ EXPECTED_SQUAD_SIZE = 23
 HIGH_UNKNOWN_THRESHOLD = 10
 
 
+def _ensure_aware(dt: datetime | None) -> datetime | None:
+    """Make a naive datetime timezone-aware (assume UTC) for safe comparison."""
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt
+
+
 def validate_round_data(
     match_data: list[dict[str, Any]],
     has_prices: bool = False,
@@ -41,22 +50,23 @@ def validate_round_data(
                 "action_params": {"match": match_label},
             })
 
-        # Rule 1: Squad completeness
+        # Rule 1: Squad completeness (both teams combined = 46)
         squad_count = match.get("squad_count", 0)
-        if has_prices and squad_count < EXPECTED_SQUAD_SIZE:
+        expected_match_squad = EXPECTED_SQUAD_SIZE * 2
+        if has_prices and squad_count < expected_match_squad:
             warnings.append({
                 "type": "incomplete_squad",
                 "match": match_label,
                 "team": f"{home}/{away}",
                 "count": squad_count,
                 "expected": EXPECTED_SQUAD_SIZE,
-                "message": f"{match_label} squad incomplete: {squad_count}/{EXPECTED_SQUAD_SIZE}",
+                "message": f"{match_label} squad incomplete: {squad_count}/{expected_match_squad}",
                 "action": "re_scrape_prices",
             })
 
         # Rule 3: Stale odds (per market)
         for market, key in [("handicaps", "handicap_scraped_at"), ("totals", "totals_scraped_at"), ("try scorers", "try_scorer_scraped_at")]:
-            scraped_at = match.get(key)
+            scraped_at = _ensure_aware(match.get(key))
             if scraped_at and (now - scraped_at) > timedelta(hours=STALE_THRESHOLD_HOURS):
                 hours_old = int((now - scraped_at).total_seconds() / 3600)
                 warnings.append({
@@ -71,7 +81,7 @@ def validate_round_data(
 
         # Rule 2: Pre-squad odds
         unknown = match.get("unknown_availability", 0)
-        ts_scraped = match.get("try_scorer_scraped_at")
+        ts_scraped = _ensure_aware(match.get("try_scorer_scraped_at"))
         if match.get("has_try_scorer") and ts_scraped and unknown >= HIGH_UNKNOWN_THRESHOLD:
             warnings.append({
                 "type": "pre_squad_odds",
@@ -96,7 +106,7 @@ def validate_round_data(
 
         # Rule 7: Missing player odds
         players_with_odds = match.get("players_with_odds", 0)
-        if squad_count >= EXPECTED_SQUAD_SIZE and unknown == 0 and players_with_odds < squad_count:
+        if squad_count >= expected_match_squad and unknown == 0 and players_with_odds < squad_count:
             missing_count = squad_count - players_with_odds
             warnings.append({
                 "type": "missing_player_odds",

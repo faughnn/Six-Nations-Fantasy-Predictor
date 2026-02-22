@@ -226,7 +226,11 @@ function ScrapeButton({
 
 function timeAgo(iso: string | null): string {
   if (!iso) return 'Never';
-  const diff = Date.now() - new Date(iso + 'Z').getTime();
+  // Handle both naive (no tz) and aware (with tz) datetime strings
+  const d = new Date(iso);
+  const ts = isNaN(d.getTime()) ? new Date(iso + 'Z').getTime() : d.getTime();
+  if (isNaN(ts)) return '—';
+  const diff = Date.now() - ts;
   const mins = Math.floor(diff / 60_000);
   if (mins < 1) return 'Just now';
   if (mins < 60) return `${mins}m ago`;
@@ -561,21 +565,21 @@ export default function AdminScrape() {
                       <td className="py-1.5 pr-2">
                         <MarketCell
                           market={m.handicaps}
-                          onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeMarket(season, round, 'handicaps'))}
+                          onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeMatchMarket(season, round, 'handicaps', m.home_team, m.away_team))}
                           disabled={scrapeJob.isBusy}
                         />
                       </td>
                       <td className="py-1.5 pr-2">
                         <MarketCell
                           market={m.totals}
-                          onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeMarket(season, round, 'totals'))}
+                          onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeMatchMarket(season, round, 'totals', m.home_team, m.away_team))}
                           disabled={scrapeJob.isBusy}
                         />
                       </td>
                       <td className="py-1.5 pr-2">
                         <MarketCell
                           market={m.try_scorer}
-                          onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeMarket(season, round, 'try_scorer'))}
+                          onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeMatchMarket(season, round, 'try_scorer', m.home_team, m.away_team))}
                           disabled={scrapeJob.isBusy}
                         />
                       </td>

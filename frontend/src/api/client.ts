@@ -213,6 +213,11 @@ export const scrapeApi = {
     return response.data;
   },
 
+  scrapeMatchMarket: async (season: number, round: number, market: string, homeTeam: string, awayTeam: string): Promise<ScrapeResponse> => {
+    const response = await api.post('/api/scrape/match-market', { season, round, market, home_team: homeTeam, away_team: awayTeam });
+    return response.data;
+  },
+
   scrapeMissing: async (season: number, round: number): Promise<ScrapeResponse> => {
     const response = await api.post('/api/scrape/missing', { season, round });
     return response.data;

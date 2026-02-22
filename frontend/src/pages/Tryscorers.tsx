@@ -1,5 +1,4 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { matchesApi } from '../api/client';
 import { useCurrentRound, useRoundScrapeStatus } from '../hooks/useMatches';
@@ -338,9 +337,9 @@ export default function Tryscorers() {
                           title={AVAILABILITY_INDICATOR[p.availability].label}
                         />
                       )}
-                      <Link to={`/players/${p.player_id}`} className="font-medium text-stone-800 hover:text-[#b91c1c]">
+                      <span className="font-medium text-stone-800">
                         {p.name}
-                      </Link>
+                      </span>
                     </div>
                   </td>
                   <td className="py-1.5 text-sm text-stone-500">{p.country}</td>

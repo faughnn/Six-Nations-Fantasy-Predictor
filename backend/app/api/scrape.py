@@ -160,6 +160,7 @@ async def _run_scraper(
     round_num: int,
     markets: List[tuple],
     per_match_missing: Optional[Dict[str, List[tuple]]] = None,
+    match_filter: Optional[tuple] = None,  # (home_team, away_team) to scrape one match only
 ):
     """Background task: discover matches and scrape specified markets.
 
@@ -187,6 +188,15 @@ async def _run_scraper(
             job["message"] = "No matches found on Oddschecker"
             job["matches_found"] = 0
             return
+
+        # Filter to a single match when match_filter is set
+        if match_filter is not None:
+            filter_home, filter_away = match_filter
+            matches = [
+                m for m in matches
+                if m['home'].lower() == filter_home.lower()
+                and m['away'].lower() == filter_away.lower()
+            ]
 
         # Filter to only matches that need scraping when per_match_missing is set
         if per_match_missing is not None:
@@ -334,6 +344,46 @@ async def scrape_single_market(
         status="in_progress",
         job_id=job_id,
         message=f"Scraping {market} — discovering matches...",
+    )
+
+
+class MatchMarketScrapeRequest(AllMatchOddsScrapeRequest):
+    """Request model for scraping a specific market for a specific match."""
+    market: str  # "handicaps", "totals", or "try_scorer"
+    home_team: str
+    away_team: str
+
+
+@router.post("/match-market", response_model=OddsScrapeResponse)
+async def scrape_match_market(
+    request: MatchMarketScrapeRequest,
+    _admin: User = Depends(require_admin),
+):
+    """Scrape a single market for a single match."""
+    market = request.market
+    if market not in MARKET_URL_MAP:
+        return OddsScrapeResponse(
+            status="error",
+            job_id="",
+            message=f"Invalid market: {market}. Use: handicaps, totals, try_scorer",
+        )
+
+    url_suffix = MARKET_URL_MAP[market]
+    market_type = MARKET_TYPE_MAP[market]
+    markets = [(url_suffix, market_type)]
+    match_label = f"{request.home_team} v {request.away_team}"
+
+    job_id = _create_job(f"{market} for {match_label}")
+    _tasks[job_id] = asyncio.create_task(
+        _run_scraper(
+            job_id, request.season, request.round, markets,
+            match_filter=(request.home_team, request.away_team),
+        )
+    )
+    return OddsScrapeResponse(
+        status="in_progress",
+        job_id=job_id,
+        message=f"Scraping {market} for {match_label}...",
     )
 
 

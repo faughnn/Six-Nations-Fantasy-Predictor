@@ -50,7 +50,7 @@ class MarketStatus(BaseModel):
 
 class SquadStatus(BaseModel):
     total: int
-    expected: int = 23
+    expected: int = 46  # 23 per team × 2 teams per match
     unknown_availability: int
 
 
