@@ -184,8 +184,8 @@ export default function Tryscorers() {
     <div className="space-y-4">
       <div>
         <div className="masthead">
-          <h1 className="masthead-title">Try Scorer <span className="italic" style={{ color: '#b91c1c' }}>Odds</span></h1>
-          <p className="masthead-subtitle">Anytime Try Scorer Analysis</p>
+          <h1 className="masthead-title">Player <span className="italic" style={{ color: '#b91c1c' }}>Analysis</span></h1>
+          <p className="masthead-subtitle">Odds, Value & Ownership</p>
         </div>
         <div className="edition-bar">
           <span>Round {round} — {season} Six Nations</span>
@@ -215,15 +215,15 @@ export default function Tryscorers() {
         const tsScrapedAts = enriched
           .map(m => m.try_scorer.scraped_at)
           .filter((v): v is string => v != null);
-        const earliest = tsScrapedAts.length > 0
-          ? tsScrapedAts.reduce((a, b) => (a < b ? a : b))
+        const latest = tsScrapedAts.length > 0
+          ? tsScrapedAts.reduce((a, b) => (a > b ? a : b))
           : null;
         const hasPreSquadWarning = enriched.some(m => m.try_scorer.status === 'warning');
         return (
           <div className="space-y-1.5">
-            {earliest && (
+            {latest && (
               <p className="text-xs text-stone-400">
-                Odds retrieved: {formatDate(earliest)} ({timeAgo(earliest)})
+                Odds retrieved: {formatDate(latest)} ({timeAgo(latest)})
               </p>
             )}
             {hasPreSquadWarning && (

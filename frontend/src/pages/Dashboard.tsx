@@ -66,6 +66,25 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Upcoming Matches */}
+      <div>
+        <h2 className="text-sm font-bold text-stone-400 uppercase tracking-[2px] mb-4" style={{ fontFamily: 'Fraunces, Georgia, serif' }}>This Week's Fixtures</h2>
+        {matchList.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-3 border-t-2 border-stone-900">
+            {matchList.map((match) => (
+              <MatchCard
+                key={`${match.home_team}-${match.away_team}`}
+                match={match}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center text-stone-400 py-8 border-t-2 border-stone-900">
+            No match odds available for this round yet
+          </div>
+        )}
+      </div>
+
       {/* Data Status */}
       {(() => {
         const isComplete = scrapeStatus && missing.length === 0 && scrapeStatus.availability_unknown === 0;
@@ -116,15 +135,15 @@ export default function Dashboard() {
                         <span className="font-medium text-stone-600 w-40">{m.home_team} v {m.away_team}</span>
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 font-medium ${hOk ? 'bg-green-50 text-green-800' : 'bg-stone-100 text-stone-400'}`}>
                           <span className={`w-1.5 h-1.5 ${hOk ? 'bg-green-700' : 'bg-stone-300'}`} />
-                          H{hOk && m.handicaps.scraped_at ? `: ${timeAgo(m.handicaps.scraped_at)}` : ''}
+                          Handicaps{hOk && m.handicaps.scraped_at ? `: ${timeAgo(m.handicaps.scraped_at)}` : ''}
                         </span>
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 font-medium ${tOk ? 'bg-green-50 text-green-800' : 'bg-stone-100 text-stone-400'}`}>
                           <span className={`w-1.5 h-1.5 ${tOk ? 'bg-green-700' : 'bg-stone-300'}`} />
-                          T{tOk && m.totals.scraped_at ? `: ${timeAgo(m.totals.scraped_at)}` : ''}
+                          Totals{tOk && m.totals.scraped_at ? `: ${timeAgo(m.totals.scraped_at)}` : ''}
                         </span>
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 font-medium ${tsOk ? 'bg-green-50 text-green-800' : 'bg-stone-100 text-stone-400'}`}>
                           <span className={`w-1.5 h-1.5 ${tsOk ? 'bg-green-700' : 'bg-stone-300'}`} />
-                          TS{tsOk ? ` (${m.try_scorer_count})` : ''}{tsOk && m.try_scorer.scraped_at ? `: ${timeAgo(m.try_scorer.scraped_at)}` : ''}
+                          Try Scorers{tsOk ? ` (${m.try_scorer_count})` : ''}{tsOk && m.try_scorer.scraped_at ? `: ${timeAgo(m.try_scorer.scraped_at)}` : ''}
                         </span>
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 font-medium bg-stone-50 text-stone-500">
                           Squad: {m.squad_status.total}/{m.squad_status.expected}
@@ -187,25 +206,6 @@ export default function Dashboard() {
           </div>
         );
       })()}
-
-      {/* Upcoming Matches */}
-      <div>
-        <h2 className="text-sm font-bold text-stone-400 uppercase tracking-[2px] mb-4" style={{ fontFamily: 'Fraunces, Georgia, serif' }}>This Week's Fixtures</h2>
-        {matchList.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-3 border-t-2 border-stone-900">
-            {matchList.map((match) => (
-              <MatchCard
-                key={`${match.home_team}-${match.away_team}`}
-                match={match}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center text-stone-400 py-8 border-t-2 border-stone-900">
-            No match odds available for this round yet
-          </div>
-        )}
-      </div>
 
     </div>
   );

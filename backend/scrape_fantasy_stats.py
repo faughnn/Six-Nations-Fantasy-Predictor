@@ -132,6 +132,12 @@ async def wait_for_table(page: Page, timeout: int = 60) -> bool:
     print("Waiting for stats table to load...")
     for i in range(timeout):
         await asyncio.sleep(1)
+
+        # Detect session expiry (redirected to welcome/login page)
+        if '#/welcome' in page.url or '#/login' in page.url:
+            print("WARNING: Redirected to login page — session expired!")
+            return False
+
         try:
             rows = await page.query_selector_all("table.fs-table tbody tr")
             if len(rows) > 0:

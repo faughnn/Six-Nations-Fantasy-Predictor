@@ -1,15 +1,17 @@
 """
 Standalone script to scrape handicap (spread) odds from Oddschecker.
 
-Auto-discovers Six Nations match URLs and scrapes per-bookmaker handicap odds.
-Saves raw JSON to backend/data/oddschecker/ and optionally persists averaged
+Uses the Six Nations overview page with the Handicaps market selected,
+which shows a single consensus line per match. Much simpler and more
+accurate than the old per-match approach that interpolated across 30+ lines.
+
+Saves raw JSON to backend/data/oddschecker/ and optionally persists
 odds to the database.
 
 Usage:
     python scrape_oddschecker_handicaps.py                         # headless, all matches
     python scrape_oddschecker_handicaps.py --headed                # visible browser
-    python scrape_oddschecker_handicaps.py --match france-v-ireland
-    python scrape_oddschecker_handicaps.py --save-db --season 2026 --round 1
+    python scrape_oddschecker_handicaps.py --save-db --season 2026 --round 4
 """
 
 import asyncio
@@ -31,36 +33,39 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def print_summary_table(parsed_data):
-    """Print the consensus handicap line to the console."""
-    if not parsed_data:
+def print_summary_table(matches):
+    """Print the handicap lines for all matches."""
+    if not matches:
         print("\nNo handicap data found.")
         return
 
-    item = parsed_data[0]
-    home_team = item.get("home_team", "?")
-    spread = item.get("home_spread", -item.get("line", 0))
-    home_odds = item.get("home_odds", 0) or 0
-    away_odds = item.get("away_odds", 0) or 0
-    num_bk = item.get("num_bookmakers", 0)
-
-    sign = "+" if spread > 0 else ""
-    print(
-        f"\nConsensus handicap: {home_team} {sign}{spread:.1f}  "
-        f"(home: {home_odds:.2f}, away: {away_odds:.2f}, {num_bk} bookmakers)"
-    )
+    print(f"\n{'Match':<30} {'Line':>8}  {'Home Odds':>10}  {'Away Odds':>10}")
+    print("-" * 65)
+    for m in matches:
+        label = f"{m['home']} v {m['away']}"
+        home_sign = "+" if m["home_line"] > 0 else ""
+        line_str = f"{home_sign}{m['home_line']}"
+        home_odds = f"{m['home_odds']:.2f}" if m["home_odds"] else "?"
+        away_odds = f"{m['away_odds']:.2f}" if m["away_odds"] else "?"
+        print(f"{label:<30} {line_str:>8}  {home_odds:>10}  {away_odds:>10}")
 
 
-async def scrape_match(scraper: OddscheckerScraper, url: str, slug: str):
-    """Scrape a single match URL and return (raw_data, parsed_data)."""
-    logger.info(f"Scraping handicap odds: {url}")
-    raw_data = await scraper.scrape_handicaps(url)
-    parsed_data = scraper.parse(raw_data)
+def build_parsed_data(match_data):
+    """
+    Convert overview match data into the format expected by save_handicap_odds().
 
-    # Save raw JSON (includes per-bookmaker breakdown)
-    scraper.save_raw_json(raw_data, f"{slug}_handicaps")
-
-    return raw_data, parsed_data
+    Returns a single-element list with the primary handicap line.
+    """
+    home_line = match_data["home_line"]
+    return [{
+        "line": abs(home_line),
+        "home_team": match_data["home"],
+        "away_team": match_data["away"],
+        "home_spread": home_line,
+        "home_odds": match_data.get("home_odds"),
+        "away_odds": match_data.get("away_odds"),
+        "num_bookmakers": 99,  # overview is already a consensus; pass MIN_BOOKMAKERS check
+    }]
 
 
 async def save_to_db(parsed_data, season: int, round_num: int, match_date: date,
@@ -91,11 +96,6 @@ async def main():
         help="Open a visible browser window (useful for debugging)",
     )
     parser.add_argument(
-        "--match",
-        metavar="SLUG",
-        help="Scrape only one match, e.g. --match france-v-ireland",
-    )
-    parser.add_argument(
         "--save-db", action="store_true",
         help="Also persist odds to the database (requires DB running)",
     )
@@ -108,94 +108,55 @@ async def main():
 
     print(f"Mode: {'headed' if args.headed else 'headless'}")
     print(f"Season: {args.season}, Round: {args.round}")
-    if args.match:
-        print(f"Single match: {args.match}")
     print()
 
     # -------------------------------------------------------------------
-    # Determine which matches to scrape
+    # Scrape all matches from the overview page in one go
     # -------------------------------------------------------------------
-    if args.match:
-        slug = args.match
-        base_url = f"https://www.oddschecker.com/rugby-union/six-nations/{slug}/handicaps"
-        matches_to_scrape = [{
-            "slug": slug,
-            "home": slug.split("-v-")[0].replace("-", " ").title() if "-v-" in slug else slug,
-            "away": slug.split("-v-")[1].replace("-", " ").title() if "-v-" in slug else "",
-            "url": base_url,
-        }]
-    else:
-        print("Discovering Six Nations matches on Oddschecker...")
-        browser = await scraper._init_browser()
-        try:
-            page = await scraper._create_page(browser)
-            matches_to_scrape = await scraper.discover_six_nations_matches(page)
-        finally:
-            await scraper._close_browser()
+    print("Scraping handicaps from Six Nations overview page...")
+    overview_matches = await scraper.scrape_handicaps_overview()
 
-        if not matches_to_scrape:
-            print("No Six Nations matches found on Oddschecker. Check debug/ for snapshots.")
-            return
+    if not overview_matches:
+        print("No handicap data found. Check data/oddschecker/debug/ for screenshots.")
+        return
 
-        # Append /handicaps to each discovered URL
-        for m in matches_to_scrape:
-            base = m["url"].rstrip("/")
-            if "/winner" in base or "/anytime" in base or "/handicap" in base:
-                base = base.rsplit("/", 1)[0]
-            m["url"] = f"{base}/handicaps"
-
-        print(f"Found {len(matches_to_scrape)} matches:")
-        for m in matches_to_scrape:
-            print(f"  {m['home']} v {m['away']}  ({m['slug']})")
-        print()
+    print(f"Found handicap lines for {len(overview_matches)} matches")
+    print_summary_table(overview_matches)
 
     # -------------------------------------------------------------------
-    # Scrape each match
+    # Save raw JSON and optionally persist to DB
     # -------------------------------------------------------------------
-    all_results = []
+    for match_data in overview_matches:
+        slug = match_data["slug"]
+        parsed_data = build_parsed_data(match_data)
 
-    for match in matches_to_scrape:
-        slug = match["slug"]
-        url = match["url"]
-        print(f"\n{'=' * 60}")
-        print(f"  {match['home']} v {match['away']}")
-        print(f"  {url}")
-        print(f"{'=' * 60}")
+        # Save raw JSON for record-keeping
+        raw_json = {
+            "market_type": "handicaps_overview",
+            "scraped_at": datetime.utcnow().isoformat(),
+            **match_data,
+        }
+        scraper.save_raw_json(raw_json, f"{slug}_handicaps")
 
-        try:
-            raw_data, parsed_data = await scrape_match(scraper, url, slug)
-            print_summary_table(parsed_data)
-            all_results.append({
-                "match": match,
-                "parsed": parsed_data,
-                "line_count": len(parsed_data),
-                "bookmaker_count": len(raw_data.get("bookmakers", [])),
-            })
-
-            # Optionally save to DB
-            if args.save_db:
-                try:
-                    db_result = await save_to_db(
-                        parsed_data,
-                        season=args.season,
-                        round_num=args.round,
-                        match_date=date.today(),
-                        home_team=match["home"],
-                        away_team=match["away"],
-                    )
-                    print(
-                        f"\n  DB: saved={db_result.get('saved')}, "
-                        f"updated={db_result.get('updated')}, "
-                        f"line={db_result.get('line')}"
-                    )
-                except Exception as e:
-                    logger.error(f"Failed to save to DB: {e}", exc_info=True)
-                    print(f"\n  DB save failed: {e}")
-
-        except Exception as e:
-            logger.error(f"Failed to scrape {slug}: {e}", exc_info=True)
-            print(f"\n  FAILED: {e}")
-            print("  Check data/oddschecker/debug/ for screenshots and HTML dumps.")
+        # Optionally save to DB
+        if args.save_db:
+            try:
+                db_result = await save_to_db(
+                    parsed_data,
+                    season=args.season,
+                    round_num=args.round,
+                    match_date=date.today(),
+                    home_team=match_data["home"],
+                    away_team=match_data["away"],
+                )
+                status = "saved" if db_result.get("saved") else "updated"
+                print(
+                    f"  DB [{status}]: {match_data['home']} v {match_data['away']}, "
+                    f"line={db_result.get('line')}"
+                )
+            except Exception as e:
+                logger.error(f"Failed to save to DB: {e}", exc_info=True)
+                print(f"  DB save failed for {slug}: {e}")
 
     # -------------------------------------------------------------------
     # Final summary
@@ -203,9 +164,7 @@ async def main():
     print(f"\n{'=' * 60}")
     print("SUMMARY")
     print(f"{'=' * 60}")
-    total_lines = sum(r["line_count"] for r in all_results)
-    print(f"Matches scraped: {len(all_results)} / {len(matches_to_scrape)}")
-    print(f"Total lines:     {total_lines}")
+    print(f"Matches scraped: {len(overview_matches)}")
     print(f"JSON output dir: data/oddschecker/")
     if args.save_db:
         print(f"DB persistence:  enabled (season={args.season}, round={args.round})")

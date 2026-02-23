@@ -155,6 +155,94 @@ async def _scrape_market_for_match(
         raise
 
 
+async def _scrape_handicaps_via_overview(
+    season: int,
+    round_num: int,
+    job: Dict[str, Any],
+    match_filter: Optional[tuple] = None,
+) -> List[Dict]:
+    """Scrape handicaps for all matches at once using the overview page.
+
+    Returns a list of per-match result dicts.
+    """
+    from app.scrapers.oddschecker import OddscheckerScraper
+    from app.services.odds_service import OddsService
+
+    job["message"] = "Scraping handicaps from overview page..."
+    scraper = OddscheckerScraper(headless=True)
+
+    started_at = datetime.now(timezone.utc)
+    overview_matches = await scraper.scrape_handicaps_overview()
+
+    if not overview_matches:
+        job["message"] = "No handicap data found on overview page"
+        return []
+
+    results = []
+    for m in overview_matches:
+        home = m["home"]
+        away = m["away"]
+        slug = m["slug"]
+
+        # Apply match filter if set
+        if match_filter is not None:
+            filter_home, filter_away = match_filter
+            if home.lower() != filter_home.lower() or away.lower() != filter_away.lower():
+                continue
+
+        # Skip already-played matches (unless single-match mode)
+        if match_filter is None and is_match_played(season, round_num, home, away):
+            continue
+
+        # Build parsed_data in the format save_handicap_odds() expects
+        home_line = m["home_line"]
+        parsed_data = [{
+            "line": abs(home_line),
+            "home_team": home,
+            "away_team": away,
+            "home_spread": home_line,
+            "home_odds": m.get("home_odds"),
+            "away_odds": m.get("away_odds"),
+            "num_bookmakers": 99,  # overview is already a consensus
+        }]
+
+        # Save raw JSON
+        raw_json = {
+            "market_type": "handicaps_overview",
+            "scraped_at": datetime.now(timezone.utc).isoformat(),
+            **m,
+        }
+        scraper.save_raw_json(raw_json, f"{slug}_handicaps")
+
+        # Save to DB
+        try:
+            async with async_session() as db:
+                service = OddsService(db)
+                db_result = await service.save_handicap_odds(
+                    handicap_data=parsed_data,
+                    season=season,
+                    round_num=round_num,
+                    match_date=date.today(),
+                    home_team=home,
+                    away_team=away,
+                )
+            results.append({"match": slug, "status": "ok", "db_result": db_result})
+            await _record_scrape_run(
+                season, round_num, "handicaps", slug,
+                "completed", started_at, result_summary=db_result,
+            )
+            logger.info(f"Handicap saved for {slug}: line={home_line}")
+        except Exception as e:
+            results.append({"match": slug, "status": "error", "error": str(e)})
+            await _record_scrape_run(
+                season, round_num, "handicaps", slug,
+                "failed", started_at, error_message=str(e),
+            )
+            logger.error(f"Failed to save handicap for {slug}: {e}")
+
+    return results
+
+
 async def _run_scraper(
     job_id: str,
     season: int,
@@ -237,19 +325,57 @@ async def _run_scraper(
         job["message"] = f"Found {len(matches)} match(es) to scrape: {', '.join(match_labels)}"
         logger.info(f"Found {len(matches)} matches: {[m['slug'] for m in matches]}")
 
+        # ---- Handicaps: scrape via overview page (all matches at once) ----
+        has_handicaps = any(mt == "handicaps" for _, mt in markets)
+        # Also check per_match_missing for handicaps
+        if not has_handicaps and per_match_missing is not None:
+            has_handicaps = any(
+                mt == "handicaps"
+                for missing_list in per_match_missing.values()
+                for _, mt in missing_list
+            )
+
+        handicap_results = {}
+        if has_handicaps:
+            job["message"] = "Scraping handicaps from overview page..."
+            try:
+                hc_results = await _scrape_handicaps_via_overview(
+                    season, round_num, job, match_filter=match_filter,
+                )
+                for r in hc_results:
+                    handicap_results[r["match"]] = r
+                job["message"] = f"Handicaps done — {len(hc_results)} match(es)"
+            except Exception as e:
+                logger.error(f"Overview handicaps failed: {e}", exc_info=True)
+                job["message"] = f"Handicaps failed: {e}"
+
+        # ---- Other markets: scrape per-match as before ----
+        non_handicap_markets = [(s, t) for s, t in markets if t != "handicaps"]
+
         for i, match in enumerate(matches, 1):
             slug = match["slug"]
             home = match["home"]
             away = match["away"]
             match_result = {"match": slug, "markets": {}}
 
+            # Include handicap result if we scraped it
+            if slug in handicap_results:
+                hc = handicap_results[slug]
+                match_result["markets"]["handicaps"] = {
+                    "status": hc["status"],
+                    "db_result": hc.get("db_result"),
+                    "error": hc.get("error"),
+                }
+
             # Use per-match markets if available, otherwise scrape all requested markets
             match_key = f"{home}|{away}"
             match_markets = (
                 per_match_missing[match_key]
                 if per_match_missing is not None and match_key in per_match_missing
-                else markets
+                else non_handicap_markets
             )
+            # Filter out handicaps from per-match list (already handled above)
+            match_markets = [(s, t) for s, t in match_markets if t != "handicaps"]
 
             for j, (url_suffix, market_type) in enumerate(match_markets, 1):
                 market_label = market_type.replace("_", " ")
@@ -291,7 +417,7 @@ async def _run_scraper(
         total_markets = sum(
             1 for r in job["results"]
             for m in r["markets"].values()
-            if m["status"] == "ok"
+            if m.get("status") == "ok"
         )
         job["message"] = f"Done — scraped {total_markets} market(s) across {len(matches)} match(es)"
         logger.info(f"Scrape complete: {len(matches)} matches, markets: {market_names}")
@@ -651,14 +777,33 @@ async def _run_scrape_all(job_id: str, season: int, round_num: int):
         errors = []
         total_ok = 0
 
-        # Steps 1-3: Scrape each odds market type for all matches
-        odds_markets = [
-            ("handicaps", "handicaps", "Handicaps"),
+        # Step 1: Handicaps via overview page (all matches at once)
+        job["current_step"] = 1
+        job["step_label"] = "Step 1/4: Handicaps (overview)"
+        job["message"] = job["step_label"]
+
+        if matches:
+            try:
+                hc_results = await _scrape_handicaps_via_overview(
+                    season, round_num, job,
+                )
+                for r in hc_results:
+                    if r["status"] == "ok":
+                        total_ok += 1
+                    else:
+                        errors.append(f"Handicaps for {r['match']}: {r.get('error')}")
+            except Exception as e:
+                err_msg = f"Handicaps overview: {e}"
+                logger.error(f"Scrape-all: {err_msg}", exc_info=True)
+                errors.append(err_msg)
+
+        # Steps 2-3: Totals and try scorers per-match
+        per_match_markets = [
             ("total-points", "match_totals", "Totals"),
             ("anytime-tryscorer", "try_scorer", "Try scorers"),
         ]
 
-        for step_idx, (url_suffix, market_type, market_label) in enumerate(odds_markets, 1):
+        for step_idx, (url_suffix, market_type, market_label) in enumerate(per_match_markets, 2):
             job["current_step"] = step_idx
             for mi, match in enumerate(matches, 1):
                 slug = match["slug"]
@@ -723,11 +868,13 @@ async def _run_scrape_all(job_id: str, season: int, round_num: int):
                 )
 
         except SessionExpiredError as e:
-            errors.append(f"Fantasy prices: session expired — {e}")
+            job["status"] = "session_expired"
+            job["message"] = str(e)
             await _record_scrape_run(
                 season, round_num, "fantasy_prices", None,
                 "failed", started_at, error_message=str(e),
             )
+            return  # Don't continue — other fantasy scrapers will fail too
         except Exception as e:
             errors.append(f"Fantasy prices: {e}")
             logger.error(f"Scrape-all fantasy import failed: {e}", exc_info=True)
@@ -812,11 +959,16 @@ async def _run_fantasy_stats(job_id: str, season: int, round_num: int):
             await dismiss_overlays(page)
 
             if not await wait_for_table(page):
-                job["status"] = "failed"
-                job["message"] = "Could not load stats table"
+                # Detect session expiry vs generic load failure
+                is_session_expired = '#/welcome' in page.url or '#/login' in page.url
+                status = "session_expired" if is_session_expired else "failed"
+                msg = "Session expired — run capture_session.py to log in again" if is_session_expired else "Could not load stats table"
+
+                job["status"] = status
+                job["message"] = msg
                 await _record_scrape_run(
                     season, round_num, "fantasy_stats", None,
-                    "failed", started_at, error_message="Could not load stats table",
+                    "failed", started_at, error_message=msg,
                 )
                 return
 

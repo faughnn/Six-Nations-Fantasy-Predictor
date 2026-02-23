@@ -198,19 +198,21 @@ function useScrapeJob() {
 
 function ScrapeButton({
   label,
+  description,
   onClick,
   disabled,
   variant = 'default',
   size = 'default',
 }: {
   label: string;
+  description?: string;
   onClick: () => void;
   disabled: boolean;
   variant?: 'default' | 'primary' | 'hero';
   size?: 'default' | 'large';
 }) {
-  const base = 'border transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium uppercase tracking-wider';
-  const sizeClass = size === 'large' ? 'px-5 py-2.5 text-sm' : 'px-3 py-1.5 text-sm';
+  const base = 'border transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-left';
+  const sizeClass = size === 'large' ? 'px-4 py-2.5' : 'px-3 py-2';
   const styles = variant === 'hero'
     ? `${base} ${sizeClass} border-stone-900 bg-stone-900 text-white hover:bg-stone-800`
     : variant === 'primary'
@@ -219,7 +221,12 @@ function ScrapeButton({
 
   return (
     <button onClick={onClick} disabled={disabled} className={styles}>
-      {label}
+      <span className="block text-sm font-semibold uppercase tracking-wider">{label}</span>
+      {description && (
+        <span className={`block text-xs mt-0.5 font-normal normal-case tracking-normal ${
+          variant === 'hero' ? 'text-stone-300' : 'text-stone-400'
+        }`}>{description}</span>
+      )}
     </button>
   );
 }
@@ -437,60 +444,101 @@ export default function AdminScrape() {
           )}
         </div>
 
-        <div className="flex flex-wrap gap-2 items-center">
+        {/* Master button */}
+        <div className="mb-4">
           <ScrapeButton
             label="Scrape Everything"
+            description="Scrape all odds from Oddschecker + player prices &amp; squads from Fantasy site (does not include Round Stats)"
             onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeAll(season, round))}
             disabled={scrapeJob.isBusy}
             variant="hero"
             size="large"
           />
-          <div className="w-px h-8 bg-stone-200 mx-1" />
-          <ScrapeButton
-            label="Scrape Missing"
-            onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeMissing(season, round))}
-            disabled={scrapeJob.isBusy || missing.length === 0}
-            variant="primary"
-          />
-          <ScrapeButton
-            label="Handicaps"
-            onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeMarket(season, round, 'handicaps'))}
-            disabled={scrapeJob.isBusy}
-          />
-          <ScrapeButton
-            label="Totals"
-            onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeMarket(season, round, 'totals'))}
-            disabled={scrapeJob.isBusy}
-          />
-          <ScrapeButton
-            label="Try Scorers"
-            onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeMarket(season, round, 'try_scorer'))}
-            disabled={scrapeJob.isBusy}
-          />
-          <ScrapeButton
-            label="Refresh All Odds"
-            onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeAllMatchOdds(season, round))}
-            disabled={scrapeJob.isBusy}
-          />
-          {scrapeJob.needsLogin ? (
-            <ScrapeButton
-              label="Scrape with Login"
-              onClick={() => scrapeJob.startJob(() => scrapeApi.importPricesLogin(season, round))}
-              disabled={scrapeJob.isBusy}
-              variant="primary"
-            />
-          ) : (
-            <ScrapeButton
-              label="Import Prices & Squads"
-              onClick={() => scrapeJob.startJob(() => scrapeApi.importPrices(season, round))}
-              disabled={scrapeJob.isBusy}
-            />
-          )}
-          <ScrapeButton
-            label="Fantasy Stats"
-            onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeFantasyStats(season, round))}
-            disabled={scrapeJob.isBusy}
-          />
+        </div>
+
+        {/* Grouped controls */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Betting Odds */}
+          <div>
+            <h4 className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Betting Odds</h4>
+            <p className="text-xs text-stone-400 mb-2">Scrape odds from Oddschecker for predictions</p>
+            <div className="flex flex-col gap-1.5">
+              <ScrapeButton
+                label="Scrape Missing"
+                description="Detect which odds markets are missing per match and only scrape those"
+                onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeMissing(season, round))}
+                disabled={scrapeJob.isBusy || missing.length === 0}
+                variant="primary"
+              />
+              <ScrapeButton
+                label="Refresh All Odds"
+                description="Re-scrape all 3 odds markets for every unplayed match, overwriting existing data"
+                onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeAllMatchOdds(season, round))}
+                disabled={scrapeJob.isBusy}
+              />
+              <div className="flex gap-1.5">
+                <ScrapeButton
+                  label="Handicaps"
+                  description="Spread lines only"
+                  onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeMarket(season, round, 'handicaps'))}
+                  disabled={scrapeJob.isBusy}
+                />
+                <ScrapeButton
+                  label="Totals"
+                  description="Over/under only"
+                  onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeMarket(season, round, 'totals'))}
+                  disabled={scrapeJob.isBusy}
+                />
+                <ScrapeButton
+                  label="Try Scorers"
+                  description="Player try odds only"
+                  onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeMarket(season, round, 'try_scorer'))}
+                  disabled={scrapeJob.isBusy}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Fantasy Game Data */}
+          <div>
+            <h4 className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Fantasy Game Data</h4>
+            <p className="text-xs text-stone-400 mb-2">Scrape from the Fantasy Six Nations website</p>
+            <div className="flex flex-col gap-1.5">
+              {scrapeJob.needsLogin ? (
+                <ScrapeButton
+                  label="Prices & Squads (Login)"
+                  description="Opens a visible browser for login, then scrapes player prices, ownership %, and squad availability from Fantasy Six Nations"
+                  onClick={() => scrapeJob.startJob(() => scrapeApi.importPricesLogin(season, round))}
+                  disabled={scrapeJob.isBusy}
+                  variant="primary"
+                />
+              ) : (
+                <ScrapeButton
+                  label="Prices & Squads"
+                  description="Scrape player prices, ownership %, and squad availability from Fantasy Six Nations (uses saved session)"
+                  onClick={() => scrapeJob.startJob(() => scrapeApi.importPrices(season, round))}
+                  disabled={scrapeJob.isBusy}
+                />
+              )}
+              <ScrapeButton
+                label="Round Stats"
+                description="Scrape per-player game stats (fantasy points, tries, tackles, metres, etc.) from Fantasy Six Nations — feeds the Fantasy Statistics page. Only available after matches are played."
+                onClick={() => scrapeJob.startJob(() => scrapeApi.scrapeFantasyStats(season, round))}
+                disabled={scrapeJob.isBusy}
+              />
+            </div>
+          </div>
+
+          {/* Info */}
+          <div>
+            <h4 className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Notes</h4>
+            <ul className="text-xs text-stone-400 space-y-1.5 list-disc list-inside">
+              <li><strong className="text-stone-500">Scrape Everything</strong> runs odds + prices/squads only — Round Stats must be run separately</li>
+              <li><strong className="text-stone-500">Odds</strong> are scraped from Oddschecker — no login needed</li>
+              <li><strong className="text-stone-500">Prices & Round Stats</strong> are scraped from the Fantasy Six Nations website — both need a saved browser session</li>
+              <li>If a session expires, a copyable prompt will appear to fix it via Claude</li>
+            </ul>
+          </div>
         </div>
 
         {/* Job status banner */}
@@ -530,6 +578,26 @@ export default function AdminScrape() {
                 dismiss
               </button>
             )}
+          </div>
+        )}
+        {scrapeJob.needsLogin && scrapeJob.status === 'error' && (
+          <div className="mt-2 px-3 py-2 bg-amber-50 border border-amber-200 text-sm">
+            <p className="text-amber-800 font-medium mb-1.5">Paste this into Claude Code to fix:</p>
+            <div className="flex items-center gap-2">
+              <code className="flex-1 text-xs bg-white border border-amber-300 px-2 py-1.5 text-stone-700 font-mono select-all">
+                Run `python capture_session.py` from the `fantasy-six-nations/backend` directory to capture a new Fantasy Six Nations login session. A browser will open for me to log in.
+              </code>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(
+                    'Run `python capture_session.py` from the `fantasy-six-nations/backend` directory to capture a new Fantasy Six Nations login session. A browser will open for me to log in.'
+                  );
+                }}
+                className="px-2 py-1.5 text-xs font-medium bg-amber-100 text-amber-800 hover:bg-amber-200 border border-amber-300 transition-colors whitespace-nowrap"
+              >
+                Copy
+              </button>
+            </div>
           </div>
         )}
 

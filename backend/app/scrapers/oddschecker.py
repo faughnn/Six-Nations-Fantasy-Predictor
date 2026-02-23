@@ -4,7 +4,7 @@ Oddschecker scraper for rugby odds using Playwright browser automation.
 Handles three market types:
 1. Anytime Try Scorer - Player odds for scoring a try
 2. Match Points Totals - Over/Under odds for total points scored
-3. Handicaps - Spread betting odds (e.g. "France -5.5")
+3. Handicaps (overview) - Consensus spread from the Six Nations overview page
 """
 
 from typing import Dict, List, Any, Optional
@@ -240,9 +240,7 @@ class OddscheckerScraper(BaseScraper):
         """
         market_type = kwargs.get("market_type", self._detect_market_type(url))
 
-        if market_type == "handicaps":
-            return await self.scrape_handicaps(url)
-        elif market_type == "match_totals":
+        if market_type == "match_totals":
             return await self.scrape_match_totals(url)
         else:
             return await self.scrape_try_scorer(url)
@@ -250,8 +248,6 @@ class OddscheckerScraper(BaseScraper):
     def _detect_market_type(self, url: str) -> str:
         """Detect market type from URL."""
         url_lower = url.lower()
-        if "handicap" in url_lower or "spread" in url_lower:
-            return "handicaps"
         if "total" in url_lower or "over-under" in url_lower or "points" in url_lower:
             return "match_totals"
         return "try_scorer"
@@ -645,9 +641,7 @@ class OddscheckerScraper(BaseScraper):
         """
         market_type = raw_data.get("market_type", "try_scorer")
 
-        if market_type == "handicaps":
-            return self._parse_handicaps(raw_data)
-        elif market_type == "match_totals":
+        if market_type == "match_totals":
             return self._parse_match_totals(raw_data)
         else:
             return self._parse_try_scorer(raw_data)
@@ -764,115 +758,295 @@ class OddscheckerScraper(BaseScraper):
         return [result]
 
     # ------------------------------------------------------------------
-    # Handicaps market
+    # Handicaps market (overview page)
     # ------------------------------------------------------------------
 
-    async def scrape_handicaps(self, url: str) -> Dict[str, Any]:
+    async def scrape_handicaps_overview(self) -> List[Dict[str, Any]]:
         """
-        Scrape handicap (spread) odds from Oddschecker.
+        Scrape handicap lines from the Six Nations overview page.
 
-        Args:
-            url: Full Oddschecker URL for handicaps market
+        Navigates to the overview page, selects the Handicaps market,
+        and extracts the consensus line + odds for every match at once.
 
         Returns:
-            Dict with handicap odds data
+            List of dicts, one per match:
+            {
+                "slug": "scotland-v-france",
+                "home": "Scotland",
+                "away": "France",
+                "home_line": 8,
+                "away_line": -8,
+                "home_odds": 1.95,
+                "away_odds": 2.0,
+            }
         """
         browser = await self._init_browser()
 
         try:
             page = await self._create_page(browser)
-            logger.info(f"Navigating to {url}")
+            logger.info(f"Navigating to overview: {self.SIX_NATIONS_URL}")
 
-            await page.goto(url, wait_until="domcontentloaded", timeout=self.DEFAULT_TIMEOUT)
-
-            # Dismiss cookie consent
+            await page.goto(
+                self.SIX_NATIONS_URL,
+                wait_until="domcontentloaded",
+                timeout=self.DEFAULT_TIMEOUT,
+            )
+            await asyncio.sleep(self.PAGE_LOAD_WAIT)
             await self._dismiss_cookie_consent(page)
 
-            # Wait for odds table to load
-            await self._wait_for_odds_table(page)
-
-            # Additional wait for JavaScript content
+            # Click "Change Market" and select "Handicaps"
+            await self._select_overview_market(page, "Handicaps")
             await asyncio.sleep(self.PAGE_LOAD_WAIT)
 
-            # Extract bookmaker headers
-            bookmakers = await self._extract_bookmakers(page)
-            logger.info(f"Found {len(bookmakers)} bookmakers")
+            # Extract match cards
+            matches = await self._extract_overview_handicaps(page)
+            logger.info(f"Extracted handicap lines for {len(matches)} matches")
 
-            # Extract handicap odds
-            handicap_data = await self._extract_handicap_odds(page, bookmakers)
-            logger.info(f"Extracted {len(handicap_data)} handicap selections")
+            if not matches:
+                await self._save_debug_snapshot(page, "no_handicaps_overview")
 
-            return {
-                "market_type": "handicaps",
-                "url": url,
-                "scraped_at": datetime.utcnow().isoformat(),
-                "bookmakers": bookmakers,
-                "handicap_data": handicap_data,
-            }
+            return matches
 
         except PlaywrightTimeout as e:
-            logger.error(f"Timeout scraping {url}: {e}")
-            await self._save_debug_snapshot(page, "timeout_handicaps")
+            logger.error(f"Timeout scraping overview handicaps: {e}")
+            try:
+                await self._save_debug_snapshot(page, "timeout_handicaps_overview")
+            except Exception:
+                pass
             raise
         except Exception as e:
-            logger.error(f"Error scraping {url}: {e}")
+            logger.error(f"Error scraping overview handicaps: {e}")
             try:
-                await self._save_debug_snapshot(page, "error_handicaps")
+                await self._save_debug_snapshot(page, "error_handicaps_overview")
             except Exception:
                 pass
             raise
         finally:
             await self._close_browser()
 
-    async def _extract_handicap_odds(self, page: Page, bookmakers: List[str]) -> List[Dict]:
-        """Extract handicap selection names and odds from each row."""
-        handicap_data = []
+    async def _select_overview_market(self, page: Page, market_name: str):
+        """Click the market-switcher dropdown on the overview page and select a market."""
+        # Try common selectors for the market dropdown
+        dropdown_selectors = [
+            "button:has-text('Change Market')",
+            "button:has-text('Match Result')",
+            "button:has-text('Winner')",
+            "[data-testid='market-selector']",
+            ".market-selector button",
+            "button.market-switcher",
+        ]
 
-        rows = await page.query_selector_all("tbody tr")
-
-        for row in rows:
+        clicked = False
+        for selector in dropdown_selectors:
             try:
-                # Get the selection text (e.g., "France -5.5", "Ireland +5.5")
-                name_elem = await row.query_selector("td:first-child, .sel, span.selTxt")
-                if not name_elem:
-                    continue
-
-                selection_text = await name_elem.inner_text()
-                selection_text = selection_text.strip()
-
-                # Parse team name and line value
-                line_info = self._parse_handicap_selection(selection_text)
-                if not line_info:
-                    continue
-
-                # Extract odds for each bookmaker
-                odds_cells = await row.query_selector_all("td.bc, td[data-odig]")
-                if not odds_cells:
-                    odds_cells = await row.query_selector_all("td")
-                    # Skip the first cell (selection name)
-                    odds_cells = odds_cells[1:] if odds_cells else []
-
-                odds_by_bookmaker = {}
-                for i, cell in enumerate(odds_cells):
-                    if i >= len(bookmakers):
-                        break
-                    odds_value = await self._extract_odds_value(cell)
-                    if odds_value is not None:
-                        odds_by_bookmaker[bookmakers[i]] = odds_value
-
-                if odds_by_bookmaker:
-                    handicap_data.append({
-                        "selection": selection_text,
-                        "team": line_info["team"],
-                        "line": line_info["line"],
-                        "odds_by_bookmaker": odds_by_bookmaker,
-                    })
-
-            except Exception as e:
-                logger.warning(f"Error extracting handicap row: {e}")
+                btn = page.locator(selector).first
+                if await btn.is_visible(timeout=2000):
+                    await btn.click()
+                    logger.info(f"Opened market dropdown with: {selector}")
+                    clicked = True
+                    await asyncio.sleep(1)
+                    break
+            except Exception:
                 continue
 
-        return handicap_data
+        if not clicked:
+            logger.warning("Could not find market dropdown — page may already show handicaps")
+
+        # Now click the Handicaps option in the dropdown
+        option_selectors = [
+            f"a:has-text('{market_name}')",
+            f"li:has-text('{market_name}')",
+            f"button:has-text('{market_name}')",
+            f"[data-testid='market-option']:has-text('{market_name}')",
+            f"div[role='option']:has-text('{market_name}')",
+        ]
+
+        for selector in option_selectors:
+            try:
+                opt = page.locator(selector).first
+                if await opt.is_visible(timeout=2000):
+                    await opt.click()
+                    logger.info(f"Selected market '{market_name}' with: {selector}")
+                    await asyncio.sleep(1)
+                    return
+            except Exception:
+                continue
+
+        logger.warning(f"Could not select market '{market_name}' — may already be active or selector changed")
+
+    async def _extract_overview_handicaps(self, page: Page) -> List[Dict[str, Any]]:
+        """
+        Extract handicap lines and odds from the overview page match cards.
+
+        Each match card shows two rows (home/away) with a handicap line and odds.
+        """
+        matches = []
+
+        # Find match card containers — try several selectors
+        card_selectors = [
+            "div[data-testid='match-card']",
+            ".betslip-card",
+            "section.match-card",
+            "div.event-card",
+            # Oddschecker commonly wraps each match in a container with a link
+            "div[class*='MatchCard']",
+            "div[class*='match-card']",
+            "div[class*='EventCard']",
+        ]
+
+        cards = []
+        for selector in card_selectors:
+            cards = await page.query_selector_all(selector)
+            if cards:
+                logger.info(f"Found {len(cards)} match cards with: {selector}")
+                break
+
+        if not cards:
+            # Fallback: look for match sections by finding team-v-team links
+            logger.info("No match cards found via selectors — trying link-based discovery")
+            return await self._extract_overview_handicaps_by_links(page)
+
+        for card in cards:
+            try:
+                match_data = await self._parse_overview_card(card)
+                if match_data:
+                    matches.append(match_data)
+            except Exception as e:
+                logger.warning(f"Error parsing match card: {e}")
+
+        return matches
+
+    async def _extract_overview_handicaps_by_links(self, page: Page) -> List[Dict[str, Any]]:
+        """
+        Fallback extraction: find matches by looking for team-v-team links,
+        then extract handicap data from the surrounding elements.
+        """
+        matches = []
+        seen_slugs = set()
+
+        # Get all text content from the page to parse match data
+        # Look for patterns like "Team +X  odds  Team -X  odds"
+        links = await page.query_selector_all("a[href*='/rugby-union/six-nations/']")
+
+        for link in links:
+            href = await link.get_attribute("href") or ""
+            m = re.search(r'/rugby-union/six-nations/([a-z]+-v-[a-z]+)', href)
+            if not m:
+                continue
+
+            slug = m.group(1)
+            if slug in seen_slugs:
+                continue
+            seen_slugs.add(slug)
+
+            parts = slug.split("-v-")
+            if len(parts) != 2:
+                continue
+
+            home = parts[0].replace("-", " ").title()
+            away = parts[1].replace("-", " ").title()
+
+            # Try to find odds buttons near this link
+            # Walk up to find the parent card/container
+            parent = link
+            for _ in range(5):
+                parent = await parent.evaluate_handle("el => el.parentElement")
+                if not parent:
+                    break
+
+                # Look for handicap text and odds within this parent
+                text = await parent.evaluate("el => el.innerText")
+                if not text:
+                    continue
+
+                match_data = self._parse_overview_text(text, slug, home, away)
+                if match_data:
+                    matches.append(match_data)
+                    break
+
+        return matches
+
+    def _parse_overview_text(
+        self, text: str, slug: str, home: str, away: str
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Parse free text from an overview card to find handicap lines and odds.
+
+        Looks for patterns like:
+            Scotland +8  1.95
+            France -8    2.00
+        """
+        lines = [l.strip() for l in text.split("\n") if l.strip()]
+
+        home_line = None
+        home_odds = None
+        away_line = None
+        away_odds = None
+
+        for line_text in lines:
+            parsed = self._parse_handicap_selection(line_text)
+            if not parsed:
+                continue
+
+            team = parsed["team"]
+            hcap = parsed["line"]
+
+            # Look for odds near this line
+            # Try to find a decimal number after the handicap text
+            odds_match = re.search(
+                re.escape(line_text) + r'\s+(\d+\.?\d*)',
+                text,
+            )
+            odds_val = float(odds_match.group(1)) if odds_match else None
+
+            if team.lower() == home.lower():
+                home_line = hcap
+                home_odds = odds_val
+            elif team.lower() == away.lower():
+                away_line = hcap
+                away_odds = odds_val
+
+        if home_line is not None and away_line is not None:
+            return {
+                "slug": slug,
+                "home": home,
+                "away": away,
+                "home_line": home_line,
+                "away_line": away_line,
+                "home_odds": home_odds,
+                "away_odds": away_odds,
+            }
+
+        return None
+
+    async def _parse_overview_card(self, card) -> Optional[Dict[str, Any]]:
+        """
+        Parse a single match card element to extract handicap data.
+
+        Returns dict with slug, home, away, lines, and odds, or None.
+        """
+        # Try to find the match slug from a link inside the card
+        link = await card.query_selector("a[href*='/rugby-union/six-nations/']")
+        slug = None
+        home = None
+        away = None
+
+        if link:
+            href = await link.get_attribute("href") or ""
+            m = re.search(r'/rugby-union/six-nations/([a-z]+-v-[a-z]+)', href)
+            if m:
+                slug = m.group(1)
+                parts = slug.split("-v-")
+                if len(parts) == 2:
+                    home = parts[0].replace("-", " ").title()
+                    away = parts[1].replace("-", " ").title()
+
+        if not slug:
+            return None
+
+        # Extract all text from the card and parse handicap data
+        text = await card.inner_text()
+        return self._parse_overview_text(text, slug, home, away)
 
     def _parse_handicap_selection(self, text: str) -> Optional[Dict]:
         """
@@ -890,116 +1064,3 @@ class OddscheckerScraper(BaseScraper):
             return {"team": team, "line": line}
 
         return None
-
-    def _parse_handicaps(self, raw_data: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """
-        Parse handicap odds data and find the single consensus line.
-
-        For each bookmaker, find which selection they price closest to 2.0
-        (even money). Normalize all selections to a home-team spread, then
-        average across bookmakers to get the market consensus handicap.
-        """
-        handicap_data = raw_data.get("handicap_data", [])
-        if not handicap_data:
-            return []
-
-        # Discover the two teams and determine home/away from URL slug
-        teams = list({item["team"] for item in handicap_data})
-        if len(teams) != 2:
-            logger.warning(f"Expected 2 teams in handicaps, found {len(teams)}: {teams}")
-            if not teams:
-                return []
-
-        # Home team is the first team in the URL slug (e.g. france-v-ireland -> France)
-        url = raw_data.get("url", "")
-        slug_match = re.search(r'/([a-z]+-v-[a-z]+)', url.lower())
-        if slug_match:
-            slug_home = slug_match.group(1).split("-v-")[0].replace("-", " ")
-            # Match to actual team name (case-insensitive)
-            home_team = next(
-                (t for t in teams if t.lower().startswith(slug_home)),
-                teams[0],
-            )
-        else:
-            home_team = teams[0]
-
-        away_team = next(t for t in teams if t != home_team)
-
-        # Build per-bookmaker map of home-team selections:
-        # bk -> sorted list of (abs_spread, odds) for "HomeTeam -X" entries
-        bk_home: Dict[str, List[tuple]] = {}
-        # Also keep all entries for odds collection later
-        bk_all: Dict[str, List[tuple]] = {}
-        for item in handicap_data:
-            for bk, odds in item["odds_by_bookmaker"].items():
-                bk_all.setdefault(bk, []).append(
-                    (item["team"], item["line"], odds)
-                )
-                # Collect home-team negative-line entries (e.g. "France -10")
-                if item["team"] == home_team and item["line"] < 0:
-                    bk_home.setdefault(bk, []).append(
-                        (abs(item["line"]), odds)
-                    )
-
-        if not bk_home:
-            return []
-
-        # For each bookmaker, find the main line by locating where the
-        # home-team odds cross 2.0 as the spread increases.  Larger
-        # spreads are easier for the underdog to cover, so odds for the
-        # favourite should rise monotonically.  The crossing point is
-        # the bookmaker's true main line.
-        spread_values = []
-        home_odds_list = []
-        away_odds_list = []
-
-        for bk, home_entries in bk_home.items():
-            home_entries.sort()  # sort by abs_spread ascending
-            below = [(sp, o) for sp, o in home_entries if o <= 2.0]
-            above = [(sp, o) for sp, o in home_entries if o > 2.0]
-
-            if below and above:
-                last_below = max(below, key=lambda x: x[0])
-                first_above = min(above, key=lambda x: x[0])
-                # Linear interpolation to find the 2.0 crossing
-                if first_above[1] != last_below[1]:
-                    frac = (2.0 - last_below[1]) / (first_above[1] - last_below[1])
-                    main_line = last_below[0] + frac * (first_above[0] - last_below[0])
-                else:
-                    main_line = (last_below[0] + first_above[0]) / 2
-                # Odds straddle the crossing — use the below-side entry
-                nearest_abs = last_below[0]
-            elif below:
-                # All odds <= 2.0; use the largest spread
-                best = max(below, key=lambda x: x[0])
-                main_line = best[0]
-                nearest_abs = best[0]
-            else:
-                # All odds > 2.0; use the smallest spread
-                best = min(above, key=lambda x: x[0])
-                main_line = best[0]
-                nearest_abs = best[0]
-
-            spread_values.append(-main_line)  # negative = home favourite
-
-            # Collect home/away odds at the nearest real line to the crossing
-            for team, line, odds in bk_all.get(bk, []):
-                if abs(abs(line) - nearest_abs) < 0.01:
-                    if team == home_team and line < 0:
-                        home_odds_list.append(odds)
-                    elif team == away_team and line > 0:
-                        away_odds_list.append(odds)
-
-        avg_spread = round(sum(spread_values) / len(spread_values), 1)
-        avg_home_odds = round(sum(home_odds_list) / len(home_odds_list), 2) if home_odds_list else None
-        avg_away_odds = round(sum(away_odds_list) / len(away_odds_list), 2) if away_odds_list else None
-
-        return [{
-            "line": abs(avg_spread),
-            "home_team": home_team,
-            "away_team": away_team,
-            "home_spread": avg_spread,
-            "home_odds": avg_home_odds,
-            "away_odds": avg_away_odds,
-            "num_bookmakers": len(bk_home),
-        }]
