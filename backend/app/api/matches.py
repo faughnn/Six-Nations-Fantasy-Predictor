@@ -11,7 +11,7 @@ from app.models.player import Player
 from app.models.prediction import FantasyPrice
 from app.models.scrape_run import ScrapeRun
 from app.models.stats import FantasyRoundStats
-from app.fixtures import is_match_played
+from app.fixtures import is_match_played, get_round_fixtures, get_current_round as fixtures_current_round
 from app.services.scoring import is_forward
 from app.services.validation_service import validate_round_data
 from app.schemas.match import (
@@ -41,40 +41,13 @@ async def get_current_round(
     db: AsyncSession = Depends(get_db),
 ):
     """
-    Determine the current active round.
+    Determine the current active round from the hardcoded schedule.
 
-    Logic:
-    1. Find the nearest round with match_date >= today (upcoming)
-    2. If none, fall back to the most recent round with data
-    3. If no data at all, default to season=current year, round=1
+    Uses fixture kickoff times to find the earliest round with unplayed matches.
     """
-    today = date.today()
-    current_year = today.year
-    target_season = season or current_year
-
-    # Try to find the next upcoming round (match_date >= today)
-    result = await db.execute(
-        select(MatchOdds.season, MatchOdds.round)
-        .where(MatchOdds.match_date >= today)
-        .order_by(MatchOdds.match_date.asc())
-        .limit(1)
-    )
-    row = result.first()
-    if row:
-        return CurrentRoundResponse(season=row[0], round=row[1])
-
-    # Fall back to most recent round with data
-    result = await db.execute(
-        select(MatchOdds.season, MatchOdds.round)
-        .order_by(MatchOdds.match_date.desc())
-        .limit(1)
-    )
-    row = result.first()
-    if row:
-        return CurrentRoundResponse(season=row[0], round=row[1])
-
-    # No data at all
-    return CurrentRoundResponse(season=target_season, round=1)
+    target_season = season or date.today().year
+    current = fixtures_current_round(target_season)
+    return CurrentRoundResponse(season=target_season, round=current)
 
 
 @router.get("/status", response_model=RoundScrapeStatusResponse)
@@ -85,20 +58,26 @@ async def get_round_scrape_status(
 ):
     """
     Report which markets have been scraped for each match in a round.
+    Uses hardcoded schedule as the base, enriched with DB data.
     """
-    # Get all matches for this round
+    fixtures = get_round_fixtures(season, game_round)
+
+    # Build lookup of DB odds keyed by (home, away)
     result = await db.execute(
         select(MatchOdds)
         .where(MatchOdds.season == season, MatchOdds.round == game_round)
         .order_by(MatchOdds.match_date)
     )
-    matches = result.scalars().all()
+    odds_by_match: dict[tuple[str, str], MatchOdds] = {
+        (m.home_team, m.away_team): m for m in result.scalars().all()
+    }
 
     match_statuses = []
     enriched_match_data = []  # Collect per-match data for validation
-    for match in matches:
-        has_handicap = match.handicap_line is not None
-        has_totals = match.over_under_line is not None
+    for home, away, kickoff in fixtures:
+        match = odds_by_match.get((home, away))
+        has_handicap = match is not None and match.handicap_line is not None
+        has_totals = match is not None and match.over_under_line is not None
 
         # Check if any try scorer odds exist for players on these teams
         try_scorer_result = await db.execute(
@@ -108,7 +87,7 @@ async def get_round_scrape_status(
             .where(
                 Odds.season == season,
                 Odds.round == game_round,
-                Player.country.in_([match.home_team, match.away_team]),
+                Player.country.in_([home, away]),
                 Odds.anytime_try_scorer.isnot(None),
             )
         )
@@ -123,7 +102,7 @@ async def get_round_scrape_status(
             .where(
                 Odds.season == season,
                 Odds.round == game_round,
-                Player.country.in_([match.home_team, match.away_team]),
+                Player.country.in_([home, away]),
                 Odds.anytime_try_scorer.isnot(None),
             )
         )
@@ -137,7 +116,7 @@ async def get_round_scrape_status(
             .where(
                 FantasyPrice.season == season,
                 FantasyPrice.round == game_round,
-                Player.country.in_([match.home_team, match.away_team]),
+                Player.country.in_([home, away]),
                 FantasyPrice.availability.in_(["starting", "substitute"]),
             )
         )
@@ -151,7 +130,7 @@ async def get_round_scrape_status(
             .where(
                 FantasyPrice.season == season,
                 FantasyPrice.round == game_round,
-                Player.country.in_([match.home_team, match.away_team]),
+                Player.country.in_([home, away]),
                 FantasyPrice.availability.is_(None),
             )
         )
@@ -165,20 +144,20 @@ async def get_round_scrape_status(
             .where(
                 Odds.season == season,
                 Odds.round == game_round,
-                Player.country.in_([match.home_team, match.away_team]),
+                Player.country.in_([home, away]),
                 Odds.anytime_try_scorer.isnot(None),
             )
         )
         players_with_odds = pwo_result.scalar() or 0
 
         # MatchOdds.scraped_at applies to both handicaps and totals
-        match_odds_scraped_at = match.scraped_at if match.scraped_at else None
+        match_odds_scraped_at = match.scraped_at if match and match.scraped_at else None
 
         match_statuses.append(
             MatchScrapeStatus(
-                home_team=match.home_team,
-                away_team=match.away_team,
-                match_date=match.match_date,
+                home_team=home,
+                away_team=away,
+                match_date=kickoff.date(),
                 has_handicap=has_handicap,
                 has_totals=has_totals,
                 has_try_scorer=try_scorer_count > 0,
@@ -188,9 +167,9 @@ async def get_round_scrape_status(
 
         # Collect data for validation and enriched response
         enriched_match_data.append({
-            "home_team": match.home_team,
-            "away_team": match.away_team,
-            "match_date": match.match_date,
+            "home_team": home,
+            "away_team": away,
+            "match_date": kickoff.date(),
             "has_handicap": has_handicap,
             "has_totals": has_totals,
             "has_try_scorer": try_scorer_count > 0,
@@ -407,19 +386,13 @@ async def get_tryscorers(
     db: AsyncSession = Depends(get_db),
 ):
     """Get all players with fantasy prices for a round, enriched with tryscorer odds."""
-    # Get matches for this round to map players to matches
-    match_result = await db.execute(
-        select(MatchOdds)
-        .where(MatchOdds.season == season, MatchOdds.round == game_round)
-    )
-    matches = match_result.scalars().all()
-
-    # Build country -> match label mapping
+    # Build country -> match label mapping from hardcoded schedule
+    fixtures = get_round_fixtures(season, game_round)
     country_to_match: dict[str, str] = {}
-    for m in matches:
-        label = f"{m.home_team} v {m.away_team}"
-        country_to_match[m.home_team] = label
-        country_to_match[m.away_team] = label
+    for home, away, _ in fixtures:
+        label = f"{home} v {away}"
+        country_to_match[home] = label
+        country_to_match[away] = label
 
     # Get all players with a fantasy price for this round (the full roster)
     price_result = await db.execute(
@@ -478,17 +451,26 @@ async def get_matches(
     game_round: int = 1,
     db: AsyncSession = Depends(get_db),
 ):
-    """Get match odds and top try scorers for a given season/round."""
-    # Fetch match odds
+    """Get match fixtures and odds for a given season/round.
+
+    Always returns fixtures from the hardcoded schedule, enriched with
+    odds data from the database when available.
+    """
+    fixtures = get_round_fixtures(season, game_round)
+
+    # Build lookup of DB odds keyed by (home, away)
     result = await db.execute(
         select(MatchOdds)
         .where(MatchOdds.season == season, MatchOdds.round == game_round)
-        .order_by(MatchOdds.match_date)
     )
-    matches = result.scalars().all()
+    odds_by_match: dict[tuple[str, str], MatchOdds] = {
+        (m.home_team, m.away_team): m for m in result.scalars().all()
+    }
 
     responses = []
-    for match in matches:
+    for home, away, kickoff in fixtures:
+        match = odds_by_match.get((home, away))
+
         # Get top try scorers for players from both teams
         odds_result = await db.execute(
             select(Odds, Player)
@@ -496,7 +478,7 @@ async def get_matches(
             .where(
                 Odds.season == season,
                 Odds.round == game_round,
-                Player.country.in_([match.home_team, match.away_team]),
+                Player.country.in_([home, away]),
                 Odds.anytime_try_scorer.isnot(None),
             )
             .order_by(Odds.anytime_try_scorer.asc())
@@ -517,18 +499,18 @@ async def get_matches(
 
         responses.append(
             MatchResponse(
-                home_team=match.home_team,
-                away_team=match.away_team,
-                match_date=match.match_date,
-                home_win=float(match.home_win) if match.home_win else None,
-                away_win=float(match.away_win) if match.away_win else None,
-                draw=float(match.draw) if match.draw else None,
-                handicap_line=float(match.handicap_line) if match.handicap_line else None,
-                home_handicap_odds=float(match.home_handicap_odds) if match.home_handicap_odds else None,
-                away_handicap_odds=float(match.away_handicap_odds) if match.away_handicap_odds else None,
-                over_under_line=float(match.over_under_line) if match.over_under_line else None,
-                over_odds=float(match.over_odds) if match.over_odds else None,
-                under_odds=float(match.under_odds) if match.under_odds else None,
+                home_team=home,
+                away_team=away,
+                match_date=kickoff.date(),
+                home_win=float(match.home_win) if match and match.home_win else None,
+                away_win=float(match.away_win) if match and match.away_win else None,
+                draw=float(match.draw) if match and match.draw else None,
+                handicap_line=float(match.handicap_line) if match and match.handicap_line else None,
+                home_handicap_odds=float(match.home_handicap_odds) if match and match.home_handicap_odds else None,
+                away_handicap_odds=float(match.away_handicap_odds) if match and match.away_handicap_odds else None,
+                over_under_line=float(match.over_under_line) if match and match.over_under_line else None,
+                over_odds=float(match.over_odds) if match and match.over_odds else None,
+                under_odds=float(match.under_odds) if match and match.under_odds else None,
                 top_try_scorers=top_scorers,
             )
         )

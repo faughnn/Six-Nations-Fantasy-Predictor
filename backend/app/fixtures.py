@@ -64,3 +64,33 @@ def get_upcoming_matches(
         if key[0] == season and key[1] == round_num
         and not is_match_played(season, round_num, key[2], key[3])
     ]
+
+
+def get_round_fixtures(
+    season: int, round_num: int,
+) -> list[tuple[str, str, datetime]]:
+    """Return (home, away, kickoff) for all matches in a round, sorted by kickoff."""
+    fixtures = [
+        (key[2], key[3], SIX_NATIONS_2026[key])
+        for key in SIX_NATIONS_2026
+        if key[0] == season and key[1] == round_num
+    ]
+    fixtures.sort(key=lambda f: f[2])
+    return fixtures
+
+
+def get_current_round(season: int = 2026) -> int:
+    """Determine current round based on schedule dates.
+
+    Returns the earliest round that still has unplayed matches,
+    or the last round if everything has been played.
+    """
+    now = _utcnow()
+    for rnd in range(1, 6):
+        fixtures = get_round_fixtures(season, rnd)
+        if not fixtures:
+            continue
+        last_kickoff = max(ko for _, _, ko in fixtures)
+        if now < last_kickoff + MATCH_PLAYED_BUFFER:
+            return rnd
+    return 5
