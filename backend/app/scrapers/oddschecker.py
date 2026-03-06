@@ -75,6 +75,8 @@ class OddscheckerScraper(BaseScraper):
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
                 "--disable-dev-shm-usage",
+                "--disable-infobars",
+                "--window-size=1920,1080",
             ]
         )
         return browser
@@ -94,13 +96,29 @@ class OddscheckerScraper(BaseScraper):
             user_agent=(
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                 "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/131.0.0.0 Safari/537.36"
+                "Chrome/132.0.0.0 Safari/537.36"
             ),
             viewport={"width": 1920, "height": 1080},
             java_script_enabled=True,
             locale="en-GB",
             timezone_id="Europe/London",
+            extra_http_headers={
+                "Accept-Language": "en-GB,en;q=0.9",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+                "Sec-Fetch-Dest": "document",
+                "Sec-Fetch-Mode": "navigate",
+                "Sec-Fetch-Site": "none",
+                "Sec-Fetch-User": "?1",
+                "Upgrade-Insecure-Requests": "1",
+            },
         )
+        # Stealth: override navigator.webdriver to hide automation
+        await context.add_init_script("""
+            Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+            Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
+            Object.defineProperty(navigator, 'languages', { get: () => ['en-GB', 'en'] });
+            window.chrome = { runtime: {} };
+        """)
         page = await context.new_page()
         return page
 
@@ -177,12 +195,28 @@ class OddscheckerScraper(BaseScraper):
         """
         logger.info(f"Navigating to {self.SIX_NATIONS_URL}")
         await page.goto(self.SIX_NATIONS_URL, wait_until="domcontentloaded", timeout=self.DEFAULT_TIMEOUT)
-        await asyncio.sleep(self.PAGE_LOAD_WAIT)
+        # Wait longer for JS-rendered content and potential Cloudflare challenges
+        await asyncio.sleep(self.PAGE_LOAD_WAIT + 5)
 
         await self._dismiss_cookie_consent(page)
 
+        # Additional wait after cookie dismissal for content to render
+        await asyncio.sleep(2)
+
         # Find all links that match the Six Nations match pattern
         links = await page.query_selector_all("a[href*='/rugby-union/six-nations/']")
+
+        # If no links found, try waiting longer and retrying (page may still be loading)
+        if not links:
+            logger.warning("No match links found on first attempt, waiting and retrying...")
+            await asyncio.sleep(5)
+            links = await page.query_selector_all("a[href*='/rugby-union/six-nations/']")
+
+        # If still no links, save debug snapshot
+        if not links:
+            logger.warning("Still no match links found after retry")
+            await self._save_debug_snapshot(page, "no_matches_discovered")
+
         seen_slugs = set()
         matches = []
 

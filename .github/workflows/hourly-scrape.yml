@@ -53,7 +53,7 @@ jobs:
         if: steps.date-check.outputs.should_run == 'true'
         run: |
           pip install -r backend/requirements.txt
-          playwright install chromium
+          playwright install --with-deps chromium
 
       - name: Restore fantasy session
         if: steps.date-check.outputs.should_run == 'true'
@@ -73,3 +73,12 @@ jobs:
             ROUND_ARG="--round ${{ github.event.inputs.round }}"
           fi
           python scrape_hourly.py $ROUND_ARG
+
+      - name: Upload debug snapshots
+        if: always() && steps.date-check.outputs.should_run == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: scrape-debug-${{ github.run_id }}
+          path: backend/data/oddschecker/debug/
+          if-no-files-found: ignore
+          retention-days: 3
