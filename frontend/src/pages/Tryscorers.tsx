@@ -223,7 +223,7 @@ export default function Tryscorers() {
           <div className="space-y-1.5">
             {latest && (
               <p className="text-xs text-stone-400">
-                Odds retrieved: {formatDate(latest)} ({timeAgo(latest)})
+                Odds correct as of: {formatDate(latest)} ({timeAgo(latest)})
               </p>
             )}
             {hasPreSquadWarning && (
