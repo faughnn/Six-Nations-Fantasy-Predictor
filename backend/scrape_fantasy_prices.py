@@ -43,6 +43,11 @@ async def main():
         help="Fantasy Six Nations URL to scrape",
     )
     parser.add_argument(
+        "--headless",
+        action="store_true",
+        help="Run in headless mode (requires saved session)",
+    )
+    parser.add_argument(
         "--clear-session",
         action="store_true",
         help="Delete saved session and force a fresh login",
@@ -53,7 +58,7 @@ async def main():
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    scraper = FantasySixNationsScraper()
+    scraper = FantasySixNationsScraper(headless=args.headless)
 
     if args.clear_session and scraper._session_path.exists():
         scraper._session_path.unlink()

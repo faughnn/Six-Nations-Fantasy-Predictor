@@ -1,0 +1,75 @@
+name: Hourly Odds & Fantasy Scrape
+
+on:
+  schedule:
+    # Every hour — the date-check step skips non-match-week days
+    - cron: '0 * * * *'
+  workflow_dispatch:
+    inputs:
+      round:
+        description: 'Override round number (leave empty for auto-detect)'
+        required: false
+        type: string
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check if today is a match-week day
+        id: date-check
+        run: |
+          # Match-week days: 2 days before, day before, and match days
+          # Round 4: Mar 6-7 -> scrape Mar 4,5,6,7
+          # Round 5: Mar 14   -> scrape Mar 12,13,14
+          MATCH_DAYS="2026-03-04 2026-03-05 2026-03-06 2026-03-07 2026-03-12 2026-03-13 2026-03-14"
+          TODAY=$(date -u +%Y-%m-%d)
+
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "Manual trigger — running regardless of date"
+            echo "should_run=true" >> $GITHUB_OUTPUT
+          elif echo "$MATCH_DAYS" | grep -q "$TODAY"; then
+            echo "Today ($TODAY) is a match-week day — running"
+            echo "should_run=true" >> $GITHUB_OUTPUT
+          else
+            echo "Today ($TODAY) is not a match-week day — skipping"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Checkout
+        if: steps.date-check.outputs.should_run == 'true'
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        if: steps.date-check.outputs.should_run == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        if: steps.date-check.outputs.should_run == 'true'
+        run: |
+          pip install -r backend/requirements.txt
+          playwright install chromium
+
+      - name: Restore fantasy session
+        if: steps.date-check.outputs.should_run == 'true'
+        run: |
+          mkdir -p backend/data
+          echo "${{ secrets.SESSION_STATE }}" | base64 -d > backend/data/session_state.json
+
+      - name: Run hourly scrape
+        if: steps.date-check.outputs.should_run == 'true'
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        run: |
+          cd backend
+          ROUND_ARG=""
+          if [ -n "${{ github.event.inputs.round }}" ]; then
+            ROUND_ARG="--round ${{ github.event.inputs.round }}"
+          fi
+          python scrape_hourly.py $ROUND_ARG
