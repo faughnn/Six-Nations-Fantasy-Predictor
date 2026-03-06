@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../hooks/useAuth';
@@ -368,6 +368,44 @@ export default function AdminScrape() {
   const { data: scrapeStatus } = useRoundScrapeStatus(season, round);
   const { data: metrics } = useUserMetrics();
   const scrapeJob = useScrapeJob();
+
+  type UserSortKey = 'name' | 'email' | 'auth_method' | 'login_count' | 'last_login_at' | 'created_at';
+  const [userSortKey, setUserSortKey] = useState<UserSortKey>('created_at');
+  const [userSortDir, setUserSortDir] = useState<'asc' | 'desc'>('desc');
+  const [userPage, setUserPage] = useState(0);
+  const usersPerPage = 15;
+
+  const handleUserSort = (key: UserSortKey) => {
+    if (userSortKey === key) {
+      setUserSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    } else {
+      setUserSortKey(key);
+      setUserSortDir(['login_count', 'last_login_at', 'created_at'].includes(key) ? 'desc' : 'asc');
+    }
+    setUserPage(0);
+  };
+
+  const sortedUsers = useMemo(() => {
+    if (!metrics?.users) return [];
+    const list = [...metrics.users];
+    list.sort((a, b) => {
+      const aVal = a[userSortKey];
+      const bVal = b[userSortKey];
+      if (aVal == null && bVal == null) return 0;
+      if (aVal == null) return 1;
+      if (bVal == null) return -1;
+      if (typeof aVal === 'number' && typeof bVal === 'number') {
+        return userSortDir === 'asc' ? aVal - bVal : bVal - aVal;
+      }
+      const aStr = String(aVal);
+      const bStr = String(bVal);
+      return userSortDir === 'asc' ? aStr.localeCompare(bStr) : bStr.localeCompare(aStr);
+    });
+    return list;
+  }, [metrics?.users, userSortKey, userSortDir]);
+
+  const totalUserPages = Math.max(1, Math.ceil(sortedUsers.length / usersPerPage));
+  const pagedUsers = sortedUsers.slice(userPage * usersPerPage, (userPage + 1) * usersPerPage);
 
   const { data: scrapeHistory } = useQuery<ScrapeRunSummary[]>({
     queryKey: ['scrapeHistory', season, round],
@@ -843,21 +881,55 @@ export default function AdminScrape() {
           </div>
 
           <div className="border-t-2 border-stone-900 border-b border-stone-300 py-4 px-4">
-            <h3 className="font-semibold text-sm text-stone-600 mb-3">Recent Users</h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-semibold text-sm text-stone-600">Users ({sortedUsers.length})</h3>
+              {totalUserPages > 1 && (
+                <div className="flex items-center gap-2 text-xs text-stone-400">
+                  <button
+                    onClick={() => setUserPage(p => Math.max(0, p - 1))}
+                    disabled={userPage === 0}
+                    className="px-2 py-0.5 border border-stone-300 hover:bg-stone-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    ‹
+                  </button>
+                  <span className="font-mono tabular-nums">{userPage + 1} / {totalUserPages}</span>
+                  <button
+                    onClick={() => setUserPage(p => Math.min(totalUserPages - 1, p + 1))}
+                    disabled={userPage >= totalUserPages - 1}
+                    className="px-2 py-0.5 border border-stone-300 hover:bg-stone-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    ›
+                  </button>
+                </div>
+              )}
+            </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="text-left text-stone-400 text-[10px] uppercase tracking-wider font-bold">
-                    <th className="pb-2">Name</th>
-                    <th className="pb-2">Email</th>
-                    <th className="pb-2">Method</th>
-                    <th className="pb-2 text-right">Logins</th>
-                    <th className="pb-2 text-right">Last Active</th>
-                    <th className="pb-2 text-right">Joined</th>
+                    {([
+                      ['name', 'Name', false],
+                      ['email', 'Email', false],
+                      ['auth_method', 'Method', false],
+                      ['login_count', 'Logins', true],
+                      ['last_login_at', 'Last Active', true],
+                      ['created_at', 'Joined', true],
+                    ] as [UserSortKey, string, boolean][]).map(([key, label, isRight]) => (
+                      <th
+                        key={key}
+                        className={`pb-2 cursor-pointer select-none hover:text-stone-700 transition-colors ${isRight ? 'text-right' : ''}`}
+                        onClick={() => handleUserSort(key)}
+                      >
+                        {label}
+                        {userSortKey === key && (
+                          <span className="ml-1 text-[#b91c1c]">{userSortDir === 'asc' ? '↑' : '↓'}</span>
+                        )}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {metrics.users.map((u) => (
+                  {pagedUsers.map((u) => (
                     <tr key={u.id} className="border-b border-dotted border-stone-300">
                       <td className="py-1.5 font-medium text-stone-800">
                         {u.name}
