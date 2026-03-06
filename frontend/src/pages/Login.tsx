@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useAuth } from '../hooks/useAuth';
 
 declare global {
@@ -25,8 +25,8 @@ export default function Login() {
 
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
-  // Initialize Google Sign In button
-  const googleButtonRef = (node: HTMLDivElement | null) => {
+  // Initialize Google Sign In button — stable ref so it doesn't re-render on every keystroke
+  const googleButtonRef = useCallback((node: HTMLDivElement | null) => {
     if (node && googleClientId && window.google) {
       window.google.accounts.id.initialize({
         client_id: googleClientId,
@@ -49,7 +49,8 @@ export default function Login() {
         text: 'continue_with',
       });
     }
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [googleClientId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,7 +139,7 @@ export default function Login() {
                 className="input"
                 placeholder="Your password"
                 required
-                minLength={6}
+                minLength={8}
               />
             </div>
 
