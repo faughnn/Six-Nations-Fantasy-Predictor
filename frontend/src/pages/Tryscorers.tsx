@@ -235,25 +235,32 @@ export default function Tryscorers() {
         );
       })()}
 
-      {/* Tips banner */}
-      {!localStorage.getItem('hideTips') && (
-        <div className="bg-stone-50 border border-stone-200 text-stone-600 text-xs px-4 py-3 relative">
-          <button
-            onClick={() => { localStorage.setItem('hideTips', '1'); window.location.reload(); }}
-            className="absolute top-2 right-3 text-stone-400 hover:text-stone-600 text-sm"
-            title="Dismiss"
-          >
-            ✕
-          </button>
-          <p className="font-semibold text-stone-700 mb-1">Quick tips</p>
-          <ul className="space-y-0.5 list-disc list-inside">
-            <li>Sort by <strong>EXP/STAR</strong> to find the best value picks for your squad</li>
-            <li>Filter by position to fill gaps in your team</li>
-            <li>Low ownership + high EXP/STAR = great differentials</li>
-            <li>Filter <strong>Subs</strong> and sort by <strong>OWN%</strong> to see who everyone is picking as Super Sub</li>
-          </ul>
-        </div>
-      )}
+      {/* Tips banner — shows on first two visits, gone after second dismissal */}
+      {(() => {
+        const dismissCount = parseInt(localStorage.getItem('tipsDismissed') || '0', 10);
+        if (dismissCount >= 2) return null;
+        return (
+          <div className="bg-stone-50 border border-stone-200 text-stone-600 text-xs px-4 py-3 relative">
+            <button
+              onClick={() => {
+                localStorage.setItem('tipsDismissed', String(dismissCount + 1));
+                window.location.reload();
+              }}
+              className="absolute top-2 right-3 text-stone-400 hover:text-stone-600 text-sm"
+              title="Dismiss"
+            >
+              ✕
+            </button>
+            <p className="font-semibold text-stone-700 mb-1">Quick tips</p>
+            <ul className="space-y-0.5 list-disc list-inside">
+              <li>Sort by <strong>EXP/STAR</strong> to find the best value picks for your squad</li>
+              <li>Filter by position to fill gaps in your team</li>
+              <li>Low ownership + high EXP/STAR = great differentials</li>
+              <li>Filter <strong>Subs</strong> and sort by <strong>OWN%</strong> to see who everyone is picking as Super Sub</li>
+            </ul>
+          </div>
+        );
+      })()}
 
       {/* Filters */}
       <div className="space-y-2">
