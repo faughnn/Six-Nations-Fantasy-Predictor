@@ -105,17 +105,22 @@ class OddscheckerScraper(BaseScraper):
         return page
 
     async def _dismiss_cookie_consent(self, page: Page):
-        """Try to dismiss cookie consent banners."""
-        for selector in self.COOKIE_CONSENT_SELECTORS:
-            try:
-                btn = page.locator(selector).first
-                if await btn.is_visible(timeout=1000):
-                    await btn.click()
-                    logger.info(f"Dismissed cookie consent with selector: {selector}")
-                    await asyncio.sleep(0.5)
-                    return
-            except Exception:
-                continue
+        """Try to dismiss cookie consent banners (including Admiral CMP used by Oddschecker)."""
+        # Admiral CMP banner can take a few seconds to load, so retry a few times
+        for attempt in range(3):
+            for selector in self.COOKIE_CONSENT_SELECTORS:
+                try:
+                    btn = page.locator(selector).first
+                    if await btn.is_visible(timeout=2000):
+                        await btn.click()
+                        logger.info(f"Dismissed cookie consent with selector: {selector}")
+                        await asyncio.sleep(1)
+                        return
+                except Exception:
+                    continue
+            # Wait before retrying — banner may still be loading
+            if attempt < 2:
+                await asyncio.sleep(2)
         logger.debug("No cookie consent banner found (or already dismissed)")
 
     async def _save_debug_snapshot(self, page: Page, label: str):
@@ -825,40 +830,62 @@ class OddscheckerScraper(BaseScraper):
             await self._close_browser()
 
     async def _select_overview_market(self, page: Page, market_name: str):
-        """Click the market-switcher dropdown on the overview page and select a market."""
-        # Try common selectors for the market dropdown
+        """Click the market-switcher dropdown on the overview page and select a market.
+
+        Uses JavaScript clicks as primary approach since native Playwright clicks
+        often fail on Oddschecker's custom dropdown (div-based, not <select>).
+        """
+        # Try JS-based approach first — most reliable in headless mode
+        js_result = await page.evaluate(f"""() => {{
+            // Open dropdown
+            const trigger = document.querySelector('div.select-item.selected');
+            if (trigger) trigger.click();
+
+            // Find and click the market option
+            return new Promise(resolve => {{
+                setTimeout(() => {{
+                    const links = document.querySelectorAll('a.select-item');
+                    for (const a of links) {{
+                        if (a.textContent.trim() === '{market_name}') {{
+                            a.click();
+                            resolve('clicked');
+                            return;
+                        }}
+                    }}
+                    resolve('not_found');
+                }}, 500);
+            }});
+        }}""")
+
+        if js_result == "clicked":
+            logger.info(f"Selected market '{market_name}' via JS click")
+            await asyncio.sleep(self.PAGE_LOAD_WAIT)
+            return
+
+        logger.warning(f"JS click failed ({js_result}), trying Playwright selectors...")
+
+        # Fallback: Playwright-based clicks
         dropdown_selectors = [
+            "div.select-item.selected",
+            ".select-wrap .select-title",
             "button:has-text('Change Market')",
-            "button:has-text('Match Result')",
-            "button:has-text('Winner')",
-            "[data-testid='market-selector']",
-            ".market-selector button",
-            "button.market-switcher",
         ]
 
-        clicked = False
         for selector in dropdown_selectors:
             try:
                 btn = page.locator(selector).first
                 if await btn.is_visible(timeout=2000):
                     await btn.click()
                     logger.info(f"Opened market dropdown with: {selector}")
-                    clicked = True
                     await asyncio.sleep(1)
                     break
             except Exception:
                 continue
 
-        if not clicked:
-            logger.warning("Could not find market dropdown — page may already show handicaps")
-
-        # Now click the Handicaps option in the dropdown
         option_selectors = [
+            f"a.select-item:has-text('{market_name}')",
+            f".item-list a:has-text('{market_name}')",
             f"a:has-text('{market_name}')",
-            f"li:has-text('{market_name}')",
-            f"button:has-text('{market_name}')",
-            f"[data-testid='market-option']:has-text('{market_name}')",
-            f"div[role='option']:has-text('{market_name}')",
         ]
 
         for selector in option_selectors:
@@ -972,9 +999,19 @@ class OddscheckerScraper(BaseScraper):
         """
         Parse free text from an overview card to find handicap lines and odds.
 
-        Looks for patterns like:
+        Handles two layouts:
+
+        Layout A (team + line on same line):
             Scotland +8  1.95
             France -8    2.00
+
+        Layout B (columnar — lines and odds on separate lines, Home/Away columns):
+            Scotland
+            France
+            +10
+            2.1
+            -10
+            1.91
         """
         lines = [l.strip() for l in text.split("\n") if l.strip()]
 
@@ -983,6 +1020,7 @@ class OddscheckerScraper(BaseScraper):
         away_line = None
         away_odds = None
 
+        # --- Try Layout A first: "Team +/-X" on a single line ---
         for line_text in lines:
             parsed = self._parse_handicap_selection(line_text)
             if not parsed:
@@ -992,7 +1030,6 @@ class OddscheckerScraper(BaseScraper):
             hcap = parsed["line"]
 
             # Look for odds near this line
-            # Try to find a decimal number after the handicap text
             odds_match = re.search(
                 re.escape(line_text) + r'\s+(\d+\.?\d*)',
                 text,
@@ -1007,6 +1044,42 @@ class OddscheckerScraper(BaseScraper):
                 away_odds = odds_val
 
         if home_line is not None and away_line is not None:
+            return {
+                "slug": slug,
+                "home": home,
+                "away": away,
+                "home_line": home_line,
+                "away_line": away_line,
+                "home_odds": home_odds,
+                "away_odds": away_odds,
+            }
+
+        # --- Try Layout B: columnar format ---
+        # Look for pairs of signed numbers followed by decimal odds.
+        # The first pair is the Home column, the second is Away.
+        signed_line_re = re.compile(r'^[+-]\d+\.?\d*$')
+        odds_re = re.compile(r'^\d+\.?\d+$')
+
+        pairs = []  # list of (line_value, odds_value)
+        i = 0
+        while i < len(lines):
+            if signed_line_re.match(lines[i]):
+                line_val = float(lines[i])
+                odds_val = None
+                # Next non-empty line should be the odds
+                if i + 1 < len(lines) and odds_re.match(lines[i + 1]):
+                    odds_val = float(lines[i + 1])
+                    i += 2
+                else:
+                    i += 1
+                pairs.append((line_val, odds_val))
+            else:
+                i += 1
+
+        if len(pairs) >= 2:
+            # First pair = Home column, second pair = Away column
+            home_line, home_odds = pairs[0]
+            away_line, away_odds = pairs[1]
             return {
                 "slug": slug,
                 "home": home,

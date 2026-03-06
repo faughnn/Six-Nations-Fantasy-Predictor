@@ -197,7 +197,7 @@ async def _scrape_handicaps_via_overview(
         # Build parsed_data in the format save_handicap_odds() expects
         home_line = m["home_line"]
         parsed_data = [{
-            "line": abs(home_line),
+            "line": home_line,
             "home_team": home,
             "away_team": away,
             "home_spread": home_line,

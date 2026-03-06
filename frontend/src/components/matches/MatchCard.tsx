@@ -137,7 +137,7 @@ export function MatchCard({ match }: MatchCardProps) {
           <div className="bg-[#f5f0e8] p-2.5 text-center">
             <div className="text-[10px] text-stone-400 uppercase tracking-[1.2px] font-semibold mb-1">Handicap</div>
             <div className="font-mono font-semibold text-sm text-stone-800 tabular-nums">
-              {match.home_team.split(' ')[0]} {-match.handicap_line > 0 ? '+' : ''}{-match.handicap_line}
+              {match.home_team.split(' ')[0]} {match.handicap_line > 0 ? '+' : ''}{match.handicap_line}
             </div>
             {match.home_handicap_odds != null && match.away_handicap_odds != null && (
               <div className="text-xs text-stone-400 font-mono mt-0.5 tabular-nums">

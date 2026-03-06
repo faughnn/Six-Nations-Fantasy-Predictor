@@ -290,9 +290,12 @@ export default function Tryscorers() {
             </button>
           ))}
         </div>
-        <span className="text-sm text-stone-400">
-          {filtered.length} player{filtered.length !== 1 ? 's' : ''}
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-stone-400">
+            {filtered.length} player{filtered.length !== 1 ? 's' : ''}
+          </span>
+          <span className="text-[10px] text-stone-300 italic">Click to exclude · Right-click to solo</span>
+        </div>
       </div>
 
       {/* Table */}

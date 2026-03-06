@@ -58,7 +58,7 @@ def build_parsed_data(match_data):
     """
     home_line = match_data["home_line"]
     return [{
-        "line": abs(home_line),
+        "line": home_line,
         "home_team": match_data["home"],
         "away_team": match_data["away"],
         "home_spread": home_line,
