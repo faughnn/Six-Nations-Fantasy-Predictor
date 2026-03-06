@@ -342,7 +342,7 @@ export default function Tryscorers() {
                   <Tooltip text="Implied probability of scoring a try (100 / odds)">Implied %</Tooltip>{sortKey === 'implied_prob' && <span className="ml-1 text-[#b91c1c]">{sortDir === 'asc' ? '↑' : '↓'}</span>}
                 </th>
                 <th className="pb-2 text-right cursor-pointer select-none hover:text-stone-700" onClick={() => handleSort('expected_try_points')}>
-                  <Tooltip text="Expected fantasy points from try scoring alone">Exp Pts</Tooltip>{sortKey === 'expected_try_points' && <span className="ml-1 text-[#b91c1c]">{sortDir === 'asc' ? '↑' : '↓'}</span>}
+                  <Tooltip text="Expected fantasy points from tries alone (implied probability × 15 for forwards / 10 for backs)">Exp Pts</Tooltip>{sortKey === 'expected_try_points' && <span className="ml-1 text-[#b91c1c]">{sortDir === 'asc' ? '↑' : '↓'}</span>}
                 </th>
                 <th className="pb-2 text-right cursor-pointer select-none hover:text-stone-700" onClick={() => handleSort('price')}>
                   <Tooltip text="Fantasy cost in stars">Price</Tooltip>{sortKey === 'price' && <span className="ml-1 text-[#b91c1c]">{sortDir === 'asc' ? '↑' : '↓'}</span>}
@@ -351,7 +351,7 @@ export default function Tryscorers() {
                   <Tooltip text="% of fantasy players who own this player">Own%</Tooltip>{sortKey === 'ownership_pct' && <span className="ml-1 text-[#b91c1c]">{sortDir === 'asc' ? '↑' : '↓'}</span>}
                 </th>
                 <th className="pb-2 text-right cursor-pointer select-none hover:text-stone-700" onClick={() => handleSort('exp_pts_per_star')}>
-                  <Tooltip text="Expected try points divided by price — higher is better value">Exp/Star</Tooltip>{sortKey === 'exp_pts_per_star' && <span className="ml-1 text-[#b91c1c]">{sortDir === 'asc' ? '↑' : '↓'}</span>}
+                  <Tooltip text="Expected try points (15 fwd / 10 back × implied prob) divided by price — higher is better value">Exp/Star</Tooltip>{sortKey === 'exp_pts_per_star' && <span className="ml-1 text-[#b91c1c]">{sortDir === 'asc' ? '↑' : '↓'}</span>}
                 </th>
               </tr>
             </thead>
