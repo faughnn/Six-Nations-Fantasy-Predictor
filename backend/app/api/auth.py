@@ -155,10 +155,10 @@ async def get_user_metrics(
 
     total = (await db.execute(select(func.count()).select_from(User))).scalar() or 0
     active_7d = (await db.execute(
-        select(func.count()).select_from(User).where(User.last_login_at >= seven_days_ago)
+        select(func.count()).select_from(User).where(User.last_active_at >= seven_days_ago)
     )).scalar() or 0
     active_30d = (await db.execute(
-        select(func.count()).select_from(User).where(User.last_login_at >= thirty_days_ago)
+        select(func.count()).select_from(User).where(User.last_active_at >= thirty_days_ago)
     )).scalar() or 0
     new_7d = (await db.execute(
         select(func.count()).select_from(User).where(User.created_at >= seven_days_ago)
@@ -166,7 +166,7 @@ async def get_user_metrics(
 
     # Recent users list
     result = await db.execute(
-        select(User).order_by(User.last_login_at.desc().nullslast()).limit(20)
+        select(User).order_by(User.last_active_at.desc().nullslast()).limit(20)
     )
     users = result.scalars().all()
 
@@ -183,6 +183,8 @@ async def get_user_metrics(
                 "created_at": u.created_at.isoformat() if u.created_at else None,
                 "last_login_at": u.last_login_at.isoformat() if u.last_login_at else None,
                 "login_count": u.login_count or 0,
+                "last_active_at": u.last_active_at.isoformat() if u.last_active_at else None,
+                "visit_count": u.visit_count or 0,
                 "is_admin": u.is_admin,
                 "auth_method": "google" if u.google_id else "email",
             }

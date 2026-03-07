@@ -15,6 +15,8 @@ interface MetricsUser {
   created_at: string | null;
   last_login_at: string | null;
   login_count: number;
+  last_active_at: string | null;
+  visit_count: number;
   is_admin: boolean;
   auth_method: 'google' | 'email';
 }
@@ -369,7 +371,7 @@ export default function AdminScrape() {
   const { data: metrics } = useUserMetrics();
   const scrapeJob = useScrapeJob();
 
-  type UserSortKey = 'name' | 'email' | 'auth_method' | 'login_count' | 'last_login_at' | 'created_at';
+  type UserSortKey = 'name' | 'email' | 'auth_method' | 'login_count' | 'visit_count' | 'last_active_at' | 'created_at';
   const [userSortKey, setUserSortKey] = useState<UserSortKey>('created_at');
   const [userSortDir, setUserSortDir] = useState<'asc' | 'desc'>('desc');
   const [userPage, setUserPage] = useState(0);
@@ -380,7 +382,7 @@ export default function AdminScrape() {
       setUserSortDir(d => d === 'asc' ? 'desc' : 'asc');
     } else {
       setUserSortKey(key);
-      setUserSortDir(['login_count', 'last_login_at', 'created_at'].includes(key) ? 'desc' : 'asc');
+      setUserSortDir(['login_count', 'visit_count', 'last_active_at', 'created_at'].includes(key) ? 'desc' : 'asc');
     }
     setUserPage(0);
   };
@@ -912,7 +914,8 @@ export default function AdminScrape() {
                       ['email', 'Email', false],
                       ['auth_method', 'Method', false],
                       ['login_count', 'Logins', true],
-                      ['last_login_at', 'Last Active', true],
+                      ['visit_count', 'Visits', true],
+                      ['last_active_at', 'Last Active', true],
                       ['created_at', 'Joined', true],
                     ] as [UserSortKey, string, boolean][]).map(([key, label, isRight]) => (
                       <th
@@ -950,7 +953,8 @@ export default function AdminScrape() {
                         </span>
                       </td>
                       <td className="py-1.5 text-right tabular-nums text-stone-500 font-mono">{u.login_count}</td>
-                      <td className="py-1.5 text-right text-stone-400">{timeAgo(u.last_login_at)}</td>
+                      <td className="py-1.5 text-right tabular-nums text-stone-500 font-mono">{u.visit_count}</td>
+                      <td className="py-1.5 text-right text-stone-400">{timeAgo(u.last_active_at)}</td>
                       <td className="py-1.5 text-right text-stone-400">{timeAgo(u.created_at)}</td>
                     </tr>
                   ))}

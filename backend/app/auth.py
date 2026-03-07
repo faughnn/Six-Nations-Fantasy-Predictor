@@ -5,12 +5,14 @@ import bcrypt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
 from app.database import get_db
 from app.models.user import User
+
+ACTIVITY_THROTTLE_MINUTES = 15
 
 security = HTTPBearer()
 
@@ -63,6 +65,15 @@ async def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User not found",
         )
+
+    # Throttled activity tracking
+    now = datetime.utcnow()
+    if user.last_active_at is None or (now - user.last_active_at) > timedelta(minutes=ACTIVITY_THROTTLE_MINUTES):
+        user.last_active_at = now
+        user.visit_count = (user.visit_count or 0) + 1
+        await db.commit()
+        await db.refresh(user)
+
     return user
 
 
