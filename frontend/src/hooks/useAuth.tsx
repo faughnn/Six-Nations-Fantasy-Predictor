@@ -65,6 +65,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     clearToken();
     setUser(null);
+    // Prevent Google One Tap from auto-signing in the previous account
+    window.google?.accounts.id.disableAutoSelect();
   }, []);
 
   return (

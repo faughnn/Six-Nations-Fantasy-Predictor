@@ -1,19 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useAuth } from '../hooks/useAuth';
 
-declare global {
-  interface Window {
-    google?: {
-      accounts: {
-        id: {
-          initialize: (config: { client_id: string; callback: (response: { credential: string }) => void }) => void;
-          renderButton: (element: HTMLElement, config: { theme: string; size: string; width: number; text: string }) => void;
-        };
-      };
-    };
-  }
-}
-
 export default function Login() {
   const { login, register, googleLogin } = useAuth();
   const [isRegister, setIsRegister] = useState(false);
@@ -30,6 +17,7 @@ export default function Login() {
     if (node && googleClientId && window.google) {
       window.google.accounts.id.initialize({
         client_id: googleClientId,
+        auto_select: false,
         callback: async (response: { credential: string }) => {
           setError('');
           setLoading(true);
