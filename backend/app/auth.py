@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 import bcrypt
@@ -34,7 +34,7 @@ def hash_password(password: str) -> str:
 
 def create_access_token(user_id: int, email: str) -> str:
     settings = get_settings()
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     payload = {"sub": str(user_id), "email": email, "exp": expire}
     return jwt.encode(payload, settings.jwt_secret, algorithm=ALGORITHM)
 
@@ -67,7 +67,7 @@ async def get_current_user(
         )
 
     # Throttled activity tracking
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     if user.last_active_at is None or (now - user.last_active_at) > timedelta(minutes=ACTIVITY_THROTTLE_MINUTES):
         user.last_active_at = now
         user.visit_count = (user.visit_count or 0) + 1

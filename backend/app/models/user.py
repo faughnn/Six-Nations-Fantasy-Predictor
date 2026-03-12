@@ -17,5 +17,5 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     last_login_at = Column(DateTime, nullable=True)
     login_count = Column(Integer, default=0, nullable=False, server_default="0")
-    last_active_at = Column(DateTime, nullable=True)
+    last_active_at = Column(DateTime(timezone=True), nullable=True)
     visit_count = Column(Integer, default=0, nullable=False, server_default="0")

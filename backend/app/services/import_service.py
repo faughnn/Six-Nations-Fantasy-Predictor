@@ -82,30 +82,30 @@ def _fuzzy_find(name: str, cache: Dict[str, Player]) -> Optional[Player]:
                 # Check if surname matches the last part(s) of the player name
                 player_surname = " ".join(parts[1:])
                 # Use fuzzy match for surname to handle hyphens, accents, etc.
-                if fuzz.ratio(surname, player_surname) >= 85:
+                surname_score = fuzz.ratio(surname, player_surname)
+                if surname_score >= 85:
                     player_initial = parts[0][0] if parts[0] else ""
-                    surname_candidates.append((pname, player_initial))
+                    surname_candidates.append((pname, player_initial, surname_score))
 
         # Among surname matches, prefer those with matching initial
-        initial_matches = [pn for pn, pi in surname_candidates if pi == initial]
+        initial_matches = [(pn, sc) for pn, pi, sc in surname_candidates if pi == initial]
         if len(initial_matches) == 1:
-            return cache[initial_matches[0]]
+            return cache[initial_matches[0][0]]
         if len(initial_matches) > 1:
-            # Multiple players with same initial + surname — pick best fuzzy
-            best = process.extractOne(
-                normalized, initial_matches, scorer=fuzz.token_sort_ratio
-            )
-            if best and best[1] >= FUZZY_MATCH_THRESHOLD:
-                return cache[best[0]]
+            # Multiple players with same initial + surname — pick highest surname score
+            initial_matches.sort(key=lambda x: x[1], reverse=True)
+            return cache[initial_matches[0][0]]
 
         # No initial match — try surname-only candidates as fallback
         if surname_candidates:
-            candidate_names = [pn for pn, _ in surname_candidates]
-            best = process.extractOne(
-                normalized, candidate_names, scorer=fuzz.token_sort_ratio
-            )
-            if best and best[1] >= FUZZY_MATCH_THRESHOLD:
-                return cache[best[0]]
+            # Pick the candidate with the highest surname score
+            surname_candidates.sort(key=lambda x: x[2], reverse=True)
+            return cache[surname_candidates[0][0]]
+
+        # Abbreviated name with no surname match — don't fall through to
+        # general fuzzy matching, which can false-positive on first names
+        # (e.g. "S. STEPHEN" matching "Stephen Varney" via partial_ratio).
+        return None
 
     # Standard fuzzy matching for non-abbreviated names
     # token_sort_ratio handles name-order differences
