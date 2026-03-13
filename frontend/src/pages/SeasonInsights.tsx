@@ -1,10 +1,26 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSeasonSummary } from '../hooks/useStats';
+import { useCurrentRound } from '../hooks/useMatches';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { CountryFlag } from '../components/common/CountryFlag';
 import { Tooltip } from '../components/common/Tooltip';
 import type { Country, Position } from '../types';
-import type { SeasonSummaryPlayer, PositionAverage } from '../api/client';
+import type { SeasonSummaryPlayer } from '../api/client';
+
+type Availability = 'starting' | 'substitute' | 'not_playing';
+
+const AVAILABILITY_INDICATOR: Record<Availability, { dot: string; label: string }> = {
+  starting: { dot: 'bg-green-700', label: 'XV' },
+  substitute: { dot: 'bg-amber-600', label: 'SUB' },
+  not_playing: { dot: 'bg-stone-300', label: 'Out' },
+};
+
+const AVAILABILITY_OPTIONS: { value: Availability | 'all'; label: string }[] = [
+  { value: 'all', label: 'All' },
+  { value: 'starting', label: 'Starting XV' },
+  { value: 'substitute', label: 'Subs' },
+  { value: 'not_playing', label: 'Not playing' },
+];
 
 type SortKey = keyof SeasonSummaryPlayer | 'name' | 'country' | 'position';
 type SortDir = 'asc' | 'desc';
@@ -12,10 +28,9 @@ type SortDir = 'asc' | 'desc';
 const COUNTRIES: Country[] = ['Ireland', 'England', 'France', 'Wales', 'Scotland', 'Italy'];
 const POSITIONS: Position[] = ['prop', 'hooker', 'second_row', 'back_row', 'scrum_half', 'out_half', 'centre', 'back_3'];
 
-const FORWARD_POSITIONS = new Set(['prop', 'hooker', 'second_row', 'back_row']);
-
 const STAT_COLS: { key: SortKey; header: string; tooltip: string; format?: (v: number) => string }[] = [
   { key: 'games_played', header: 'GP', tooltip: 'Games played' },
+  { key: 'price', header: 'Price', tooltip: 'Current price (stars)', format: (v) => v.toFixed(1) },
   { key: 'avg_points', header: 'Avg Pts', tooltip: 'Average fantasy points per game' },
   { key: 'total_points', header: 'Tot Pts', tooltip: 'Total fantasy points across all rounds' },
   { key: 'avg_minutes', header: 'Avg Min', tooltip: 'Average minutes per game' },
@@ -33,7 +48,7 @@ const STAT_COLS: { key: SortKey; header: string; tooltip: string; format?: (v: n
 ];
 
 const DESC_BY_DEFAULT = new Set([
-  'avg_points', 'total_points', 'avg_minutes', 'points_per_minute', 'avg_tries',
+  'price', 'avg_points', 'total_points', 'avg_minutes', 'points_per_minute', 'avg_tries',
   'avg_tackles', 'avg_metres', 'avg_defenders_beaten', 'avg_offloads',
   'total_tries', 'total_conversions', 'total_penalties_kicked', 'potm_count', 'games_played',
 ]);
@@ -53,10 +68,13 @@ function readStoredSet<T extends string>(key: string): Set<T> {
 const GAME_COUNTS = [1, 2, 3, 4] as const;
 
 export default function SeasonInsights() {
-  const { data, isLoading } = useSeasonSummary();
+  const { data: currentRound } = useCurrentRound();
+  const nextRound = currentRound?.round ?? 5;
+  const { data, isLoading } = useSeasonSummary({ next_round: nextRound });
 
   const [excludedCountries, setExcludedCountries] = useState<Set<Country>>(() => readStoredSet<Country>(STORAGE_KEY));
   const [excludedPositions, setExcludedPositions] = useState<Set<Position>>(() => readStoredSet<Position>(STORAGE_KEY_POS));
+  const [availabilityFilter, setAvailabilityFilter] = useState<Availability | 'all'>('all');
   const [sortKey, setSortKey] = useState<SortKey>('avg_points');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
   const [excludedGames, setExcludedGames] = useState<Set<number>>(() => readStoredSet<string>(STORAGE_KEY_GAMES).size > 0 ? new Set([...readStoredSet<string>(STORAGE_KEY_GAMES)].map(Number)) : new Set());
@@ -98,6 +116,7 @@ export default function SeasonInsights() {
     if (excludedCountries.size > 0) list = list.filter(p => !excludedCountries.has(p.country as Country));
     if (excludedPositions.size > 0) list = list.filter(p => !excludedPositions.has(p.position as Position));
     if (excludedGames.size > 0) list = list.filter(p => !excludedGames.has(p.games_played));
+    if (availabilityFilter !== 'all') list = list.filter(p => p.availability === availabilityFilter);
 
     list.sort((a, b) => {
       const aVal = a[sortKey as keyof SeasonSummaryPlayer];
@@ -109,7 +128,7 @@ export default function SeasonInsights() {
       return sortDir === 'asc' ? String(aVal).localeCompare(String(bVal)) : String(bVal).localeCompare(String(aVal));
     });
     return list;
-  }, [data, excludedCountries, excludedPositions, sortKey, sortDir, excludedGames]);
+  }, [data, excludedCountries, excludedPositions, sortKey, sortDir, excludedGames, availabilityFilter]);
 
   // Position averages computed from the filtered player list (respects country, position, min games filters)
   const positionAverages = useMemo(() => {
@@ -237,6 +256,25 @@ export default function SeasonInsights() {
             </button>
           ))}
         </div>
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-[10px] text-stone-400 uppercase tracking-[2px] font-bold mr-1">Rd {nextRound} Status</span>
+          {AVAILABILITY_OPTIONS.map(opt => (
+            <button
+              key={opt.value}
+              onClick={() => setAvailabilityFilter(opt.value)}
+              className={`px-2.5 py-1 text-xs font-medium transition-colors flex items-center gap-1 ${
+                availabilityFilter === opt.value
+                  ? 'bg-stone-900 text-white border border-stone-900'
+                  : 'bg-transparent text-stone-400 border border-stone-300 hover:text-stone-700'
+              }`}
+            >
+              {opt.value !== 'all' && (
+                <span className={`inline-block w-2 h-2 rounded-full ${AVAILABILITY_INDICATOR[opt.value].dot}`} />
+              )}
+              {opt.label}
+            </button>
+          ))}
+        </div>
         <div className="flex items-center gap-3">
           <span className="text-sm text-stone-400">
             {filtered.length} player{filtered.length !== 1 ? 's' : ''}
@@ -283,18 +321,25 @@ export default function SeasonInsights() {
                   <td className="py-1.5 pr-2">
                     <div className="flex items-center gap-1.5">
                       <CountryFlag country={p.country} size="sm" />
+                      {p.availability && AVAILABILITY_INDICATOR[p.availability] && (
+                        <span
+                          className={`inline-block w-2 h-2 rounded-full flex-shrink-0 ${AVAILABILITY_INDICATOR[p.availability].dot}`}
+                          title={AVAILABILITY_INDICATOR[p.availability].label}
+                        />
+                      )}
                       <span className="font-medium text-stone-800">{p.name}</span>
                     </div>
                   </td>
                   <td className="py-1.5 text-sm text-stone-500">{p.country}</td>
                   <td className="py-1.5 text-sm text-stone-500 whitespace-nowrap">{p.position ? p.position.replace(/_/g, ' ') : ''}</td>
                   {STAT_COLS.map(col => {
-                    const val = p[col.key as keyof SeasonSummaryPlayer] as number;
+                    const val = p[col.key as keyof SeasonSummaryPlayer] as number | null;
                     const isAvgPts = col.key === 'avg_points';
                     const isTotPts = col.key === 'total_points';
                     const isGP = col.key === 'games_played';
                     const isPotm = col.key === 'potm_count';
-                    const formatted = col.format ? col.format(val) : (typeof val === 'number' && !Number.isInteger(val) ? val.toFixed(1) : val);
+                    const isPrice = col.key === 'price';
+                    const formatted = val == null ? '-' : col.format ? col.format(val) : (typeof val === 'number' && !Number.isInteger(val) ? val.toFixed(1) : val);
                     return (
                       <td
                         key={col.key}
@@ -302,11 +347,12 @@ export default function SeasonInsights() {
                           isAvgPts ? 'font-bold text-[#b91c1c]' :
                           isTotPts ? 'font-semibold text-stone-800' :
                           isGP ? 'font-semibold text-stone-600' :
-                          isPotm && val > 0 ? 'text-amber-700 font-medium' :
-                          val > 0 ? 'text-stone-700' : 'text-stone-300'
+                          isPrice && val ? 'text-stone-600' :
+                          isPotm && val && val > 0 ? 'text-amber-700 font-medium' :
+                          val && val > 0 ? 'text-stone-700' : 'text-stone-300'
                         }`}
                       >
-                        {val === 0 ? '-' : formatted}
+                        {val == null || val === 0 ? '-' : formatted}
                       </td>
                     );
                   })}

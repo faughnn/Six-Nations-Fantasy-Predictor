@@ -275,6 +275,9 @@ export interface SeasonSummaryPlayer {
   name: string;
   country: string;
   position: string;
+  availability: 'starting' | 'substitute' | 'not_playing' | null;
+  price: number | null;
+  ownership_pct: number | null;
   games_played: number;
   total_points: number;
   avg_points: number;
@@ -340,7 +343,7 @@ export const fantasyStatsApi = {
     return response.data;
   },
 
-  getSeasonSummary: async (params: { country?: string; position?: string } = {}): Promise<SeasonSummary> => {
+  getSeasonSummary: async (params: { country?: string; position?: string; next_round?: number } = {}): Promise<SeasonSummary> => {
     const response = await api.get('/api/stats/fantasy/season-summary', { params });
     return response.data;
   },

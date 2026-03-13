@@ -147,13 +147,31 @@ class FantasyStatsService:
         self,
         country: Optional[str] = None,
         position: Optional[str] = None,
+        next_round: Optional[int] = None,
     ) -> dict:
         """Aggregate fantasy stats across all rounds for each player."""
+        from app.models.prediction import FantasyPrice
+
         query = select(FantasyRoundStats).options(
             selectinload(FantasyRoundStats.player)
         )
         result = await self.db.execute(query)
         stats = result.scalars().all()
+
+        # Get next-round availability/price if requested
+        price_map: dict[int, dict] = {}
+        if next_round:
+            price_q = select(FantasyPrice).where(
+                FantasyPrice.season == 2026,
+                FantasyPrice.round == next_round,
+            )
+            price_result = await self.db.execute(price_q)
+            for fp in price_result.scalars().all():
+                price_map[fp.player_id] = {
+                    "availability": fp.availability,
+                    "price": float(fp.price) if fp.price else None,
+                    "ownership_pct": float(fp.ownership_pct) if fp.ownership_pct else None,
+                }
 
         # Group by player
         from collections import defaultdict
@@ -188,8 +206,12 @@ class FantasyStatsService:
             total_pts = sum(float(s.fantasy_points) if s.fantasy_points else 0 for s in rounds)
             total_mins = sum(s.minutes_played or 0 for s in rounds)
 
+            price_info = price_map.get(pid, {})
             players.append({
                 **info,
+                "availability": price_info.get("availability"),
+                "price": price_info.get("price"),
+                "ownership_pct": price_info.get("ownership_pct"),
                 "games_played": games,
                 "total_points": round(total_pts, 1),
                 "avg_points": round(total_pts / games, 1) if games else 0,

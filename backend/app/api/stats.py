@@ -262,8 +262,9 @@ async def get_fantasy_stats_rounds(db: AsyncSession = Depends(get_db)):
 async def get_fantasy_season_summary(
     country: Optional[str] = Query(None, description="Filter by country"),
     position: Optional[str] = Query(None, description="Filter by position"),
+    next_round: Optional[int] = Query(None, description="Include availability/price for this upcoming round"),
     db: AsyncSession = Depends(get_db),
 ):
     """Get aggregated season stats: per-player averages and position breakdowns."""
     service = FantasyStatsService(db)
-    return await service.get_season_summary(country=country, position=position)
+    return await service.get_season_summary(country=country, position=position, next_round=next_round)

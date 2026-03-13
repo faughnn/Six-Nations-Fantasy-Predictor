@@ -100,7 +100,7 @@ export function useFantasyStatsRounds() {
   });
 }
 
-export function useSeasonSummary(params: { country?: string; position?: string } = {}) {
+export function useSeasonSummary(params: { country?: string; position?: string; next_round?: number } = {}) {
   return useQuery<SeasonSummary>({
     queryKey: ['stats', 'fantasy', 'season-summary', params],
     queryFn: () => fantasyStatsApi.getSeasonSummary(params),
