@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { statsApi, historicalStatsApi, projectionsApi, fantasyStatsApi, type GetStatsParams, type GetHistoricalSixNationsParams, type GetHistoricalClubParams, type GetProjectionsParams, type GetFantasyStatsParams } from '../api/client';
+import { statsApi, historicalStatsApi, projectionsApi, fantasyStatsApi, type GetStatsParams, type GetHistoricalSixNationsParams, type GetHistoricalClubParams, type GetProjectionsParams, type GetFantasyStatsParams, type SeasonSummary } from '../api/client';
 
 export function useAllStats(params: GetStatsParams = {}) {
   return useQuery({
@@ -97,5 +97,12 @@ export function useFantasyStatsRounds() {
   return useQuery({
     queryKey: ['stats', 'fantasy', 'rounds'],
     queryFn: () => fantasyStatsApi.getRounds(),
+  });
+}
+
+export function useSeasonSummary(params: { country?: string; position?: string } = {}) {
+  return useQuery<SeasonSummary>({
+    queryKey: ['stats', 'fantasy', 'season-summary', params],
+    queryFn: () => fantasyStatsApi.getSeasonSummary(params),
   });
 }

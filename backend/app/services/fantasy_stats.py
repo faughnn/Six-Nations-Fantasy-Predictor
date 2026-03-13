@@ -142,3 +142,103 @@ class FantasyStatsService:
         query = select(FantasyRoundStats.round).distinct().order_by(FantasyRoundStats.round)
         result = await self.db.execute(query)
         return [row[0] for row in result.fetchall()]
+
+    async def get_season_summary(
+        self,
+        country: Optional[str] = None,
+        position: Optional[str] = None,
+    ) -> dict:
+        """Aggregate fantasy stats across all rounds for each player."""
+        query = select(FantasyRoundStats).options(
+            selectinload(FantasyRoundStats.player)
+        )
+        result = await self.db.execute(query)
+        stats = result.scalars().all()
+
+        # Group by player
+        from collections import defaultdict
+        player_rounds: dict[int, list] = defaultdict(list)
+        player_info: dict[int, dict] = {}
+
+        for s in stats:
+            p = s.player
+            if country and p.country != country:
+                continue
+            if position and p.fantasy_position != position:
+                continue
+
+            # Skip entries where player had 0 minutes (didn't actually play)
+            if (s.minutes_played or 0) == 0:
+                continue
+
+            player_rounds[p.id].append(s)
+            if p.id not in player_info:
+                player_info[p.id] = {
+                    "player_id": p.id,
+                    "name": p.name,
+                    "country": p.country,
+                    "position": p.fantasy_position,
+                }
+
+        # Compute per-player averages
+        players = []
+        for pid, rounds in player_rounds.items():
+            info = player_info[pid]
+            games = len(rounds)
+            total_pts = sum(float(s.fantasy_points) if s.fantasy_points else 0 for s in rounds)
+            total_mins = sum(s.minutes_played or 0 for s in rounds)
+
+            players.append({
+                **info,
+                "games_played": games,
+                "total_points": round(total_pts, 1),
+                "avg_points": round(total_pts / games, 1) if games else 0,
+                "avg_minutes": round(total_mins / games, 1) if games else 0,
+                "points_per_minute": round(total_pts / total_mins, 3) if total_mins > 0 else 0,
+                "total_tries": sum(s.tries for s in rounds),
+                "avg_tries": round(sum(s.tries for s in rounds) / games, 2) if games else 0,
+                "total_tackles": sum(s.tackles_made for s in rounds),
+                "avg_tackles": round(sum(s.tackles_made for s in rounds) / games, 1) if games else 0,
+                "total_metres": sum(s.metres_carried for s in rounds),
+                "avg_metres": round(sum(s.metres_carried for s in rounds) / games, 1) if games else 0,
+                "avg_defenders_beaten": round(sum(s.defenders_beaten for s in rounds) / games, 1) if games else 0,
+                "avg_offloads": round(sum(s.offloads for s in rounds) / games, 1) if games else 0,
+                "total_conversions": sum(s.conversions for s in rounds),
+                "total_penalties_kicked": sum(s.penalties_kicked for s in rounds),
+                "total_turnovers": sum(s.breakdown_steals for s in rounds),
+                "total_lineout_steals": sum(s.lineout_steals for s in rounds),
+                "total_yellow_cards": sum(s.yellow_cards for s in rounds),
+                "total_red_cards": sum(s.red_cards for s in rounds),
+                "total_penalties_conceded": sum(s.penalties_conceded for s in rounds),
+                "potm_count": sum(1 for s in rounds if s.player_of_match),
+                "rounds_played": sorted(s.round for s in rounds),
+            })
+
+        # Position averages
+        from collections import defaultdict as dd
+        pos_data: dict[str, list[float]] = dd(list)
+        for p in players:
+            if p["position"]:
+                pos_data[p["position"]].append(p["avg_points"])
+
+        position_averages = []
+        for pos, avgs in sorted(pos_data.items()):
+            position_averages.append({
+                "position": pos,
+                "player_count": len(avgs),
+                "avg_points": round(sum(avgs) / len(avgs), 1) if avgs else 0,
+                "max_avg_points": round(max(avgs), 1) if avgs else 0,
+                "min_avg_points": round(min(avgs), 1) if avgs else 0,
+            })
+
+        # Get available rounds
+        rounds_q = select(FantasyRoundStats.round).distinct().order_by(FantasyRoundStats.round)
+        result = await self.db.execute(rounds_q)
+        available_rounds = [row[0] for row in result.fetchall()]
+
+        return {
+            "players": players,
+            "position_averages": position_averages,
+            "rounds_included": available_rounds,
+            "total_players": len(players),
+        }

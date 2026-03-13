@@ -8,12 +8,14 @@ import HistoricalStats from './pages/HistoricalStats';
 import Tryscorers from './pages/Tryscorers';
 import AdminScrape from './pages/AdminScrape';
 import FantasyStats from './pages/FantasyStats';
+import SeasonInsights from './pages/SeasonInsights';
 import IssueModal from './components/IssueModal';
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', end: true },
   { to: '/tryscorers', label: 'Player Analysis' },
   { to: '/fantasy-stats', label: '2026 Stats' },
+  { to: '/season-insights', label: 'Season Insights' },
   { to: '/players-all-stats', label: '2025 F6N Stats' },
   { to: '/historical-stats', label: 'Historical Stats', wip: true },
 ];
@@ -222,6 +224,11 @@ function App() {
             <Route path="/fantasy-stats" element={
               <div className="px-6 py-6">
                 <FantasyStats />
+              </div>
+            } />
+            <Route path="/season-insights" element={
+              <div className="px-6 py-6">
+                <SeasonInsights />
               </div>
             } />
             <Route path="/players-all-stats" element={

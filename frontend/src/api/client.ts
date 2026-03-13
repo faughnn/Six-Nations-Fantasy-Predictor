@@ -270,6 +270,50 @@ export interface GetFantasyStatsParams {
   position?: string;
 }
 
+export interface SeasonSummaryPlayer {
+  player_id: number;
+  name: string;
+  country: string;
+  position: string;
+  games_played: number;
+  total_points: number;
+  avg_points: number;
+  avg_minutes: number;
+  points_per_minute: number;
+  total_tries: number;
+  avg_tries: number;
+  total_tackles: number;
+  avg_tackles: number;
+  total_metres: number;
+  avg_metres: number;
+  avg_defenders_beaten: number;
+  avg_offloads: number;
+  total_conversions: number;
+  total_penalties_kicked: number;
+  total_turnovers: number;
+  total_lineout_steals: number;
+  total_yellow_cards: number;
+  total_red_cards: number;
+  total_penalties_conceded: number;
+  potm_count: number;
+  rounds_played: number[];
+}
+
+export interface PositionAverage {
+  position: string;
+  player_count: number;
+  avg_points: number;
+  max_avg_points: number;
+  min_avg_points: number;
+}
+
+export interface SeasonSummary {
+  players: SeasonSummaryPlayer[];
+  position_averages: PositionAverage[];
+  rounds_included: number[];
+  total_players: number;
+}
+
 export const fantasyStatsApi = {
   getAll: async (params: GetFantasyStatsParams = {}): Promise<FantasyStatPlayer[]> => {
     const response = await api.get('/api/stats/fantasy', { params });
@@ -293,6 +337,11 @@ export const fantasyStatsApi = {
 
   getRounds: async (): Promise<number[]> => {
     const response = await api.get('/api/stats/fantasy/rounds');
+    return response.data;
+  },
+
+  getSeasonSummary: async (params: { country?: string; position?: string } = {}): Promise<SeasonSummary> => {
+    const response = await api.get('/api/stats/fantasy/season-summary', { params });
     return response.data;
   },
 };

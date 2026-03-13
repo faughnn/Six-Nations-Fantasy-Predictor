@@ -74,6 +74,10 @@ export default function Tryscorers() {
 
   const { data: scrapeStatus } = useRoundScrapeStatus(season, round);
 
+  const [tipsDismissed, setTipsDismissed] = useState(
+    () => parseInt(localStorage.getItem('tipsDismissed') || '0', 10)
+  );
+
   const [excludedCountries, setExcludedCountries] = useState<Set<Country>>(
     () => readStoredSet<Country>(STORAGE_KEY_COUNTRIES)
   );
@@ -236,15 +240,13 @@ export default function Tryscorers() {
       })()}
 
       {/* Tips banner — shows on first two visits, gone after second dismissal */}
-      {(() => {
-        const dismissCount = parseInt(localStorage.getItem('tipsDismissed') || '0', 10);
-        if (dismissCount >= 2) return null;
-        return (
+      {tipsDismissed < 2 && (
           <div className="bg-stone-50 border border-stone-200 text-stone-600 text-xs px-4 py-3 relative">
             <button
               onClick={() => {
-                localStorage.setItem('tipsDismissed', String(dismissCount + 1));
-                window.location.reload();
+                const next = tipsDismissed + 1;
+                localStorage.setItem('tipsDismissed', String(next));
+                setTipsDismissed(next);
               }}
               className="absolute top-2 right-3 text-stone-400 hover:text-stone-600 text-sm"
               title="Dismiss"
@@ -259,8 +261,7 @@ export default function Tryscorers() {
               <li>Filter <strong>Subs</strong> and sort by <strong>OWN%</strong> to see who everyone is picking as Super Sub</li>
             </ul>
           </div>
-        );
-      })()}
+      )}
 
       {/* Filters */}
       <div className="space-y-2">

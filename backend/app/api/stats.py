@@ -256,3 +256,14 @@ async def get_fantasy_stats_rounds(db: AsyncSession = Depends(get_db)):
     """Get list of rounds that have been scraped."""
     service = FantasyStatsService(db)
     return await service.get_rounds()
+
+
+@router.get("/fantasy/season-summary")
+async def get_fantasy_season_summary(
+    country: Optional[str] = Query(None, description="Filter by country"),
+    position: Optional[str] = Query(None, description="Filter by position"),
+    db: AsyncSession = Depends(get_db),
+):
+    """Get aggregated season stats: per-player averages and position breakdowns."""
+    service = FantasyStatsService(db)
+    return await service.get_season_summary(country=country, position=position)
