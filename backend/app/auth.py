@@ -66,8 +66,8 @@ async def get_current_user(
             detail="User not found",
         )
 
-    # Throttled activity tracking
-    now = datetime.now(timezone.utc)
+    # Throttled activity tracking (use naive UTC to match DB's timestamp-without-tz)
+    now = datetime.utcnow()
     if user.last_active_at is None or (now - user.last_active_at) > timedelta(minutes=ACTIVITY_THROTTLE_MINUTES):
         user.last_active_at = now
         user.visit_count = (user.visit_count or 0) + 1
